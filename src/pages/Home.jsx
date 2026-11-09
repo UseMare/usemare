@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, ChevronLeft, ChevronRight, CreditCard, Gem, Leaf, LockKeyhole, Truck } from 'lucide-react'
 import { products } from '../products.js'
-import { usePageTitle } from '../shop.jsx'
+import { usePageTitle, useShop } from '../shop.jsx'
 import { HandHeart, Instagram, ProductCard, SectionHeading, responsive } from '../ui.jsx'
 import { store } from '../store.js'
 
@@ -61,6 +61,7 @@ function Hero() {
 
 export default function Home() {
   usePageTitle(null)
+  useShop() // redesenha quando o catálogo do Supabase chega
   // Prévia na página inicial: só as 4 primeiras peças disponíveis. O catálogo completo fica em /produtos.
   const highlights = products.filter(product => product.available).slice(0, 4)
 

@@ -7,6 +7,7 @@ import { usePageTitle, useShop } from '../shop.jsx'
 import { Instagram, Price, ProductCard, SectionHeading, WhatsApp } from '../ui.jsx'
 import { productMessage, restockMessage, store, whatsappLink } from '../store.js'
 import NotFound from './NotFound.jsx'
+import { supabase } from '../supabase.js'
 
 const lineLabel = product => lineInfo[product.line]?.label || 'Produtos'
 const lineLink = product => `/produtos?categoria=${lineInfo[product.line]?.key || ''}`
@@ -131,25 +132,118 @@ function InfoTabs({ product }) {
   )
 }
 
+// Avaliações: lidas e gravadas no Supabase (tabela reviews).
+// A cliente logada avalia; a avaliação fica "em análise" até a loja aprovar no painel.
+const formatDate = iso => new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })
+
+function StarsInput({ value, onChange }) {
+  const [hover, setHover] = useState(0)
+  return (
+    <div className="stars-input" role="radiogroup" aria-label="Sua nota" onMouseLeave={() => setHover(0)}>
+      {[1, 2, 3, 4, 5].map(n => (
+        <button key={n} type="button" role="radio" aria-checked={value === n} aria-label={`${n} ${n === 1 ? 'estrela' : 'estrelas'}`}
+          className={(hover || value) >= n ? 'on' : ''} onMouseEnter={() => setHover(n)} onClick={() => onChange(n)}>
+          <Star />
+        </button>
+      ))}
+    </div>
+  )
+}
+
 function Reviews({ product }) {
+  const { user } = useShop()
+  const [list, setList] = useState([])
+  const [loaded, setLoaded] = useState(false)
+  const [rating, setRating] = useState(0)
+  const [comment, setComment] = useState('')
+  const [notice, setNotice] = useState(null)
+  const [busy, setBusy] = useState(false)
+  const noun = product.flavors ? 'deste produto' : 'desta peça'
+
+  useEffect(() => {
+    if (!supabase || !product.uuid) { setLoaded(true); return }
+    let alive = true
+    supabase.from('reviews')
+      .select('id, user_id, author_name, rating, comment, status, created_at')
+      .eq('product_id', product.uuid)
+      .order('created_at', { ascending: false })
+      .then(({ data }) => { if (alive) { setList(data || []); setLoaded(true) } })
+    return () => { alive = false }
+  }, [product.uuid, user?.id])
+
+  const approved = list.filter(r => r.status === 'aprovada')
+  const mine = user ? list.find(r => r.user_id === user.id) : null
+  const average = approved.length ? approved.reduce((sum, r) => sum + r.rating, 0) / approved.length : 0
+
+  useEffect(() => {
+    setRating(mine?.rating || 0)
+    setComment(mine?.comment || '')
+  }, [mine?.id])
+
+  const submit = async event => {
+    event.preventDefault()
+    if (!rating) { setNotice({ type: 'error', text: 'Escolha de 1 a 5 estrelas. ⭐' }); return }
+    setBusy(true)
+    const { data, error } = await supabase.from('reviews')
+      .upsert({ product_id: product.uuid, user_id: user.id, rating, comment: comment.trim() || null }, { onConflict: 'product_id,user_id' })
+      .select('id, user_id, author_name, rating, comment, status, created_at')
+      .single()
+    setBusy(false)
+    if (error) { setNotice({ type: 'error', text: 'Não conseguimos enviar agora. Tente de novo em instantes. 🤍' }); return }
+    setList(current => [data, ...current.filter(r => r.id !== data.id)])
+    setNotice({ type: 'ok', text: 'Obrigada! Sua avaliação foi enviada e aparece aqui assim que a Maré aprovar. 🤎' })
+  }
+
   return (
     <section className="reviews shell" aria-labelledby="reviews-title">
       <SectionHeading id="reviews-title" title="Avaliações" />
       <div className="reviews-box" data-reveal>
         <div className="reviews-score">
-          <div className="stars" aria-hidden="true">{[0, 1, 2, 3, 4].map(i => <Star key={i} />)}</div>
-          <strong>Ainda sem avaliações</strong>
-          <p>Seja a primeira a contar o que achou {product.flavors ? 'deste produto' : 'desta peça'}. 🤎</p>
+          <div className="stars" aria-hidden="true">{[1, 2, 3, 4, 5].map(i => <Star key={i} className={approved.length && Math.round(average) >= i ? 'on' : ''} />)}</div>
+          {approved.length ? <>
+            <strong>{average.toFixed(1).replace('.', ',')} de 5</strong>
+            <p>{approved.length} {approved.length === 1 ? 'avaliação' : 'avaliações'} de clientes Maré. 🤎</p>
+          </> : <>
+            <strong>Ainda sem avaliações</strong>
+            <p>Seja a primeira a contar o que achou {noun}. 🤎</p>
+          </>}
         </div>
-        <div className="reviews-cta">
-          <MessageCircleHeart />
-          <div>
-            <b>Em breve você poderá avaliar por aqui</b>
-            <p>Entre na sua conta para deixar seu comentário e fotos. Enquanto isso, marque a gente no Instagram vestindo Maré!</p>
+
+        {!product.uuid || !supabase ? (
+          <div className="reviews-cta">
+            <MessageCircleHeart />
+            <div><b>Avaliações indisponíveis no momento</b><p>Enquanto isso, marque a gente no Instagram vestindo Maré!</p></div>
+            <a className="button outline small" href={store.instagram} target="_blank" rel="noreferrer"><Instagram /> {store.instagramHandle}</a>
           </div>
-          <a className="button outline small" href={store.instagram} target="_blank" rel="noreferrer"><Instagram /> {store.instagramHandle}</a>
-        </div>
+        ) : user ? (
+          <form className="reviews-form" onSubmit={submit}>
+            <b>{mine ? 'Sua avaliação' : `O que você achou ${noun}?`}</b>
+            {mine && mine.status !== 'aprovada' && <span className={`review-status ${mine.status}`}>{mine.status === 'pendente' ? 'Em análise' : 'Não publicada'}</span>}
+            <StarsInput value={rating} onChange={value => { setRating(value); setNotice(null) }} />
+            <textarea value={comment} onChange={e => setComment(e.target.value)} maxLength={2000} rows={3} placeholder="Conta pra gente: caimento, tecido, tamanho… (opcional)" />
+            {notice && <p className={`login-notice ${notice.type === 'error' ? 'is-error' : ''}`} role="status">{notice.text}</p>}
+            <button className="button dark small" type="submit" disabled={busy}>{busy ? 'Enviando…' : mine ? 'Atualizar avaliação' : 'Enviar avaliação'}</button>
+          </form>
+        ) : (
+          <div className="reviews-cta">
+            <MessageCircleHeart />
+            <div><b>Comprou na Maré? Conta pra gente!</b><p>Entre na sua conta para deixar sua nota e seu comentário.</p></div>
+            <Link className="button outline small" to="/entrar">Entrar para avaliar</Link>
+          </div>
+        )}
       </div>
+
+      {loaded && approved.length > 0 && (
+        <ul className="reviews-list">
+          {approved.map(r => (
+            <li key={r.id} data-reveal>
+              <div className="stars small" aria-label={`${r.rating} de 5 estrelas`}>{[1, 2, 3, 4, 5].map(i => <Star key={i} className={r.rating >= i ? 'on' : ''} />)}</div>
+              {r.comment && <p>{r.comment}</p>}
+              <span><b>{r.author_name}</b> · {formatDate(r.created_at)}</span>
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   )
 }

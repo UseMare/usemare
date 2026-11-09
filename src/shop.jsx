@@ -1,8 +1,11 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { products } from './products.js'
+import { refreshCatalog } from './data.js'
+import { supabase } from './supabase.js'
 
-// Estado compartilhado da loja: sacola, favoritos e avisos ("foi para a sacola").
+// Estado compartilhado da loja: catálogo, conta, sacola, favoritos e avisos ("foi para a sacola").
 // Sacola e favoritos ficam salvos no aparelho da cliente (localStorage).
+// Com a cliente logada, os favoritos também vão para a conta dela no Supabase (tabela favorites).
 
 const ShopContext = createContext(null)
 export const useShop = () => useContext(ShopContext)
@@ -13,13 +16,22 @@ const read = (key, fallback) => {
 const write = (key, value) => {
   try { localStorage.setItem(key, JSON.stringify(value)) } catch { /* navegação privada: segue sem salvar */ }
 }
+const uuidOf = code => products.find(p => p.id === code)?.uuid
 
 export function ShopProvider({ children }) {
-  const [bag, setBag] = useState(() =>
-    read('mare-sacola', []).filter(item => products.some(p => p.id === item.id && p.available)))
+  // Sobe a cada atualização do catálogo vindo do Supabase: quem usa useShop() redesenha.
+  const [catalogVersion, setCatalogVersion] = useState(0)
+  const [bag, setBag] = useState(() => read('mare-sacola', []))
   const [liked, setLiked] = useState(() => read('mare-favoritos', []))
   const [bagOpen, setBagOpen] = useState(false)
   const [toast, setToast] = useState(null)
+  const [session, setSession] = useState(null)
+  const [authReady, setAuthReady] = useState(!supabase)
+  const [profile, setProfile] = useState(null)
+  const [recovering, setRecovering] = useState(false)
+  const likedRef = useRef(liked)
+  likedRef.current = liked
+  const user = session?.user ?? null
 
   useEffect(() => write('mare-sacola', bag), [bag])
   useEffect(() => write('mare-favoritos', liked), [liked])
@@ -29,6 +41,52 @@ export function ShopProvider({ children }) {
     return () => clearTimeout(timer)
   }, [toast])
 
+  // Catálogo e configurações atualizados do banco.
+  useEffect(() => {
+    let alive = true
+    refreshCatalog().then(changed => { if (alive && changed) setCatalogVersion(v => v + 1) })
+    return () => { alive = false }
+  }, [])
+
+  // Peças que saíram do catálogo ou esgotaram deixam a sacola.
+  useEffect(() => {
+    setBag(list => {
+      const next = list.filter(item => products.some(p => p.id === item.id && p.available))
+      return next.length === list.length ? list : next
+    })
+  }, [catalogVersion])
+
+  // Sessão de login.
+  useEffect(() => {
+    if (!supabase) return
+    supabase.auth.getSession().then(({ data }) => { setSession(data.session); setAuthReady(true) })
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, next) => {
+      setSession(next)
+      setAuthReady(true)
+      if (event === 'PASSWORD_RECOVERY') setRecovering(true)
+    })
+    return () => subscription.unsubscribe()
+  }, [])
+
+  // Perfil + favoritos da conta (junta os favoritos do aparelho com os da conta).
+  useEffect(() => {
+    if (!user) { setProfile(null); return }
+    let alive = true
+    ;(async () => {
+      const [{ data: prof }, { data: favs }] = await Promise.all([
+        supabase.from('profiles').select('full_name, phone, role').eq('id', user.id).maybeSingle(),
+        supabase.from('favorites').select('product_id'),
+      ])
+      if (!alive) return
+      setProfile(prof)
+      const remote = (favs || []).map(f => products.find(p => p.uuid === f.product_id)?.id).filter(Boolean)
+      const missing = likedRef.current.filter(code => !remote.includes(code)).map(uuidOf).filter(Boolean)
+      if (missing.length) await supabase.from('favorites').upsert(missing.map(product_id => ({ product_id })), { ignoreDuplicates: true })
+      if (alive) setLiked(list => [...new Set([...list, ...remote])])
+    })()
+    return () => { alive = false }
+  }, [user?.id, catalogVersion])
+
   const addToBag = useCallback(product => {
     if (!product.available) return
     setBag(list => list.some(item => item.id === product.id)
@@ -37,7 +95,24 @@ export function ShopProvider({ children }) {
     setToast({ name: product.name, key: Date.now() })
   }, [])
 
+  const toggleLike = useCallback(id => {
+    const isLiked = likedRef.current.includes(id)
+    setLiked(list => isLiked ? list.filter(item => item !== id) : [...list, id])
+    const product_id = uuidOf(id)
+    if (!user || !product_id) return
+    const request = isLiked
+      ? supabase.from('favorites').delete().eq('product_id', product_id)
+      : supabase.from('favorites').upsert({ product_id }, { ignoreDuplicates: true })
+    request.then(({ error }) => { if (error) console.warn('Favorito não sincronizado.', error) })
+  }, [user])
+
+  const signOut = useCallback(async () => {
+    await supabase?.auth.signOut()
+    setRecovering(false)
+  }, [])
+
   const value = useMemo(() => ({
+    catalogVersion,
     bag,
     bagItems: bag.map(item => ({ product: products.find(p => p.id === item.id), quantity: item.quantity })).filter(item => item.product),
     bagCount: bag.reduce((sum, item) => sum + item.quantity, 0),
@@ -50,10 +125,17 @@ export function ShopProvider({ children }) {
     openBag: () => setBagOpen(true),
     closeBag: () => setBagOpen(false),
     liked,
-    toggleLike: id => setLiked(list => list.includes(id) ? list.filter(item => item !== id) : [...list, id]),
+    toggleLike,
     toast,
     dismissToast: () => setToast(null),
-  }), [bag, liked, bagOpen, toast, addToBag])
+    user,
+    profile,
+    setProfile,
+    authReady,
+    recovering,
+    endRecovery: () => setRecovering(false),
+    signOut,
+  }), [catalogVersion, bag, liked, bagOpen, toast, addToBag, toggleLike, user, profile, authReady, recovering, signOut])
 
   return <ShopContext.Provider value={value}>{children}</ShopContext.Provider>
 }

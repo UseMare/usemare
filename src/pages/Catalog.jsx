@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { ArrowRight, Check, ChevronDown, Heart, SlidersHorizontal, Truck, X } from 'lucide-react'
 import { collections, products, typeLabels } from '../products.js'
-import { usePageTitle } from '../shop.jsx'
+import { usePageTitle, useShop } from '../shop.jsx'
 import { PageIntro, ProductCard, WhatsApp } from '../ui.jsx'
 import { helloMessage, whatsappLink } from '../store.js'
 
@@ -23,10 +23,13 @@ const sorts = [
   { key: 'a-z', label: 'Nome (A–Z)' },
 ]
 
-const allTypes = [...new Set(products.map(p => typeLabels[p.type]))]
-const allColors = [...new Map(products.filter(p => p.color).map(p => [p.color, p.swatch])).entries()]
-const priceFloor = Math.floor(Math.min(...products.map(p => p.price)) / 10) * 10
-const priceCeil = Math.ceil(Math.max(...products.map(p => p.price)) / 10) * 10
+// Opções dos filtros, calculadas a partir do catálogo atual.
+const filterOptions = () => ({
+  allTypes: [...new Set(products.map(p => typeLabels[p.type]))],
+  allColors: [...new Map(products.filter(p => p.color).map(p => [p.color, p.swatch])).entries()],
+  priceFloor: Math.floor(Math.min(...products.map(p => p.price)) / 10) * 10,
+  priceCeil: Math.ceil(Math.max(...products.map(p => p.price)) / 10) * 10,
+})
 
 const normalize = text => text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
 const listParam = (params, key) => (params.get(key) || '').split(',').filter(Boolean)
@@ -44,6 +47,8 @@ function FilterGroup({ title, children, defaultOpen = true }) {
 export default function Catalog() {
   const [params, setParams] = useSearchParams()
   const [filtersOpen, setFiltersOpen] = useState(false)
+  const { catalogVersion } = useShop()
+  const { allTypes, allColors, priceFloor, priceCeil } = useMemo(filterOptions, [catalogVersion])
 
   const categoria = params.get('categoria') || 'todos'
   const busca = params.get('busca') || ''
@@ -83,7 +88,7 @@ export default function Catalog() {
     if (sort === 'maior-preco') sorted.sort((a, b) => b.price - a.price)
     if (sort === 'a-z') sorted.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'))
     return sorted.sort((a, b) => Number(b.available) - Number(a.available))
-  }, [collection, busca, tipos.join(), cores.join(), maxPrice, onlyAvailable, sort])
+  }, [collection, busca, tipos.join(), cores.join(), maxPrice, onlyAvailable, sort, catalogVersion])
 
   const activeCount = tipos.length + cores.length + (maxPrice < priceCeil ? 1 : 0) + (onlyAvailable ? 1 : 0) + (busca ? 1 : 0)
 

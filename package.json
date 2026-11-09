@@ -1,7 +1,7 @@
 {
   "name": "mare-store",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,12 +9,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@vitejs/plugin-react": "latest",
-    "lucide-react": "latest",
-    "react": "latest",
-    "react-dom": "latest",
-    "react-router-dom": "^7.18.5",
-    "typescript": "latest",
-    "vite": "latest"
+    "@supabase/supabase-js": "~2.119.0",
+    "lucide-react": "~1.62.0",
+    "react": "~19.3.1",
+    "react-dom": "~19.3.1",
+    "react-router-dom": "~7.18.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "~6.1.2",
+    "vite": "~8.3.5"
   }
 }

@@ -1,4 +1,7 @@
-// Catálogo inicial da Maré.
+import { spotlightIds, store } from './store.js'
+
+// Catálogo inicial da Maré — usado quando o Supabase está fora do ar e como base do seed do banco.
+// A fonte oficial agora é a tabela public.products no Supabase (edite por lá).
 // As fotos ficam em /public/img/produtos/ (geradas a partir de assets/.../PRODUTOS INICIAIS/#{id}):
 //   {id}-{nº}.webp      → 1000px, usada na janela do produto
 //   {id}-{nº}-480.webp  → 480px, usada nos cards
@@ -290,17 +293,29 @@ Seu momento de cuidado é na Maré! Chama a gente e garanta o seu. 🛍️`,
 
 const slugify = text => text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
 
-export const products = catalog.map(product => ({
+// Completa os campos calculados (slug, preços formatados, miniaturas…).
+// Serve tanto para o catálogo local acima quanto para o que vem do Supabase (src/data.js).
+const enrich = product => ({
   ...product,
-  slug: slugify(product.name),
+  slug: product.slug || slugify(product.name),
   oldPriceLabel: product.oldPrice ? formatPrice(product.oldPrice) : null,
   available: product.available !== false,
-  thumbs: product.photos.map(thumbOf),
+  spotlight: product.spotlight ?? spotlightIds.includes(product.id),
+  thumbs: product.thumbs || product.photos.map(thumbOf),
   priceLabel: formatPrice(product.price),
-  installments: installments(product.price),
-}))
-  // disponíveis primeiro, esgotadas no fim (mantendo a ordem do catálogo)
-  .sort((a, b) => Number(b.available) - Number(a.available))
+  installments: installments(product.price, store.installments),
+})
+
+// disponíveis primeiro, esgotadas no fim (mantendo a ordem do catálogo)
+const availableFirst = list => list.sort((a, b) => Number(b.available) - Number(a.available))
+
+// Lista viva: setProducts() troca o conteúdo sem trocar o array, então todo o site enxerga a versão nova.
+export const products = availableFirst(catalog.map(enrich))
+
+export function setProducts(list) {
+  if (!list?.length) return
+  products.splice(0, products.length, ...availableFirst(list.map(enrich)))
+}
 
 // ---------- Categorias usadas no menu, nos chips e nos filtros ----------
 export const typeLabels = { conjunto: 'Conjuntos', vestido: 'Vestidos', blusa: 'Blusas', saia: 'Saias & calças', calca: 'Saias & calças', suplemento: 'Suplementos' }

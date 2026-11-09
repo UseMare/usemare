@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Gem, HeartHandshake, MessageCircle, Package, ShoppingBag, Sparkles, UserPlus } from 'lucide-react'
-import { usePageTitle } from '../shop.jsx'
+import { usePageTitle, useShop } from '../shop.jsx'
 import { HandHeart, Instagram, WhatsApp, responsive } from '../ui.jsx'
 import { helloMessage, store, whatsappLink } from '../store.js'
 
@@ -36,6 +36,7 @@ const igProfile = {
 
 export default function About() {
   usePageTitle('Sobre nós')
+  useShop() // redesenha quando as configurações (Instagram/WhatsApp) chegam
   return (
     <div className="about-page">
       <section className="about-hero">
