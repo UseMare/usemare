@@ -1,0 +1,19 @@
+# Hostinger (Apache): faz as páginas do site (/produtos, /sobre, /produto/...) abrirem
+# direto pelo link ou ao recarregar, entregando o index.html do React.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>
+
+# Cache longo para imagens e arquivos com hash (carregamento mais rápido em visitas seguintes)
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/webp "access plus 30 days"
+  ExpiresByType image/png "access plus 30 days"
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+</IfModule>

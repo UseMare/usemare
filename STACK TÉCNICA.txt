@@ -1,0 +1,3 @@
+STACK TÉCNICA:
+
+React + Vite + Tailwind CSS para hostinger
