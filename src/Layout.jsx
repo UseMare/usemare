@@ -3,8 +3,9 @@ import { Link, NavLink, Outlet, useLocation, useNavigate, useNavigationType, use
 import { ArrowRight, ArrowUpRight, CreditCard, LockKeyhole, Menu, Minus, Plus, Search, ShoppingBag, Trash2, Truck, UserRound, X } from 'lucide-react'
 import { useRevealObserver, useShop } from './shop.jsx'
 import { Brand, Instagram, WhatsApp } from './ui.jsx'
-import { bagMessage, helloMessage, spotlightIds, store, whatsappLink } from './store.js'
+import { bagMessage, helloMessage, store, whatsappLink } from './store.js'
 import { products } from './products.js'
+import { supabase } from './supabase.js'
 
 export const navItems = [
   { label: 'Início', to: '/' },
@@ -97,11 +98,36 @@ function BagDrawer() {
   )
 }
 
+// "Receba novidades" do rodapé: grava o e-mail no Supabase (função subscribe_newsletter).
+function Newsletter() {
+  const [email, setEmail] = useState('')
+  const [status, setStatus] = useState(null) // null | 'sending' | 'ok' | 'error'
+  const submit = async event => {
+    event.preventDefault()
+    if (!supabase) { setStatus('error'); return }
+    setStatus('sending')
+    const { error } = await supabase.rpc('subscribe_newsletter', { p_email: email, p_source: 'rodape' })
+    setStatus(error ? 'error' : 'ok')
+    if (!error) setEmail('')
+  }
+  if (status === 'ok') return <p className="newsletter-ok" role="status">Prontinho! Você vai receber as novidades da Maré em primeira mão. 🌊</p>
+  return (
+    <>
+      <form onSubmit={submit}>
+        <input type="email" value={email} onChange={e => { setEmail(e.target.value); if (status === 'error') setStatus(null) }} aria-label="Seu e-mail" placeholder="Seu melhor e-mail" required disabled={status === 'sending'} />
+        <button aria-label="Cadastrar e-mail" disabled={status === 'sending'}><ArrowRight /></button>
+      </form>
+      {status === 'error' && <p className="newsletter-error" role="alert">Não deu certo agora. Confere o e-mail e tenta de novo? 🤍</p>}
+    </>
+  )
+}
+
 // Card flutuante de destaques: 5 produtos que alternam a cada 5 s.
 // Fechou? Some até a próxima vez que o site for carregado (F5 ou abrir de novo) —
 // o estado vive só na memória, então trocar de página não traz o card de volta.
 function Spotlight() {
-  const items = spotlightIds.map(id => products.find(p => p.id === id)).filter(p => p && p.available)
+  // Produtos marcados com spotlight no Supabase (até 5).
+  const items = products.filter(p => p.spotlight && p.available).slice(0, 5)
   const [index, setIndex] = useState(0)
   const [dir, setDir] = useState('next')
   const [visible, setVisible] = useState(false)
@@ -128,7 +154,7 @@ function Spotlight() {
   }, [visible, closed, paused, items.length, index])
 
   if (closed || !items.length) return null
-  const product = items[index]
+  const product = items[index % items.length]
 
   // Arrastar para o lado (mouse ou dedo): esquerda = próximo, direita = anterior.
   const onPointerDown = event => {
@@ -185,7 +211,7 @@ export default function Layout() {
   const location = useLocation()
   const [params] = useSearchParams()
   const [menuOpen, setMenuOpen] = useState(false)
-  const { bagCount, openBag, toast, dismissToast } = useShop()
+  const { bagCount, openBag, toast, dismissToast, user } = useShop()
   useRevealObserver()
 
   // Ao trocar de página: volta ao topo (ou rola até a âncora #) e fecha o menu.
@@ -230,7 +256,7 @@ export default function Layout() {
           </nav>
           <SearchBox />
           <div className="header-actions">
-            <Link to="/entrar" className={`icon-button hide-small ${location.pathname === '/entrar' ? 'active' : ''}`} aria-label="Entrar na minha conta" title="Entrar / criar conta"><UserRound /></Link>
+            <Link to="/entrar" className={`icon-button hide-small account-link ${location.pathname === '/entrar' ? 'active' : ''} ${user ? 'logged' : ''}`} aria-label={user ? 'Minha conta' : 'Entrar na minha conta'} title={user ? 'Minha conta' : 'Entrar / criar conta'}><UserRound />{user && <i aria-hidden="true" />}</Link>
             <button className="icon-button cart" onClick={openBag} aria-label={`Sacola com ${bagCount} itens`}><ShoppingBag /><b key={bagCount} className={bagCount ? 'bump' : ''}>{bagCount}</b></button>
             <a className="header-whats" href={whatsappLink(helloMessage)} target="_blank" rel="noreferrer" aria-label="Falar com a Maré no WhatsApp">
               <WhatsApp />
@@ -243,7 +269,7 @@ export default function Layout() {
       <div className={`drawer ${menuOpen ? 'open' : ''}`} aria-hidden={!menuOpen}>
         <div className="drawer-head"><Brand onClick={() => setMenuOpen(false)} /><button className="icon-button" onClick={() => setMenuOpen(false)} aria-label="Fechar menu"><X /></button></div>
         {navItems.map(item => <Link to={item.to} key={item.label} className={isActive(item, location, params) ? 'active' : ''}>{item.label}<ArrowRight /></Link>)}
-        <Link to="/entrar" className="drawer-account"><UserRound /> Entrar / criar conta</Link>
+        <Link to="/entrar" className="drawer-account"><UserRound /> {user ? 'Minha conta' : 'Entrar / criar conta'}</Link>
         <a className="drawer-whats" href={whatsappLink(helloMessage)} target="_blank" rel="noreferrer"><WhatsApp /> Fale com a gente</a>
       </div>
       {menuOpen && <button className="backdrop" onClick={() => setMenuOpen(false)} aria-label="Fechar menu" />}
@@ -257,7 +283,7 @@ export default function Layout() {
           <div className="footer-brand" data-reveal><Brand /><p>Moda que acompanha seu ritmo,<br />com leveza e personalidade.</p><p className="footer-handle"><a href={store.instagram} target="_blank" rel="noreferrer"><Instagram /> {store.instagramHandle}</a></p></div>
           <div data-reveal style={{ '--i': 1 }}><h3>Loja</h3><Link to="/produtos">Todos os produtos</Link><Link to="/produtos?categoria=moda-feminina">Moda feminina</Link><Link to="/promocoes">Promoções</Link></div>
           <div data-reveal style={{ '--i': 2 }}><h3>Atendimento</h3><Link to="/sobre#como-comprar">Como comprar</Link><a href={whatsappLink(helloMessage)} target="_blank" rel="noreferrer">Fale no WhatsApp</a><Link to="/sobre">Sobre a Maré</Link></div>
-          <div data-reveal style={{ '--i': 3 }}><h3>Receba novidades</h3><p>Lançamentos e promoções em primeira mão.</p><form onSubmit={e => e.preventDefault()}><input type="email" aria-label="Seu e-mail" placeholder="Seu melhor e-mail" required /><button aria-label="Cadastrar e-mail"><ArrowRight /></button></form></div>
+          <div data-reveal style={{ '--i': 3 }}><h3>Receba novidades</h3><p>Lançamentos e promoções em primeira mão.</p><Newsletter /></div>
         </div>
         <div className="copyright"><div className="shell">© 2026 Maré. Todos os direitos reservados.</div></div>
       </footer>

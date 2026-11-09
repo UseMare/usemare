@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, BellRing, Tag } from 'lucide-react'
 import { products } from '../products.js'
-import { usePageTitle } from '../shop.jsx'
+import { usePageTitle, useShop } from '../shop.jsx'
 import { Instagram, PageIntro, ProductCard, SectionHeading, WhatsApp } from '../ui.jsx'
 import { store, whatsappLink } from '../store.js'
 
@@ -11,6 +11,7 @@ const promoMessage = 'Oi, Maré! 🌊 Quero ficar sabendo das próximas promoç�
 
 export default function Promotions() {
   usePageTitle('Promoções')
+  useShop() // redesenha quando o catálogo do Supabase chega
   const onSale = products.filter(p => p.oldPrice && p.available)
   const suggestions = products.filter(p => p.available).slice(0, 4)
 
