@@ -215,7 +215,7 @@ function Account() {
       <p className="login-sub">{user.email}</p>
 
       {profile?.role === 'admin' && (
-        <p className="account-admin"><ShieldCheck /> Você é administradora da loja. Produtos, preços, avaliações e configurações são editados no painel do Supabase.</p>
+        <p className="account-admin"><ShieldCheck /> Você é administradora da loja. <Link to="/painel-loja">Abrir o painel da loja →</Link></p>
       )}
 
       <form onSubmit={save} noValidate>

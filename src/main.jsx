@@ -1,4 +1,4 @@
-﻿import React from 'react'
+import React, { Suspense, lazy } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import './styles.css'
@@ -13,6 +13,9 @@ import Promotions from './pages/Promotions.jsx'
 import NotFound from './pages/NotFound.jsx'
 import Login from './pages/Login.jsx'
 
+// Painel da loja: só é baixado quando alguém abre /painel-loja.
+const AdminApp = lazy(() => import('./admin/AdminApp.jsx'))
+
 // Páginas do site:
 //   /                     Início (prévia de tudo)
 //   /produtos             Catálogo completo (?categoria=, ?busca=, filtros)
@@ -20,22 +23,28 @@ import Login from './pages/Login.jsx'
 //   /promocoes            Promoções
 //   /sobre                Sobre nós (+ #como-comprar)
 //   /entrar               Login / criar conta
+//   /painel-loja          Painel de administração (só contas admin)
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
-      <ShopProvider>
-        <Routes>
-          <Route element={<Layout />}>
-            <Route index element={<Home />} />
-            <Route path="produtos" element={<Catalog />} />
-            <Route path="produto/:slug" element={<Product />} />
-            <Route path="promocoes" element={<Promotions />} />
-            <Route path="sobre" element={<About />} />
-            <Route path="entrar" element={<Login />} />
-            <Route path="*" element={<NotFound />} />
-          </Route>
-        </Routes>
-      </ShopProvider>
+      <Routes>
+        <Route path="/painel-loja/*" element={<Suspense fallback={null}><AdminApp /></Suspense>} />
+        <Route path="/*" element={
+          <ShopProvider>
+            <Routes>
+              <Route element={<Layout />}>
+                <Route index element={<Home />} />
+                <Route path="produtos" element={<Catalog />} />
+                <Route path="produto/:slug" element={<Product />} />
+                <Route path="promocoes" element={<Promotions />} />
+                <Route path="sobre" element={<About />} />
+                <Route path="entrar" element={<Login />} />
+                <Route path="*" element={<NotFound />} />
+              </Route>
+            </Routes>
+          </ShopProvider>
+        } />
+      </Routes>
     </BrowserRouter>
   </React.StrictMode>
 )
