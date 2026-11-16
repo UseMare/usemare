@@ -473,3 +473,27 @@ select.adm-input { appearance: auto; }
   .adm-repeat > li > .adm-icon-btn { margin: 0 0 10px; justify-self: end; }
   .adm-promos { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* ---------- Abas (Textos das páginas) ---------- */
+.adm-tabs { display: flex; gap: 4px; margin: -6px 0 18px; overflow-x: auto; border-bottom: 1px solid var(--adm-line); scrollbar-width: none; }
+.adm-tabs::-webkit-scrollbar { display: none; }
+.adm-tabs button { position: relative; flex: none; padding: 10px 14px; border: 0; color: var(--adm-muted); background: none; font: inherit; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.adm-tabs button:hover { color: var(--adm-text); }
+.adm-tabs button.active { color: var(--adm-wine); }
+.adm-tabs button.active::after { content: ''; position: absolute; left: 8px; right: 8px; bottom: -1px; height: 2px; border-radius: 2px; background: var(--adm-wine); }
+
+/* ---------- Editor de textos (ContentEditor) ---------- */
+.adm-content-card > .adm-content-heading:first-child .adm-subtitle { margin-top: 0; padding-top: 0; border-top: 0; }
+.adm-content-heading .adm-hint { margin: 0 0 10px; }
+.adm-content-list > span { font-weight: 600; }
+.adm-repeat-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 12px; margin: 4px 0 4px; padding: 0; list-style: none; }
+.adm-repeat-list > li { padding: 10px 12px 0; border: 1px solid var(--adm-line); border-radius: 10px; background: #fdfbfa; }
+.adm-repeat-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 32px; margin-bottom: 6px; }
+.adm-repeat-head b { font-size: 13px; }
+.adm-repeat-head > span { display: flex; gap: 2px; }
+.adm-repeat-head .adm-icon-btn { width: 30px; height: 30px; }
+.adm-repeat-head .adm-icon-btn svg { width: 16px; height: 16px; }
+.adm-repeat-body .adm-imagefield-box { flex-direction: column; }
+.adm-repeat-body .adm-imagefield-preview { width: 100%; max-height: 260px; }
+.adm-content-list + .adm-btn, .adm-content-list > .adm-btn { justify-self: start; }
+.adm-repeat-list.cols-1 { grid-template-columns: minmax(0, 1fr); }

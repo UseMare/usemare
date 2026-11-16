@@ -5,13 +5,20 @@ import { categories, categoryBySlug, collections, productTypeName, products } fr
 import { usePageTitle, useShop } from '../shop.jsx'
 import { PageIntro, ProductCard, WhatsApp } from '../ui.jsx'
 import { helloMessage, whatsappLink } from '../store.js'
-import { getContent } from '../content.js'
+import { pageContent } from '../content.js'
 
 // Textos do cabeçalho da página: os da categoria (painel → Categorias) ou, em "Todos",
 // os textos gerais do catálogo (painel → Textos das páginas).
-export const catalogDefaults = { eyebrow: 'Nossa coleção', title: 'Vista sua\nmelhor versão.', text: 'Moda feminina e Maré Move: peças leves, versáteis e escolhidas com carinho para cada momento.', script: 'com carinho' }
+export const catalogDefaults = {
+  eyebrow: 'Nossa coleção',
+  title: 'Vista sua\nmelhor versão.',
+  text: 'Moda feminina e Maré Move: peças leves, versáteis e escolhidas com carinho para cada momento.',
+  script: 'com carinho',
+  shippingBadge: 'Envio para todo o Brasil',
+  whatsappBadge: 'Compra pelo WhatsApp',
+}
 const bannerFor = slug => {
-  const general = getContent('catalog', catalogDefaults)
+  const general = pageContent('catalog', catalogDefaults)
   const category = categoryBySlug(slug)
   if (!category) return general
   return {
@@ -19,6 +26,8 @@ const bannerFor = slug => {
     title: category.banner_title || general.title,
     text: category.banner_text || general.text,
     script: general.script,
+    shippingBadge: general.shippingBadge,
+    whatsappBadge: general.whatsappBadge,
   }
 }
 
@@ -129,8 +138,8 @@ export default function Catalog() {
         aside={(
           <ul className="intro-meta">
             <li><b>{products.filter(collection.test).length}</b> {products.filter(collection.test).length === 1 ? 'peça' : 'peças'}</li>
-            <li><Truck /> Envio para todo o Brasil</li>
-            <li><WhatsApp /> Compra pelo WhatsApp</li>
+            {banner.shippingBadge && <li><Truck /> {banner.shippingBadge}</li>}
+            {banner.whatsappBadge && <li><WhatsApp /> {banner.whatsappBadge}</li>}
           </ul>
         )}
       />

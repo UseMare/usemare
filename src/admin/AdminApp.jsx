@@ -13,6 +13,7 @@ import ProductEditor from './pages/ProductEditor.jsx'
 import Categories from './pages/Categories.jsx'
 import Spotlight from './pages/Spotlight.jsx'
 import HomePage from './pages/HomePage.jsx'
+import PageTexts from './pages/PageTexts.jsx'
 import { ConfirmProvider, ToastProvider } from './ui.jsx'
 import PasswordModal from './components/PasswordModal.jsx'
 
@@ -26,6 +27,7 @@ const pages = {
   categorias: Categories,
   destaques: Spotlight,
   paginaInicial: HomePage,
+  paginas: PageTexts,
 }
 
 // Página atual = seção cujo endereço é o maior prefixo do endereço aberto.

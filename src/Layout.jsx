@@ -7,6 +7,19 @@ import { bagMessage, helloMessage, store, whatsappLink } from './store.js'
 import { spotlightProducts } from './products.js'
 import { supabase } from './supabase.js'
 import AlphaCredit from './alpha-credit/AlphaCredit.jsx'
+import { pageContent } from './content.js'
+import { SiteIcon } from './icons.jsx'
+
+// Faixa de avisos do topo (painel → Textos das páginas → Faixa do topo). No celular só o 1º aparece.
+// {parcelas} = parcelas das Configurações; link '{instagram}' = Instagram da loja.
+export const announcementDefaults = {
+  items: [
+    { icon: 'truck', text: 'Envio para todo o Brasil', link: '' },
+    { icon: 'card', text: 'Parcele em até {parcelas}x sem juros', link: '' },
+    { icon: 'lock', text: 'Compra 100% segura', link: '' },
+    { icon: 'instagram', text: 'Siga nosso Instagram', link: '{instagram}' },
+  ],
+}
 
 export const navItems = [
   { label: 'Início', to: '/' },
@@ -239,10 +252,13 @@ export default function Layout() {
       <a className="skip-link" href="#conteudo">Pular para o conteúdo</a>
       <div className="announcement" aria-label="Vantagens da loja">
         <div className="shell announcement-inner">
-          <span><Truck /> Envio para todo o Brasil</span>
-          <span><CreditCard /> Parcele em até 6x sem juros</span>
-          <span><LockKeyhole /> Compra 100% segura</span>
-          <a href={store.instagram} target="_blank" rel="noreferrer"><Instagram /> Siga nosso Instagram</a>
+          {pageContent('announcement', announcementDefaults).items.filter(item => item?.text).map((item, i) => {
+            const text = item.text.replace(/\{parcelas\}/g, store.installments)
+            const href = item.link === '{instagram}' ? store.instagram : item.link
+            if (!href) return <span key={i}><SiteIcon name={item.icon} /> {text}</span>
+            if (/^https?:\/\//.test(href)) return <a key={i} href={href} target="_blank" rel="noreferrer"><SiteIcon name={item.icon} /> {text}</a>
+            return <Link key={i} to={href}><SiteIcon name={item.icon} /> {text}</Link>
+          })}
         </div>
       </div>
 

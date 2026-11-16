@@ -11,6 +11,16 @@ export function setContent(map) {
 
 const isEmpty = value => value === undefined || value === null || value === '' || (Array.isArray(value) && !value.length)
 
+// Textos das páginas (Sobre, Como comprar, Catálogo, Promoções, faixa do topo):
+// tudo o que foi salvo vale como está — inclusive campo vazio, que some do site.
+// O painel não deixa salvar vazio um campo obrigatório. Campo nunca salvo = padrão do código.
+export function pageContent(key, defaults) {
+  const saved = content[key] || {}
+  const result = { ...defaults }
+  Object.keys(defaults).forEach(field => { if (saved[field] !== undefined && saved[field] !== null) result[field] = saved[field] })
+  return result
+}
+
 // O que foi salvo no painel para uma seção, sem misturar com o padrão (quem chama decide).
 export const savedContent = key => content[key] || {}
 
