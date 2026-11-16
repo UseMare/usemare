@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { useNavigate } from 'react-router-dom'
 import { AlertTriangle, CheckCircle2, X, XCircle } from 'lucide-react'
 
 // Componentes compartilhados do painel: avisos rápidos (toast), confirmação e janela (modal).
@@ -89,6 +90,30 @@ export function ConfirmProvider({ children }) {
       )}
     </ConfirmContext.Provider>
   )
+}
+
+// ---------- Alterações não salvas ----------
+// Pergunta antes de sair da tela com alterações não salvas (links do painel e fechar/recarregar a aba).
+export function useUnsavedGuard(dirty, text = 'Você fez alterações que ainda não foram salvas. Se sair agora, elas serão perdidas.') {
+  const confirm = useConfirm()
+  const navigate = useNavigate()
+  useEffect(() => {
+    if (!dirty) return
+    const onClick = async event => {
+      const link = event.target.closest?.('a[href]')
+      if (!link || link.target === '_blank' || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey) return
+      const url = new URL(link.href, window.location.href)
+      if (url.origin !== window.location.origin || url.pathname === window.location.pathname) return
+      event.preventDefault()
+      event.stopPropagation()
+      const ok = await confirm({ title: 'Sair sem salvar?', text, confirmLabel: 'Sair sem salvar', cancelLabel: 'Continuar editando', danger: true })
+      if (ok) navigate(url.pathname + url.search)
+    }
+    const onUnload = e => { e.preventDefault(); e.returnValue = '' }
+    document.addEventListener('click', onClick, true)
+    window.addEventListener('beforeunload', onUnload)
+    return () => { document.removeEventListener('click', onClick, true); window.removeEventListener('beforeunload', onUnload) }
+  }, [dirty, text, confirm, navigate])
 }
 
 // ---------- Pequenos utilitários ----------

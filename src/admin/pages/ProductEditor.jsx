@@ -4,7 +4,7 @@ import { ArrowLeft, ExternalLink, Plus, Trash2, X } from 'lucide-react'
 import { supabase } from '../../supabase.js'
 import { deleteProduct, getProduct, listCategories, nextProductCode, uniqueSlug, slugify } from '../api.js'
 import { BASE } from '../sections.js'
-import { Loading, Switch, errorText, useConfirm, useToast } from '../ui.jsx'
+import { Loading, Switch, errorText, useConfirm, useToast, useUnsavedGuard } from '../ui.jsx'
 import ProductPhotos, { syncPhotos } from '../components/ProductPhotos.jsx'
 
 const COMMON_SIZES = ['PP', 'P', 'M', 'G', 'GG', 'XG', 'Único', '36', '38', '40', '42', '44']
@@ -43,26 +43,6 @@ const sortSizes = sizes => [...sizes].sort((a, b) => {
   return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib)
 })
 
-// Pergunta antes de sair do editor com alterações não salvas (cliques em links do painel).
-function useUnsavedGuard(dirty, confirm, navigate) {
-  useEffect(() => {
-    if (!dirty) return
-    const onClick = async event => {
-      const link = event.target.closest?.('a[href]')
-      if (!link || link.target === '_blank' || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey) return
-      const url = new URL(link.href, window.location.href)
-      if (url.origin !== window.location.origin || url.pathname === window.location.pathname) return
-      event.preventDefault()
-      event.stopPropagation()
-      const ok = await confirm({ title: 'Sair sem salvar?', text: 'Você fez alterações neste produto que ainda não foram salvas. Se sair agora, elas serão perdidas.', confirmLabel: 'Sair sem salvar', cancelLabel: 'Continuar editando', danger: true })
-      if (ok) navigate(url.pathname + url.search)
-    }
-    const onUnload = e => { e.preventDefault(); e.returnValue = '' }
-    document.addEventListener('click', onClick, true)
-    window.addEventListener('beforeunload', onUnload)
-    return () => { document.removeEventListener('click', onClick, true); window.removeEventListener('beforeunload', onUnload) }
-  }, [dirty, confirm, navigate])
-}
 
 // Confere o formulário e devolve os problemas (campo → mensagem).
 const validate = (form, categories) => {
@@ -149,7 +129,7 @@ export default function ProductEditor() {
   const dirty = useMemo(() => form && saved && JSON.stringify(form) !== JSON.stringify(saved), [form, saved])
 
   // Avisa antes de sair com alterações não salvas (links do painel e ao fechar/recarregar a aba).
-  useUnsavedGuard(dirty && !saving, confirm, navigate)
+  useUnsavedGuard(dirty && !saving, 'Você fez alterações neste produto que ainda não foram salvas. Se sair agora, elas serão perdidas.')
 
   if (loadError) return <div className="adm-card"><p className="adm-notice is-error">{loadError}</p><Link className="adm-btn outline" to={`${BASE}/produtos`}><ArrowLeft /> Voltar para produtos</Link></div>
   if (!form) return <Loading text="Carregando produto…" />
