@@ -1,4 +1,4 @@
-import { spotlightIds, store } from './store.js'
+import { store } from './store.js'
 
 // Catálogo inicial da Maré — usado quando o Supabase está fora do ar e como base do seed do banco.
 // A fonte oficial agora é a tabela public.products no Supabase (edite por lá).
@@ -455,49 +455,92 @@ MARÉ MOVE — seu movimento, sua melhor versão.`,
 
 const slugify = text => text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
 
-// Completa os campos calculados (slug, preços formatados, miniaturas…).
+// ---------- Categorias ----------
+// A fonte oficial é a tabela public.categories no Supabase (editada no painel /painel-loja).
+// Esta cópia local só é usada se o banco estiver fora do ar.
+//   kind 'colecao' → linha da loja (selo e caminho da página do produto)
+//   kind 'tipo'    → tipo de peça (filtro "Tipo de peça")
+const localCategories = [
+  { slug: 'mare-move', name: 'Maré Move', kind: 'colecao', home_card: true, home_card_order: 1, home_title: 'Conjuntos\nFitness', home_image: '/img/banners/conjuntos-fitness.webp', home_tone: 'light', banner_eyebrow: 'Maré Move', banner_title: 'Seu movimento,\nsua melhor versão.', banner_text: 'Conjuntos que unem conforto, segurança e aquele caimento que faz você se sentir linda para treinar.' },
+  { slug: 'moda-feminina', name: 'Moda feminina', kind: 'colecao', home_card: true, home_card_order: 2, home_title: 'Moda\nFeminina', home_image: '/img/banners/moda-feminina.webp', home_tone: 'light', banner_eyebrow: 'Moda feminina', banner_title: 'Leve, feminina\ne do seu jeito.', banner_text: 'Peças escolhidas para trazer mais estilo para os seus dias — daquelas que você veste e se sente linda.' },
+  { slug: 'vestidos', name: 'Vestidos', kind: 'tipo' },
+  { slug: 'blusas', name: 'Blusas', kind: 'tipo', home_card: true, home_card_order: 3, home_title: 'Blusas', home_image: '/img/banners/blusas.webp', home_tone: 'dark', banner_eyebrow: 'Blusas', banner_title: 'O básico que não\ntem nada de básico.', banner_text: 'Detalhes que fazem toda a diferença no look do dia a dia.' },
+  { slug: 'saias-calcas', name: 'Saias, calças & shorts', kind: 'tipo', home_card: true, home_card_order: 4, home_title: 'Saias &\nCalças', home_image: '/img/banners/saias-calcas.webp', home_tone: 'dark', banner_eyebrow: 'Saias, calças & shorts', banner_title: 'Elegância que\nnasce do simples.', banner_text: 'Modelagens que acompanham você do trabalho ao fim de semana.' },
+  { slug: 'conjuntos', name: 'Conjuntos', kind: 'tipo' },
+  { slug: 'macaquinhos', name: 'Macaquinhos', kind: 'tipo', banner_eyebrow: 'Macaquinhos', banner_title: 'Uma peça só,\nlook pronto.', banner_text: 'Macaquinhos Maré Move que abraçam o corpo e acompanham cada movimento.' },
+  { slug: 'suplementos', name: 'Suplementos', kind: 'colecao', banner_eyebrow: 'Suplementos', banner_title: 'Seu momento de\ncuidado é na Maré.', banner_text: 'Opções para complementar a sua rotina, escolhidas com o mesmo carinho das nossas peças.' },
+].map((c, i) => ({ id: c.slug, active: true, sort_order: (i + 1) * 10, home_card: false, home_card_order: 0, home_tone: 'light', ...c }))
+
+// Catálogo local (sem banco): deduz as categorias pela linha e pelo tipo antigos.
+const localCategorySlugs = product => {
+  const line = { fitness: 'mare-move', casual: 'moda-feminina', suplementos: 'suplementos' }[product.line]
+  const type = { vestido: 'vestidos', blusa: 'blusas', saia: 'saias-calcas', calca: 'saias-calcas', short: 'saias-calcas', conjunto: 'conjuntos', macaquinho: 'macaquinhos' }[product.type]
+  return [line, type].filter(Boolean)
+}
+
+// Lista viva de categorias (setCategories troca o conteúdo sem trocar o array).
+export const categories = [...localCategories]
+const bySort = (a, b) => (a.sort_order - b.sort_order) || a.name.localeCompare(b.name, 'pt-BR')
+export const categoryBySlug = slug => categories.find(c => c.slug === slug)
+
+// Chips do catálogo: "Todos" + categorias ativas.
+export const collections = []
+const rebuildCollections = () => {
+  const list = categories.filter(c => c.active).sort(bySort).map(c => ({ key: c.slug, label: c.name, test: p => p.categorySlugs.includes(c.slug) }))
+  collections.splice(0, collections.length, { key: 'todos', label: 'Todos', test: () => true }, ...list)
+}
+
+// Coleção (linha) e tipo de uma peça, pela ordem das categorias.
+const firstOfKind = (product, kind) => categories.filter(c => c.kind === kind && c.active && product.categorySlugs.includes(c.slug)).sort(bySort)[0]
+export const productCollection = product => firstOfKind(product, 'colecao')
+export const productTypeName = product => firstOfKind(product, 'tipo')?.name || (product.kind === 'suplemento' ? 'Suplementos' : 'Peças')
+export const collectionLabel = product => productCollection(product)?.name || 'Produtos'
+export const collectionLink = product => `/produtos?categoria=${productCollection(product)?.slug || ''}`
+
+// Completa os campos calculados (slug, preços formatados, miniaturas, cores, tamanhos…).
 // Serve tanto para o catálogo local acima quanto para o que vem do Supabase (src/data.js).
-const enrich = product => ({
-  ...product,
-  slug: product.slug || slugify(product.name),
-  oldPriceLabel: product.oldPrice ? formatPrice(product.oldPrice) : null,
-  available: product.available !== false,
-  spotlight: product.spotlight ?? spotlightIds.includes(product.id),
-  thumbs: product.thumbs || product.photos.map(thumbOf),
-  priceLabel: formatPrice(product.price),
-  installments: installments(product.price, store.installments),
-})
+const enrich = product => {
+  const kind = product.kind || (product.type === 'suplemento' ? 'suplemento' : 'roupa')
+  const colors = product.colors?.length ? product.colors : product.color ? [{ name: product.color, hex: product.swatch || '#cccccc' }] : []
+  return {
+    ...product,
+    kind,
+    colors,
+    color: colors[0]?.name || null, // compatibilidade: primeira cor
+    swatch: colors[0]?.hex || null,
+    sizes: product.sizes ?? (kind === 'roupa' ? ['P', 'M', 'G'] : []),
+    details: product.details || [],
+    categorySlugs: product.categorySlugs || localCategorySlugs(product),
+    slug: product.slug || slugify(product.name),
+    oldPriceLabel: product.oldPrice ? formatPrice(product.oldPrice) : null,
+    available: product.available !== false,
+    thumbs: product.thumbs || product.photos.map(thumbOf),
+    priceLabel: formatPrice(product.price),
+    installments: installments(product.price, store.installments),
+  }
+}
 
 // disponíveis primeiro, esgotadas no fim (mantendo a ordem do catálogo)
 const availableFirst = list => list.sort((a, b) => Number(b.available) - Number(a.available))
 
 // Lista viva: setProducts() troca o conteúdo sem trocar o array, então todo o site enxerga a versão nova.
 export const products = availableFirst(catalog.map(enrich))
+rebuildCollections()
 
 export function setProducts(list) {
   if (!list?.length) return
   products.splice(0, products.length, ...availableFirst(list.map(enrich)))
 }
 
-// ---------- Categorias usadas no menu, nos chips e nos filtros ----------
-export const typeLabels = { conjunto: 'Conjuntos', macaquinho: 'Macaquinhos', vestido: 'Vestidos', blusa: 'Blusas', saia: 'Saias, calças & shorts', calca: 'Saias, calças & shorts', short: 'Saias, calças & shorts', suplemento: 'Suplementos' }
-
-export const lineInfo = {
-  fitness: { label: 'Maré Move', key: 'mare-move' },
-  casual: { label: 'Moda feminina', key: 'moda-feminina' },
-  suplementos: { label: 'Suplementos', key: 'suplementos' },
+export function setCategories(list) {
+  if (!list?.length) return
+  categories.splice(0, categories.length, ...list)
+  rebuildCollections()
 }
 
-export const collections = [
-  { key: 'todos', label: 'Todos', test: () => true },
-  { key: 'mare-move', label: 'Maré Move', test: p => p.line === 'fitness' },
-  { key: 'moda-feminina', label: 'Moda feminina', test: p => p.line === 'casual' },
-  { key: 'vestidos', label: 'Vestidos', test: p => p.type === 'vestido' },
-  { key: 'blusas', label: 'Blusas', test: p => p.type === 'blusa' },
-  { key: 'saias-calcas', label: 'Saias, calças & shorts', test: p => ['saia', 'calca', 'short'].includes(p.type) },
-  { key: 'conjuntos', label: 'Conjuntos', test: p => p.type === 'conjunto' },
-  { key: 'macaquinhos', label: 'Macaquinhos', test: p => p.type === 'macaquinho' },
-  { key: 'suplementos', label: 'Suplementos', test: p => p.type === 'suplemento' },
-]
+// Destaques do card flutuante, na ordem escolhida no painel (até 5, só disponíveis).
+export const spotlightProducts = () => store.spotlight.enabled
+  ? store.spotlight.ids.map(id => products.find(p => p.uuid === id || p.id === id)).filter(p => p?.available).slice(0, 5)
+  : []
 
 export const findProduct = slug => products.find(product => product.slug === slug)

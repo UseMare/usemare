@@ -2,11 +2,15 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Heart, ShoppingBag } from 'lucide-react'
 import { useShop } from './shop.jsx'
+import { store } from './store.js'
 
-// Imagens otimizadas em /public/img. Cada banner tem duas versões (leve e grande); o navegador escolhe a ideal.
-export const logo = '/img/logo/mare.webp'
-export const responsive = (image, small) =>
-  `${image.replace(/\.webp$/, `-${small}.webp`)} ${small}w, ${image} ${small === 1200 ? 2245 : 1525}w`
+// Imagens otimizadas. Cada banner tem duas versões (leve e grande); o navegador escolhe a ideal.
+// Fotos enviadas pelo painel seguem o mesmo padrão: nome.webp + nome-800.webp (ou -1200).
+// Imagem sem a versão leve (ex.: .jpg/.png) volta sem srcSet.
+export const logo = '/img/logo/mare.webp' // logo padrão; a atual fica em store.logo
+export const responsive = (image, small) => /\.webp(\?.*)?$/.test(image || '')
+  ? `${image.replace(/\.webp(\?.*)?$/, `-${small}.webp$1`)} ${small}w, ${image} ${small === 1200 ? 2245 : 1525}w`
+  : undefined
 
 export function Instagram() {
   return (
@@ -33,8 +37,9 @@ export function HandHeart({ className = 'hand-heart' }) {
   )
 }
 
-export function Brand({ onClick }) {
-  return <Link to="/" className="brand" aria-label="Maré, página inicial" onClick={onClick}><img src={logo} alt="Maré — Moda feminina e fitness" /></Link>
+export function Brand({ onClick, footer = false }) {
+  const src = (footer && store.logoFooter) || store.logo || logo
+  return <Link to="/" className="brand" aria-label="Maré, página inicial" onClick={onClick}><img src={src} alt="Maré — Moda feminina e fitness" /></Link>
 }
 
 export function Price({ product, className = '' }) {

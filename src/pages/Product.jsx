@@ -2,15 +2,16 @@ import React, { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Link, useParams } from 'react-router-dom'
 import { ArrowRight, ChevronLeft, ChevronRight, Heart, MessageCircleHeart, Ruler, ShoppingBag, Star, Truck, X, ZoomIn } from 'lucide-react'
-import { findProduct, lineInfo, products, typeLabels } from '../products.js'
+import { collectionLabel, collectionLink, findProduct, productCollection, productTypeName, products } from '../products.js'
 import { usePageTitle, useShop } from '../shop.jsx'
 import { Instagram, Price, ProductCard, SectionHeading, WhatsApp } from '../ui.jsx'
 import { productMessage, restockMessage, store, whatsappLink } from '../store.js'
 import NotFound from './NotFound.jsx'
 import { supabase } from '../supabase.js'
 
-const lineLabel = product => lineInfo[product.line]?.label || 'Produtos'
-const lineLink = product => `/produtos?categoria=${lineInfo[product.line]?.key || ''}`
+const lineLabel = collectionLabel
+const lineLink = collectionLink
+const colorNames = product => product.colors.map(c => c.name).join(', ')
 
 function Gallery({ product }) {
   const [active, setActive] = useState(0)
@@ -102,13 +103,18 @@ function InfoTabs({ product }) {
           <p>{product.description.split('\n\n')[1] || product.description}</p>
           <ul className="spec-list">
             <li><span>Linha</span><b>{lineLabel(product)}</b></li>
-            <li><span>Tipo</span><b>{typeLabels[product.type]}</b></li>
+            <li><span>Tipo</span><b>{productTypeName(product)}</b></li>
             {product.brand && <li><span>Marca</span><b>{product.brand}</b></li>}
-            {product.flavors ? <li><span>{product.flavors.length > 1 ? 'Sabores' : 'Sabor'}</span><b>{product.flavors.join(', ')}</b></li> : <li><span>Cor</span><b>{product.color}</b></li>}
+            {product.flavors
+              ? <li><span>{product.flavors.length > 1 ? 'Sabores' : 'Sabor'}</span><b>{product.flavors.join(', ')}</b></li>
+              : product.colors.length > 0 && <li><span>{product.colors.length > 1 ? 'Cores' : 'Cor'}</span><b>{colorNames(product)}</b></li>}
+            {product.sizes.length > 0 && <li><span>Tamanhos</span><b>{product.sizes.join(' · ')}</b></li>}
+            {product.details.filter(d => d.label && d.value).map(d => <li key={d.label}><span>{d.label}</span><b>{d.value}</b></li>)}
             {product.size ? <li><span>Embalagem</span><b>{product.size}</b></li> : <li><span>Fotos</span><b>{product.photos.length} ângulos da peça</b></li>}
           </ul>
         </>}
         {tab === 'tamanhos' && <>
+          {product.sizes.length > 0 && <p>Tamanhos disponíveis: <b>{product.sizes.join(', ')}</b>.</p>}
           <p>Os tamanhos são combinados com carinho direto no WhatsApp: a gente te ajuda a escolher o caimento ideal para o seu corpo. 🤎</p>
           <p className="muted">Tem dúvida entre dois tamanhos? Manda suas medidas na conversa que a gente indica.</p>
         </>}
@@ -257,9 +263,10 @@ export default function Product() {
 
   const isLiked = liked.includes(product.id)
   const [intro, ...rest] = product.description.split('\n\n')
+  const sameCollection = p => productCollection(p)?.slug === productCollection(product)?.slug
   const related = [
-    ...products.filter(p => p.id !== product.id && p.available && p.line === product.line),
-    ...products.filter(p => p.id !== product.id && p.available && p.line !== product.line),
+    ...products.filter(p => p.id !== product.id && p.available && sameCollection(p)),
+    ...products.filter(p => p.id !== product.id && p.available && !sameCollection(p)),
   ].slice(0, 4)
 
   return (
@@ -287,16 +294,18 @@ export default function Product() {
                 <span>{product.flavors.length > 1 ? 'Sabores' : 'Sabor'}:</span>
                 <div>{product.flavors.map(f => <i key={f}>{f}</i>)}</div>
               </div>
-            ) : (
+            ) : product.colors.length > 0 && (
               <div className="pdp-option">
-                <span>Cor: <b>{product.color}</b></span>
-                <i className="swatch-dot" style={{ background: product.swatch }} />
+                <span>{product.colors.length > 1 ? 'Cores' : 'Cor'}: <b>{colorNames(product)}</b></span>
+                <span className="swatch-dots">{product.colors.map(c => <i key={c.name} className="swatch-dot" style={{ background: c.hex }} title={c.name} />)}</span>
               </div>
             )}
             <div className="pdp-option">
               {product.size
                 ? <span><Ruler /> Embalagem: <b>{product.size}</b></span>
-                : <span><Ruler /> Tamanho: <b>combinado no WhatsApp</b></span>}
+                : product.sizes.length > 0
+                  ? <><span><Ruler /> Tamanhos:</span><span className="size-chips">{product.sizes.map(s => <i key={s}>{s}</i>)}</span></>
+                  : <span><Ruler /> Tamanho: <b>combinado no WhatsApp</b></span>}
             </div>
             {product.notice && <p className="supp-notice">{product.notice}</p>}
 

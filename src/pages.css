@@ -1271,3 +1271,12 @@ html, body { max-width: 100%; overflow-x: clip; }
 @media (max-width: 640px) {
   .load-more .button { width: 100%; justify-content: center; }
 }
+
+/* Textos editáveis no painel: respeitam a quebra de linha digitada */
+.footer-text { white-space: pre-line; }
+
+/* Página do produto: várias cores e tamanhos (cadastrados no painel) */
+.pdp-option .swatch-dots { gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+.pdp-option .swatch-dots .swatch-dot { width: 26px; height: 26px; }
+.pdp-option .size-chips { gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.pdp-option .size-chips i { min-width: 38px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 999px; background: #fff; color: var(--ink); font-size: 13px; font-style: normal; font-weight: 600; text-align: center; }

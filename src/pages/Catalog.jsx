@@ -1,20 +1,25 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { ArrowRight, Check, ChevronDown, Heart, Plus, SlidersHorizontal, Truck, X } from 'lucide-react'
-import { collections, products, typeLabels } from '../products.js'
+import { categories, categoryBySlug, collections, productTypeName, products } from '../products.js'
 import { usePageTitle, useShop } from '../shop.jsx'
 import { PageIntro, ProductCard, WhatsApp } from '../ui.jsx'
 import { helloMessage, whatsappLink } from '../store.js'
+import { getContent } from '../content.js'
 
-// Textos do cabeçalho da página, conforme a categoria.
-const banners = {
-  'mare-move': { eyebrow: 'Maré Move', title: 'Seu movimento,\nsua melhor versão.', text: 'Conjuntos que unem conforto, segurança e aquele caimento que faz você se sentir linda para treinar.' },
-  'moda-feminina': { eyebrow: 'Moda feminina', title: 'Leve, feminina\ne do seu jeito.', text: 'Peças escolhidas para trazer mais estilo para os seus dias — daquelas que você veste e se sente linda.' },
-  blusas: { eyebrow: 'Blusas', title: 'O básico que não\ntem nada de básico.', text: 'Detalhes que fazem toda a diferença no look do dia a dia.' },
-  'saias-calcas': { eyebrow: 'Saias, calças & shorts', title: 'Elegância que\nnasce do simples.', text: 'Modelagens que acompanham você do trabalho ao fim de semana.' },
-  macaquinhos: { eyebrow: 'Macaquinhos', title: 'Uma peça só,\nlook pronto.', text: 'Macaquinhos Maré Move que abraçam o corpo e acompanham cada movimento.' },
-  suplementos: { eyebrow: 'Suplementos', title: 'Seu momento de\ncuidado é na Maré.', text: 'Opções para complementar a sua rotina, escolhidas com o mesmo carinho das nossas peças.' },
-  default: { eyebrow: 'Nossa coleção', title: 'Vista sua\nmelhor versão.', text: 'Moda feminina e Maré Move: peças leves, versáteis e escolhidas com carinho para cada momento.' },
+// Textos do cabeçalho da página: os da categoria (painel → Categorias) ou, em "Todos",
+// os textos gerais do catálogo (painel → Textos das páginas).
+export const catalogDefaults = { eyebrow: 'Nossa coleção', title: 'Vista sua\nmelhor versão.', text: 'Moda feminina e Maré Move: peças leves, versáteis e escolhidas com carinho para cada momento.', script: 'com carinho' }
+const bannerFor = slug => {
+  const general = getContent('catalog', catalogDefaults)
+  const category = categoryBySlug(slug)
+  if (!category) return general
+  return {
+    eyebrow: category.banner_eyebrow || category.name,
+    title: category.banner_title || general.title,
+    text: category.banner_text || general.text,
+    script: general.script,
+  }
 }
 
 const sorts = [
@@ -26,8 +31,11 @@ const sorts = [
 
 // Opções dos filtros, calculadas a partir do catálogo atual.
 const filterOptions = () => ({
-  allTypes: [...new Set(products.map(p => typeLabels[p.type]))],
-  allColors: [...new Map(products.filter(p => p.color).map(p => [p.color, p.swatch])).entries()],
+  // tipos na ordem das categorias; cores de todas as peças (cada peça pode ter várias)
+  allTypes: [...new Set([...categories].sort((a, b) => a.sort_order - b.sort_order).filter(c => c.kind === 'tipo').map(c => c.name))]
+    .filter(name => products.some(p => productTypeName(p) === name))
+    .concat(products.some(p => productTypeName(p) === 'Suplementos') && !categories.some(c => c.kind === 'tipo' && c.name === 'Suplementos') ? ['Suplementos'] : []),
+  allColors: [...new Map(products.flatMap(p => p.colors).map(c => [c.name, c.hex])).entries()],
   priceFloor: Math.floor(Math.min(...products.map(p => p.price)) / 10) * 10,
   priceCeil: Math.ceil(Math.max(...products.map(p => p.price)) / 10) * 10,
 })
@@ -63,7 +71,7 @@ export default function Catalog() {
   const sort = params.get('ordem') || 'destaques'
 
   const collection = collections.find(c => c.key === categoria) || collections[0]
-  const banner = banners[categoria] || banners.default
+  const banner = bannerFor(categoria)
   usePageTitle(busca ? `Busca: ${busca}` : collection.key === 'todos' ? 'Produtos' : collection.label)
 
   // Atualiza um filtro na URL (assim o link filtrado pode ser compartilhado).
@@ -82,9 +90,9 @@ export default function Catalog() {
     const term = normalize(busca.trim())
     const list = products.filter(p =>
       collection.test(p) &&
-      (!term || normalize(`${p.name} ${p.color || ''} ${(p.flavors || []).join(' ')} ${typeLabels[p.type]} ${p.category}`).includes(term)) &&
-      (!tipos.length || tipos.includes(typeLabels[p.type])) &&
-      (!cores.length || cores.includes(p.color)) &&
+      (!term || normalize(`${p.name} ${p.colors.map(c => c.name).join(' ')} ${(p.flavors || []).join(' ')} ${productTypeName(p)} ${p.categorySlugs.map(s => categoryBySlug(s)?.name || '').join(' ')}`).includes(term)) &&
+      (!tipos.length || tipos.includes(productTypeName(p))) &&
+      (!cores.length || p.colors.some(c => cores.includes(c.name))) &&
       p.price <= maxPrice &&
       (!onlyAvailable || p.available))
     const sorted = [...list]
@@ -116,7 +124,7 @@ export default function Catalog() {
         title={banner.title}
         text={banner.text}
         images={products.filter(p => collection.test(p) && p.available).slice(0, 3).map(p => p.photos[0])}
-        script="com carinho"
+        script={banner.script}
         variant="fan"
         aside={(
           <ul className="intro-meta">
@@ -129,7 +137,7 @@ export default function Catalog() {
 
       <div className="shell">
         <div className="chips" role="tablist" aria-label="Categorias">
-          {collections.map((c, index) => (
+          {collections.filter(c => c.key === 'todos' || c.key === collection.key || products.some(c.test)).map((c, index) => (
             <button key={c.key} role="tab" aria-selected={c.key === collection.key} className={c.key === collection.key ? 'active' : ''} onClick={() => update({ categoria: c.key === 'todos' ? null : c.key })} style={{ '--i': index }}>
               {c.label}
               <small>{products.filter(c.test).length}</small>
@@ -150,7 +158,7 @@ export default function Catalog() {
                 <label key={type} className="check">
                   <input type="checkbox" checked={tipos.includes(type)} onChange={() => toggleIn('tipo', tipos, type)} />
                   <span className="box"><Check /></span>{type}
-                  <small>{products.filter(p => typeLabels[p.type] === type && collection.test(p)).length}</small>
+                  <small>{products.filter(p => productTypeName(p) === type && collection.test(p)).length}</small>
                 </label>
               ))}
             </FilterGroup>

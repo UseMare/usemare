@@ -1,7 +1,7 @@
 // Configurações da loja — dados de contato e como as mensagens do WhatsApp são montadas.
 // As vendas são fechadas no WhatsApp: tamanho, pagamento e entrega são combinados na conversa.
 // Os valores abaixo são o padrão; os oficiais vêm da tabela public.store_settings no Supabase
-// (src/data.js copia para cá assim que carrega — edite pelo painel do Supabase).
+// (src/data.js copia para cá assim que carrega — a dona edita pelo painel /painel-loja).
 
 export const store = {
   // Número com DDI + DDD, só dígitos. Ex.: '5511999998888'.
@@ -10,11 +10,13 @@ export const store = {
   instagram: 'https://www.instagram.com/uusemaree.br/',
   instagramHandle: '@uusemaree.br',
   installments: 6,
+  logo: '/img/logo/mare.webp',          // logo do cabeçalho
+  logoFooter: null,                     // logo do rodapé (vazio = mesma do cabeçalho)
+  social: [],                           // outras redes: [{ network, url, label }]
+  footerText: 'Moda que acompanha seu ritmo,\ncom leveza e personalidade.',
+  // Card flutuante de destaques: até 5 produtos, na ordem (códigos locais ou ids do banco).
+  spotlight: { enabled: true, ids: ['02', '04', '08', '09', '13'] },
 }
-
-// Destaques do card flutuante quando o site roda sem o Supabase.
-// Com o Supabase, valem os produtos marcados com spotlight = true.
-export const spotlightIds = ['02', '04', '08', '09', '13']
 
 // Usa api.whatsapp.com direto: o atalho wa.me redireciona e, nesse redirecionamento,
 // o WhatsApp corrompe os emojis (viram "�"). Indo direto, a mensagem chega intacta.

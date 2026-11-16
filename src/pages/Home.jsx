@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, ChevronLeft, ChevronRight, CreditCard, Gem, Leaf, LockKeyhole, Truck } from 'lucide-react'
-import { products } from '../products.js'
+import { categories, products } from '../products.js'
 import { usePageTitle, useShop } from '../shop.jsx'
 import { HandHeart, Instagram, ProductCard, SectionHeading, responsive } from '../ui.jsx'
 import { store } from '../store.js'
@@ -11,12 +11,11 @@ const heroSlides = [
   { image: '/img/banners/hero.webp', alt: 'Duas amigas sorrindo com os conjuntos Maré Move lilás e amarelo' },
 ]
 
-const categories = [
-  { name: ['Conjuntos', 'Fitness'], image: '/img/banners/conjuntos-fitness.webp', tone: 'light', to: '/produtos?categoria=mare-move' },
-  { name: ['Moda', 'Feminina'], image: '/img/banners/moda-feminina.webp', tone: 'light', to: '/produtos?categoria=moda-feminina' },
-  { name: ['Blusas'], image: '/img/banners/blusas.webp', tone: 'dark', to: '/produtos?categoria=blusas' },
-  { name: ['Saias &', 'Calças'], image: '/img/banners/saias-calcas.webp', tone: 'dark', to: '/produtos?categoria=saias-calcas' },
-]
+// Cards de categoria: categorias marcadas "mostrar na página inicial" no painel, na ordem escolhida.
+const homeCategories = () => categories
+  .filter(c => c.active && c.home_card && c.home_image)
+  .sort((a, b) => a.home_card_order - b.home_card_order)
+  .map(c => ({ name: (c.home_title || c.name).split('\n'), image: c.home_image, tone: c.home_tone, to: `/produtos?categoria=${c.slug}` }))
 
 function Hero() {
   const [current, setCurrent] = useState(0)
@@ -70,11 +69,11 @@ export default function Home() {
       <Hero />
 
       <section className="categories" aria-label="Categorias">
-        {categories.map((category, index) => (
+        {homeCategories().map((category, index) => (
           <Link to={category.to} className={`category ${category.tone}`} key={category.to} data-reveal="zoom" style={{ '--i': index }}>
             <img src={category.image} srcSet={responsive(category.image, 800)} sizes="(max-width: 1100px) 50vw, 25vw" alt="" loading="lazy" />
             <div>
-              <h3>{category.name.map((line, i) => <React.Fragment key={line}>{i > 0 && <br />}{line}</React.Fragment>)}</h3>
+              <h3>{category.name.map((line, i) => <React.Fragment key={i}>{i > 0 && <br />}{line}</React.Fragment>)}</h3>
               <span className="pill">Ver produtos <ArrowRight /></span>
             </div>
           </Link>

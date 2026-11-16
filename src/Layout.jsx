@@ -4,7 +4,7 @@ import { ArrowRight, ArrowUpRight, CreditCard, LockKeyhole, Menu, Minus, Plus, S
 import { useRevealObserver, useShop } from './shop.jsx'
 import { Brand, Instagram, WhatsApp } from './ui.jsx'
 import { bagMessage, helloMessage, store, whatsappLink } from './store.js'
-import { products } from './products.js'
+import { spotlightProducts } from './products.js'
 import { supabase } from './supabase.js'
 import AlphaCredit from './alpha-credit/AlphaCredit.jsx'
 
@@ -127,8 +127,8 @@ function Newsletter() {
 // Fechou? Some até a próxima vez que o site for carregado (F5 ou abrir de novo) —
 // o estado vive só na memória, então trocar de página não traz o card de volta.
 function Spotlight() {
-  // Produtos marcados com spotlight no Supabase (até 5).
-  const items = products.filter(p => p.spotlight && p.available).slice(0, 5)
+  // Até 5 produtos escolhidos no painel (Destaques), na ordem escolhida.
+  const items = spotlightProducts()
   const [index, setIndex] = useState(0)
   const [dir, setDir] = useState('next')
   const [visible, setVisible] = useState(false)
@@ -284,7 +284,7 @@ export default function Layout() {
 
       <footer>
         <div className="shell footer-inner">
-          <div className="footer-brand" data-reveal><Brand /><p>Moda que acompanha seu ritmo,<br />com leveza e personalidade.</p><p className="footer-handle"><a href={store.instagram} target="_blank" rel="noreferrer"><Instagram /> {store.instagramHandle}</a></p></div>
+          <div className="footer-brand" data-reveal><Brand footer /><p className="footer-text">{store.footerText}</p><p className="footer-handle"><a href={store.instagram} target="_blank" rel="noreferrer"><Instagram /> {store.instagramHandle}</a></p></div>
           <div data-reveal style={{ '--i': 1 }}><h3>Loja</h3><Link to="/produtos">Todos os produtos</Link><Link to="/produtos?categoria=moda-feminina">Moda feminina</Link><Link to="/promocoes">Promoções</Link></div>
           <div data-reveal style={{ '--i': 2 }}><h3>Atendimento</h3><Link to="/sobre#como-comprar">Como comprar</Link><a href={whatsappLink(helloMessage)} target="_blank" rel="noreferrer">Fale no WhatsApp</a><Link to="/sobre">Sobre a Maré</Link></div>
           <div data-reveal style={{ '--i': 3 }}><h3>Receba novidades</h3><p>Lançamentos e promoções em primeira mão.</p><Newsletter /></div>
