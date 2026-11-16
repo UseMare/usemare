@@ -16,6 +16,9 @@ import HomePage from './pages/HomePage.jsx'
 import PageTexts from './pages/PageTexts.jsx'
 import Settings from './pages/Settings.jsx'
 import Appearance from './pages/Appearance.jsx'
+import Reviews from './pages/Reviews.jsx'
+import Newsletter from './pages/Newsletter.jsx'
+import { supabase } from '../supabase.js'
 import { ConfirmProvider, ToastProvider } from './ui.jsx'
 import PasswordModal from './components/PasswordModal.jsx'
 
@@ -32,6 +35,8 @@ const pages = {
   paginas: PageTexts,
   aparencia: Appearance,
   configuracoes: Settings,
+  avaliacoes: Reviews,
+  newsletter: Newsletter,
 }
 
 // Página atual = seção cujo endereço é o maior prefixo do endereço aberto.
@@ -42,8 +47,24 @@ const sectionFor = pathname => {
     .sort((a, b) => b.path.length - a.path.length)[0] || sections.inicio
 }
 
+// Quantas avaliações esperam aprovação (contador ao lado de "Avaliações" no menu).
+function usePendingReviews() {
+  const [n, setN] = useState(0)
+  const location = useLocation()
+  useEffect(() => {
+    let alive = true
+    const load = () => supabase.from('reviews').select('id', { count: 'exact', head: true }).eq('status', 'pendente')
+      .then(({ count }) => { if (alive) setN(count || 0) })
+    load()
+    window.addEventListener('mare:reviews-changed', load)
+    return () => { alive = false; window.removeEventListener('mare:reviews-changed', load) }
+  }, [location.pathname])
+  return n
+}
+
 function Sidebar({ open, onClose, collapsed, onToggle }) {
   const settings = sections.configuracoes
+  const pending = usePendingReviews()
   return (
     <>
       <aside className={`adm-sidebar ${open ? 'open' : ''}`} aria-label="Menu do painel">
@@ -61,6 +82,7 @@ function Sidebar({ open, onClose, collapsed, onToggle }) {
                 return (
                   <NavLink key={key} to={path} end={key === 'inicio'} onClick={onClose} title={collapsed ? label : undefined}>
                     <Icon /> <span>{label}</span>
+                    {key === 'avaliacoes' && pending > 0 && <em className="adm-nav-badge" aria-label={`${pending} pendente(s)`}>{pending}</em>}
                   </NavLink>
                 )
               })}

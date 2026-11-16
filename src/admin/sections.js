@@ -9,10 +9,10 @@ export const sections = {
   categorias:    { label: 'Categorias',      icon: Tags,            path: `${BASE}/categorias`,          stage: 7,  description: 'Criar, renomear, ordenar e ocultar categorias; imagem do card da página inicial e texto do banner.' },
   destaques:     { label: 'Destaques',       icon: Sparkles,        path: `${BASE}/destaques`,           stage: 8,  description: 'Escolher até 5 produtos para o card flutuante de destaques e a ordem deles.' },
   paginaInicial: { label: 'Página inicial',  icon: House,           path: `${BASE}/pagina-inicial`,      stage: 9,  description: 'Hero (fotos e textos), cards de categorias, banners e quadro de serviços.' },
-  paginas:       { label: 'Textos das páginas', icon: FileText,     path: `${BASE}/paginas`,             stage: 10, description: 'Sobre nós, Como comprar, Envio, faixa de avisos do topo e textos do catálogo.' },
+  paginas:       { label: 'Textos das páginas', icon: FileText,     path: `${BASE}/paginas`,             stage: 10, description: 'Sobre nós, Como comprar, topo do catálogo, promoções e faixa de avisos do topo.' },
   avaliacoes:    { label: 'Avaliações',      icon: Star,            path: `${BASE}/avaliacoes`,          stage: 12, description: 'Aprovar ou recusar as avaliações que as clientes enviam.' },
   newsletter:    { label: 'Newsletter',      icon: Mail,            path: `${BASE}/newsletter`,          stage: 12, description: 'E-mails cadastrados no rodapé, com exportação.' },
-  aparencia:     { label: 'Logo e rodapé',   icon: PanelsTopLeft,   path: `${BASE}/logo-e-rodape`,       stage: 11, description: 'Logotipo do site, textos do rodapé e redes sociais.' },
+  aparencia:     { label: 'Logo e rodapé',   icon: PanelsTopLeft,   path: `${BASE}/logo-e-rodape`,       stage: 11, description: 'Logotipo, texto e colunas do rodapé, newsletter e outras redes sociais.' },
   configuracoes: { label: 'Configurações',   icon: Settings,        path: `${BASE}/configuracoes`,       stage: 11, description: 'WhatsApp da loja (atualiza todos os botões), Instagram e parcelamento.' },
 }
 
