@@ -8,6 +8,9 @@ import { signOut, useAdminAuth } from './useAdminAuth.js'
 import { BASE, navGroups, sections } from './sections.js'
 import Dashboard from './pages/Dashboard.jsx'
 import ComingSoon from './pages/ComingSoon.jsx'
+import ProductsList from './pages/ProductsList.jsx'
+import ProductEditor from './pages/ProductEditor.jsx'
+import { ConfirmProvider, ToastProvider } from './ui.jsx'
 
 // Painel da loja (/painel-loja). Carregado só quando alguém abre essa área,
 // então não pesa no site das clientes.
@@ -15,6 +18,15 @@ import ComingSoon from './pages/ComingSoon.jsx'
 // Telas já prontas; as demais mostram o aviso "em construção" até a etapa delas.
 const pages = {
   inicio: Dashboard,
+  produtos: ProductsList,
+}
+
+// Página atual = seção cujo endereço é o maior prefixo do endereço aberto.
+const sectionFor = pathname => {
+  const clean = pathname.replace(/\/$/, '')
+  return Object.values(sections)
+    .filter(s => clean === s.path || clean.startsWith(`${s.path}/`))
+    .sort((a, b) => b.path.length - a.path.length)[0] || sections.inicio
 }
 
 function Sidebar({ open, onClose, email, name }) {
@@ -56,7 +68,7 @@ function Sidebar({ open, onClose, email, name }) {
 function Shell({ session, profile }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const location = useLocation()
-  const current = Object.values(sections).find(s => s.path === location.pathname.replace(/\/$/, '')) || sections.inicio
+  const current = sectionFor(location.pathname)
 
   useEffect(() => { setMenuOpen(false); window.scrollTo(0, 0) }, [location.pathname])
   useEffect(() => { document.title = `${current.label} · Painel Maré` }, [current])
@@ -77,6 +89,8 @@ function Shell({ session, profile }) {
               const rel = section.path.slice(BASE.length + 1)
               return <Route key={key} {...(rel ? { path: rel } : { index: true })} element={<Page section={section} />} />
             })}
+            <Route path="produtos/novo" element={<ProductEditor />} />
+            <Route path="produtos/:id" element={<ProductEditor />} />
             <Route path="*" element={<Navigate to={BASE} replace />} />
           </Routes>
         </main>
@@ -101,5 +115,11 @@ export default function AdminApp() {
   if (auth.status === 'offline') return <AdminOffline />
   if (auth.status === 'signed-out') return <AdminLogin />
   if (auth.status === 'denied') return <AdminDenied email={auth.session.user.email} />
-  return <Shell session={auth.session} profile={auth.profile} />
+  return (
+    <ToastProvider>
+      <ConfirmProvider>
+        <Shell session={auth.session} profile={auth.profile} />
+      </ConfirmProvider>
+    </ToastProvider>
+  )
 }
