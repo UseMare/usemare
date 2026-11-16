@@ -10,6 +10,7 @@ import Dashboard from './pages/Dashboard.jsx'
 import ComingSoon from './pages/ComingSoon.jsx'
 import ProductsList from './pages/ProductsList.jsx'
 import ProductEditor from './pages/ProductEditor.jsx'
+import Categories from './pages/Categories.jsx'
 import { ConfirmProvider, ToastProvider } from './ui.jsx'
 
 // Painel da loja (/painel-loja). Carregado só quando alguém abre essa área,
@@ -19,6 +20,7 @@ import { ConfirmProvider, ToastProvider } from './ui.jsx'
 const pages = {
   inicio: Dashboard,
   produtos: ProductsList,
+  categorias: Categories,
 }
 
 // Página atual = seção cujo endereço é o maior prefixo do endereço aberto.
