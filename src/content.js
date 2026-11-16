@@ -11,6 +11,9 @@ export function setContent(map) {
 
 const isEmpty = value => value === undefined || value === null || value === '' || (Array.isArray(value) && !value.length)
 
+// O que foi salvo no painel para uma seção, sem misturar com o padrão (quem chama decide).
+export const savedContent = key => content[key] || {}
+
 // Mistura o padrão com o que foi salvo no painel (campo vazio = usa o padrão).
 export function getContent(key, defaults) {
   const saved = content[key] || {}

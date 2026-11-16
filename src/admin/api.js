@@ -116,3 +116,13 @@ export async function deleteProduct(product) {
 export async function listCategories() {
   return must(await supabase.from('categories').select('*').order('sort_order').order('name'))
 }
+
+// ---------- Conteúdo do site (textos e imagens editáveis) ----------
+export async function getSiteContent(key) {
+  const row = must(await supabase.from('site_content').select('value').eq('key', key).maybeSingle())
+  return row?.value || {}
+}
+
+export async function saveSiteContent(key, value) {
+  must(await supabase.from('site_content').upsert({ key, value }, { onConflict: 'key' }).select('key').single())
+}

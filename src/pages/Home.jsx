@@ -1,15 +1,88 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, ChevronLeft, ChevronRight, CreditCard, Gem, Leaf, LockKeyhole, Truck } from 'lucide-react'
+import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
 import { categories, products } from '../products.js'
 import { usePageTitle, useShop } from '../shop.jsx'
-import { HandHeart, Instagram, ProductCard, SectionHeading, responsive } from '../ui.jsx'
+import { HandHeart, ProductCard, SectionHeading, responsive } from '../ui.jsx'
 import { store } from '../store.js'
+import { savedContent } from '../content.js'
+import { SiteIcon } from '../icons.jsx'
 
-// Para adicionar novos slides no hero, basta incluir itens aqui — setas e bolinhas aparecem sozinhas.
-const heroSlides = [
-  { image: '/img/banners/hero.webp', alt: 'Duas amigas sorrindo com os conjuntos Maré Move lilás e amarelo' },
-]
+// Textos e imagens da página inicial. Este é o padrão; o painel (Página inicial) substitui
+// campo a campo pelo que a dona salvar (tabela site_content, chave 'home').
+// Nos textos, Enter (\n) vira quebra de linha. No texto de apoio do hero a quebra só vale no computador.
+export const homeDefaults = {
+  heroSlides: [
+    { image: '/img/banners/hero.webp', alt: 'Duas amigas sorrindo com os conjuntos Maré Move lilás e amarelo' },
+  ],
+  heroEyebrow: 'Moda feminina • Fitness',
+  heroTitle: 'Vista sua\nmelhor versão.',
+  heroText: 'Peças que unem conforto, estilo e\nliberdade para o seu dia a dia.',
+  heroButton: 'Conferir coleção',
+  heroLink: '/produtos',
+  heroBenefits: [
+    { icon: 'leaf', text: 'Conforto\nem cada detalhe' },
+    { icon: 'gem', text: 'Peças versáteis\npara o seu estilo' },
+    { icon: 'truck', text: 'Enviamos para\ntodo o Brasil' },
+  ],
+  heroScript: 'Estilo\npara cada\nmomento',
+  highlightsTitle: 'Nossos destaques',
+  promos: [
+    { image: '/img/banners/conforto.webp', title: 'Conforto\nque te acompanha', text: 'Peças pensadas para o seu dia a dia,\ndo treino ao casual.', button: 'Ver conjuntos', link: '/produtos?categoria=conjuntos' },
+    { image: '/img/banners/mare-movimento.webp', title: 'Maré\né movimento', text: 'Moda feminina e fitness\npara todas as suas fases.', button: 'Conheça a Maré', link: '/sobre' },
+  ],
+  // {parcelas} = número de parcelas das Configurações da loja; {instagram} = link do Instagram da loja.
+  services: [
+    { icon: 'truck', top: 'Envio para', bold: 'todo o Brasil', link: '' },
+    { icon: 'card', top: 'Parcele em até', bold: '{parcelas}x sem juros', link: '' },
+    { icon: 'lock', top: 'Compra', bold: '100% segura', link: '' },
+    { icon: 'instagram', top: 'Acompanhe', bold: 'no Instagram', link: '{instagram}' },
+  ],
+}
+
+// Campos obrigatórios: vazio = texto padrão. Campos opcionais: se a dona apagou, o site não mostra.
+const blank = v => v === undefined || v === null || v === '' || (Array.isArray(v) && !v.length)
+const OPTIONAL = ['heroEyebrow', 'heroText', 'heroButton', 'heroScript', 'heroBenefits']
+const OPTIONAL_ITEM = ['text', 'button', 'link']
+const pick = (key, saved, base, optional) => optional.includes(key)
+  ? (saved === undefined || saved === null ? base : saved)
+  : (blank(saved) ? base : saved)
+
+// Banners e serviços: quantidade fixa, item a item com o padrão.
+const withDefaults = (list, defaults) => defaults.map((base, i) => {
+  const item = list?.[i] || {}
+  return Object.fromEntries(Object.keys({ ...base, ...item }).map(k => [k, pick(k, item[k], base[k] ?? '', OPTIONAL_ITEM)]))
+})
+
+// O que o site mostra = padrão + o que foi salvo no painel (o painel usa o mesmo para montar o formulário).
+export const mergeHome = (saved = {}) => {
+  const c = { ...homeDefaults }
+  Object.entries(saved || {}).forEach(([k, v]) => { c[k] = pick(k, v, homeDefaults[k], OPTIONAL) })
+  const slides = (c.heroSlides || []).filter(s => s?.image)
+  return {
+    ...c,
+    heroSlides: slides.length ? slides : homeDefaults.heroSlides,
+    heroBenefits: (c.heroBenefits || []).filter(b => b?.text),
+    promos: withDefaults(c.promos, homeDefaults.promos),
+    services: withDefaults(c.services, homeDefaults.services),
+  }
+}
+
+export const homeContent = () => mergeHome(savedContent('home'))
+
+// Texto com Enter → linhas com <br />. `brClass` deixa a quebra só no computador.
+export const Lines = ({ text, brClass }) => String(text || '').split('\n').map((line, i) => (
+  <React.Fragment key={i}>{i > 0 && <br className={brClass} />}{i > 0 && brClass ? ' ' : ''}{line}</React.Fragment>
+))
+
+const fill = text => String(text || '').replace(/\{parcelas\}/g, store.installments)
+
+// Link interno (/produtos…) usa o roteador; externo (https://…) abre em outra aba.
+function SmartLink({ to, className, children }) {
+  const href = to === '{instagram}' ? store.instagram : to
+  if (/^https?:\/\//.test(href || '')) return <a className={className} href={href} target="_blank" rel="noreferrer">{children}</a>
+  return <Link className={className} to={href || '/produtos'}>{children}</Link>
+}
 
 // Cards de categoria: categorias marcadas "mostrar na página inicial" no painel, na ordem escolhida.
 const homeCategories = () => categories
@@ -17,11 +90,14 @@ const homeCategories = () => categories
   .sort((a, b) => a.home_card_order - b.home_card_order)
   .map(c => ({ name: (c.home_title || c.name).split('\n'), image: c.home_image, tone: c.home_tone, to: `/produtos?categoria=${c.slug}` }))
 
-function Hero() {
+function Hero({ content }) {
+  const slides = content.heroSlides
   const [current, setCurrent] = useState(0)
-  const multiple = heroSlides.length > 1
-  const go = step => setCurrent(index => (index + step + heroSlides.length) % heroSlides.length)
+  const multiple = slides.length > 1
+  const go = step => setCurrent(index => (index + step + slides.length) % slides.length)
+  const [first, ...rest] = String(content.heroScript || '').split('\n')
 
+  useEffect(() => { if (current >= slides.length) setCurrent(0) }, [slides.length, current])
   useEffect(() => {
     if (!multiple) return
     const timer = setInterval(() => go(1), 7000)
@@ -30,43 +106,62 @@ function Hero() {
 
   return (
     <section className="hero" id="inicio">
-      {heroSlides.map((slide, index) => (
-        <img key={slide.image} className={index === current ? 'active' : ''} src={slide.image} srcSet={responsive(slide.image, 1200)} sizes="100vw" alt={index === current ? slide.alt : ''} fetchPriority={index === 0 ? 'high' : 'auto'} />
+      {slides.map((slide, index) => (
+        <img key={slide.image} className={index === current ? 'active' : ''} src={slide.image} srcSet={responsive(slide.image, 1200)} sizes="100vw" alt={index === current ? (slide.alt || '') : ''} fetchPriority={index === 0 ? 'high' : 'auto'} />
       ))}
       <div className="hero-inner">
         <div className="hero-copy">
-          <p className="eyebrow">Moda feminina • Fitness</p>
-          <h1>Vista sua<br />melhor versão.</h1>
-          <h2>Peças que unem conforto, estilo e<br className="desktop-break" /> liberdade para o seu dia a dia.</h2>
-          <Link className="button dark pulse" to="/produtos">Conferir coleção <ArrowRight /></Link>
-          <ul className="hero-benefits">
-            <li><Leaf /> <span>Conforto<br />em cada detalhe</span></li>
-            <li><Gem /> <span>Peças versáteis<br />para o seu estilo</span></li>
-            <li><Truck /> <span>Enviamos para<br />todo o Brasil</span></li>
-          </ul>
+          {content.heroEyebrow && <p className="eyebrow">{content.heroEyebrow}</p>}
+          <h1><Lines text={content.heroTitle} /></h1>
+          {content.heroText && <h2><Lines text={content.heroText} brClass="desktop-break" /></h2>}
+          {content.heroButton && <SmartLink className="button dark pulse" to={content.heroLink}>{content.heroButton} <ArrowRight /></SmartLink>}
+          {content.heroBenefits.length > 0 && (
+            <ul className="hero-benefits">
+              {content.heroBenefits.map((benefit, i) => <li key={i}><SiteIcon name={benefit.icon} /> <span><Lines text={benefit.text} /></span></li>)}
+            </ul>
+          )}
         </div>
       </div>
-      <p className="hero-script" aria-hidden="true">Estilo<br /><span>para cada</span><br /><span>momento</span><HandHeart /></p>
+      {first && (
+        <p className="hero-script" aria-hidden="true">
+          {first}{rest.map((line, i) => <React.Fragment key={i}><br /><span>{line}</span></React.Fragment>)}<HandHeart />
+        </p>
+      )}
       {multiple && <>
         <button className="slider-arrow left" onClick={() => go(-1)} aria-label="Slide anterior"><ChevronLeft /></button>
         <button className="slider-arrow right" onClick={() => go(1)} aria-label="Próximo slide"><ChevronRight /></button>
         <div className="hero-dots">
-          {heroSlides.map((slide, index) => <button key={slide.image} className={index === current ? 'active' : ''} onClick={() => setCurrent(index)} aria-label={`Ir para o slide ${index + 1}`} />)}
+          {slides.map((slide, index) => <button key={slide.image} className={index === current ? 'active' : ''} onClick={() => setCurrent(index)} aria-label={`Ir para o slide ${index + 1}`} />)}
         </div>
       </>}
     </section>
   )
 }
 
+function Promo({ promo, className, reveal, index }) {
+  return (
+    <article className={`promo ${className}`} data-reveal={reveal} style={index ? { '--i': index } : undefined}>
+      <img src={promo.image} srcSet={responsive(promo.image, 800)} sizes="(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 36vw" alt="" loading="lazy" />
+      <div>
+        <h2><Lines text={promo.title} /></h2>
+        {promo.text && <p><Lines text={promo.text} /></p>}
+        {promo.button && <SmartLink className="button dark small" to={promo.link}>{promo.button} <ArrowRight /></SmartLink>}
+      </div>
+    </article>
+  )
+}
+
 export default function Home() {
   usePageTitle(null)
   useShop() // redesenha quando o catálogo do Supabase chega
+  const content = homeContent()
   // Prévia na página inicial: só as 4 primeiras peças disponíveis. O catálogo completo fica em /produtos.
   const highlights = products.filter(product => product.available).slice(0, 4)
+  const [comfort, movement] = content.promos
 
   return (
     <>
-      <Hero />
+      <Hero content={content} />
 
       <section className="categories" aria-label="Categorias">
         {homeCategories().map((category, index) => (
@@ -82,7 +177,7 @@ export default function Home() {
 
       <section className="highlights" id="destaques" aria-labelledby="highlights-title">
         <div className="shell">
-          <SectionHeading id="highlights-title" title="Nossos destaques" to="/produtos" />
+          <SectionHeading id="highlights-title" title={content.highlightsTitle} to="/produtos" />
           <div className="highlight-grid">
             {highlights.map((product, index) => <ProductCard key={product.id} product={product} index={index} sizes="(max-width: 900px) 46vw, 300px" />)}
           </div>
@@ -93,28 +188,14 @@ export default function Home() {
       </section>
 
       <section className="promo-row" aria-label="Seleções Maré">
-        <article className="promo comfort" data-reveal="left">
-          <img src="/img/banners/conforto.webp" srcSet={responsive('/img/banners/conforto.webp', 800)} sizes="(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 36vw" alt="" loading="lazy" />
-          <div>
-            <h2>Conforto<br />que te acompanha</h2>
-            <p>Peças pensadas para o seu dia a dia,<br />do treino ao casual.</p>
-            <Link className="button dark small" to="/produtos?categoria=conjuntos">Ver conjuntos <ArrowRight /></Link>
-          </div>
-        </article>
+        <Promo promo={comfort} className="comfort" reveal="left" />
         <ul className="promo services" data-reveal style={{ '--i': 1 }}>
-          <li><Truck /><span>Envio para<br /><b>todo o Brasil</b></span></li>
-          <li><CreditCard /><span>Parcele em até<br /><b>6x sem juros</b></span></li>
-          <li><LockKeyhole /><span>Compra<br /><b>100% segura</b></span></li>
-          <li><a href={store.instagram} target="_blank" rel="noreferrer"><Instagram /><span>Acompanhe<br /><b>no Instagram</b></span></a></li>
+          {content.services.map((service, i) => {
+            const inner = <><SiteIcon name={service.icon} /><span>{fill(service.top)}<br /><b>{fill(service.bold)}</b></span></>
+            return <li key={i}>{service.link ? <SmartLink to={service.link}>{inner}</SmartLink> : inner}</li>
+          })}
         </ul>
-        <article className="promo movement" data-reveal="right" style={{ '--i': 2 }}>
-          <img src="/img/banners/mare-movimento.webp" srcSet={responsive('/img/banners/mare-movimento.webp', 800)} sizes="(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 36vw" alt="" loading="lazy" />
-          <div>
-            <h2>Maré<br />é movimento</h2>
-            <p>Moda feminina e fitness<br />para todas as suas fases.</p>
-            <Link className="button dark small" to="/sobre">Conheça a Maré <ArrowRight /></Link>
-          </div>
-        </article>
+        <Promo promo={movement} className="movement" reveal="right" index={2} />
       </section>
     </>
   )

@@ -146,7 +146,7 @@
 .adm-input-icon { position: relative; }
 .adm-input-icon input { padding-right: 44px; }
 .adm-input-icon button { position: absolute; top: 50%; right: 4px; width: 34px; height: 34px; display: grid; place-items: center; border: 0; border-radius: 6px; color: var(--adm-muted); background: none; cursor: pointer; transform: translateY(-50%); }
-.adm-grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 16px; }
+.adm-grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 16px; align-items: start; }
 .adm-grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 16px; }
 @media (max-width: 720px) { .adm-grid-2, .adm-grid-3 { grid-template-columns: minmax(0, 1fr); } }
 
@@ -436,4 +436,40 @@ select.adm-input { appearance: auto; }
   .adm-spot-list .adm-spot-pos { display: none; }
   .adm-spot-list li > .adm-icon-btn { width: 30px; height: 30px; }
   .adm-card-head:has(.adm-switch) { flex-wrap: wrap; }
+}
+
+/* ---------- Página inicial ---------- */
+.adm-slides { display: grid; gap: 12px; margin: 12px 0; padding: 0; list-style: none; }
+.adm-slides > li { position: relative; padding: 14px 14px 2px; border: 1px solid var(--adm-line); border-radius: 10px; }
+.adm-slides .adm-imagefield-preview { width: 360px; max-height: none; }
+.adm-slide-actions { position: absolute; top: 8px; right: 8px; display: flex; gap: 2px; }
+.adm-repeat { display: grid; gap: 10px; margin: 10px 0 12px; padding: 0; list-style: none; }
+.adm-repeat > li { display: grid; grid-template-columns: 220px minmax(0, 1fr) auto; gap: 0 14px; align-items: start; padding: 12px 12px 0; border: 1px solid var(--adm-line); border-radius: 10px; }
+.adm-repeat > li > .adm-icon-btn { margin-top: 24px; }
+.adm-services > li { grid-template-columns: 220px repeat(3, minmax(0, 1fr)); }
+.adm-promos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.adm-promo-edit { padding: 14px 14px 2px; border: 1px solid var(--adm-line); border-radius: 10px; }
+.adm-promo-edit h3 { margin: 0 0 12px; font-size: 14px; }
+.adm-promo-edit .adm-imagefield-preview { width: 100%; }
+.adm-promo-edit .adm-imagefield-box { flex-direction: column; }
+.adm-iconpicker { position: relative; }
+.adm-iconpicker-current { display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 10px; border: 1px solid var(--adm-line-strong); border-radius: 8px; color: var(--adm-text); background: var(--adm-surface); font: inherit; text-align: left; cursor: pointer; }
+.adm-iconpicker-current > span { flex: 1; overflow: hidden; font-size: 13.5px; text-overflow: ellipsis; white-space: nowrap; }
+.adm-iconpicker-current > svg:first-child { color: var(--adm-wine); }
+.adm-iconpicker-current > svg:last-child { width: 16px; height: 16px; color: var(--adm-muted); }
+.adm-iconpicker-current:hover { border-color: var(--adm-wine); }
+.adm-iconpicker-grid { position: absolute; z-index: 25; top: calc(100% - 8px); left: 0; display: grid; grid-template-columns: repeat(5, 40px); gap: 4px; padding: 8px; border: 1px solid var(--adm-line); border-radius: 10px; background: var(--adm-surface); box-shadow: 0 12px 40px rgba(47, 26, 21, .14); }
+.adm-iconpicker-grid button { width: 40px; height: 40px; display: grid; place-items: center; border: 1px solid transparent; border-radius: 8px; color: var(--adm-wine); background: none; cursor: pointer; }
+.adm-iconpicker-grid button:hover { background: var(--adm-soft); }
+.adm-iconpicker-grid button.active { border-color: var(--adm-wine); background: var(--adm-soft); }
+@media (max-width: 1100px) {
+  .adm-services > li { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 720px) {
+  .adm-slides .adm-imagefield-preview { width: 100%; }
+  .adm-slides .adm-imagefield-box { flex-direction: column; }
+  .adm-slides > li { padding-top: 46px; }
+  .adm-repeat > li, .adm-services > li { grid-template-columns: minmax(0, 1fr); }
+  .adm-repeat > li > .adm-icon-btn { margin: 0 0 10px; justify-self: end; }
+  .adm-promos { grid-template-columns: minmax(0, 1fr); }
 }
