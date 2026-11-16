@@ -14,7 +14,7 @@ import IconPicker from './IconPicker.jsx'
 // Lista:  { key, label, type: 'list', item: [campos], min, max, itemLabel, addLabel, columns }
 // Título: { type: 'heading', label, text }
 
-const LINK_RE = /^(https?:\/\/\S+|\/\S*|\{instagram\})$/
+const LINK_RE = /^(https?:\/\/\S+|\/\S*|\{instagram\}|\{whatsapp\})$/
 
 export const mergePage = (defaults, saved = {}) => {
   const result = { ...defaults }
@@ -22,19 +22,20 @@ export const mergePage = (defaults, saved = {}) => {
   return result
 }
 
-const plain = value => JSON.parse(JSON.stringify(value, (k, v) => (v instanceof Blob ? undefined : v)))
-const clean = text => String(text ?? '').replace(/\r/g, '').split('\n').map(l => l.trimEnd()).join('\n').trim()
-const blankValue = (field, item) => field.type === 'item' ? {} : Object.fromEntries(field.item.map(f => [f.key, f.type === 'icon' ? 'sparkles' : f.type === 'image' ? null : '']))
+export const plain = value => JSON.parse(JSON.stringify(value, (k, v) => (v instanceof Blob ? undefined : v)))
+export const clean = text => String(text ?? '').replace(/\r/g, '').split('\n').map(l => l.trimEnd()).join('\n').trim()
+const blankValue = field => Object.fromEntries(field.item.filter(f => f.key).map(f => [f.key,
+  f.type === 'icon' ? 'sparkles' : f.type === 'image' ? null : f.type === 'select' ? f.options[0].value : f.type === 'list' ? [] : '']))
 
 // Percorre os campos de imagem (inclusive dentro de listas).
-const imagesOf = (schema, value) => schema.flatMap(f => {
+export const imagesOf = (schema, value) => schema.flatMap(f => {
   if (f.type === 'image') return typeof value?.[f.key] === 'string' ? [{ url: value[f.key], suffixes: f.image.suffixes || [''] }] : []
   if (f.type === 'list') return (value?.[f.key] || []).flatMap(item => imagesOf(f.item, item))
   return []
 })
 
 // Confere obrigatórios e links; devolve a primeira mensagem de erro.
-const validate = (schema, value, where = '') => {
+export const validate = (schema, value, where = '') => {
   for (const f of schema) {
     if (f.type === 'heading') continue
     const v = value?.[f.key]
@@ -53,7 +54,7 @@ const validate = (schema, value, where = '') => {
 }
 
 // Monta o valor final: limpa textos e envia as imagens novas.
-const finalize = async (schema, value, folder) => {
+export const finalize = async (schema, value, folder) => {
   const out = {}
   for (const f of schema) {
     if (f.type === 'heading') continue
@@ -74,6 +75,13 @@ function Input({ field, value, onChange }) {
   if (type === 'icon') return <IconPicker label={title} value={value} onChange={onChange} />
   if (type === 'link') return <LinkField label={title} value={value || ''} onChange={onChange} allowNone={field.allowNone} />
   if (type === 'image') return <ImageField label={title} value={value} onChange={onChange} hint={hint} {...field.image} />
+  if (type === 'select') return (
+    <label className="adm-field">
+      <span>{title}</span>
+      <select value={value ?? ''} onChange={e => onChange(e.target.value)}>{field.options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}</select>
+      {hint && <small>{hint}</small>}
+    </label>
+  )
   return (
     <label className="adm-field">
       <span>{title}</span>
@@ -85,7 +93,7 @@ function Input({ field, value, onChange }) {
   )
 }
 
-function Fields({ schema, value, onChange }) {
+export function Fields({ schema, value, onChange }) {
   const set = (key, v) => onChange({ ...value, [key]: v })
   return schema.map((f, idx) => {
     if (f.type === 'heading') return <div key={`h${idx}`} className="adm-content-heading"><h3 className="adm-subtitle">{f.label}</h3>{f.text && <p className="adm-hint">{f.text}</p>}</div>

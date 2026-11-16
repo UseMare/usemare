@@ -448,3 +448,9 @@ footer form button svg { width: 20px; }
   .announcement-inner > :not(:first-child) { display: none !important; }
   .announcement-inner > :first-child { opacity: 1; }
 }
+
+/* Redes sociais no rodapé (painel → Logo e rodapé) */
+.footer-social { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 0; padding: 0; list-style: none; }
+.footer-social a { width: 36px; height: 36px; display: grid; place-items: center; border: 1px solid #d8c6ba; border-radius: 50%; color: var(--wine); transition: background .25s, color .25s, border-color .25s; }
+.footer-social a:hover { color: #fff; background: var(--wine); border-color: var(--wine); }
+.footer-social svg { width: 17px; height: 17px; }

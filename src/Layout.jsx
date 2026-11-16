@@ -2,13 +2,27 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation, useNavigate, useNavigationType, useSearchParams } from 'react-router-dom'
 import { ArrowRight, ArrowUpRight, CreditCard, LockKeyhole, Menu, Minus, Plus, Search, ShoppingBag, Trash2, Truck, UserRound, X } from 'lucide-react'
 import { useRevealObserver, useShop } from './shop.jsx'
-import { Brand, Instagram, WhatsApp } from './ui.jsx'
+import { Brand, Instagram, SmartLink, WhatsApp } from './ui.jsx'
 import { bagMessage, helloMessage, store, whatsappLink } from './store.js'
 import { spotlightProducts } from './products.js'
 import { supabase } from './supabase.js'
 import AlphaCredit from './alpha-credit/AlphaCredit.jsx'
 import { pageContent } from './content.js'
-import { SiteIcon } from './icons.jsx'
+import { SiteIcon, SocialIcon, socialHref, socialNetworks } from './icons.jsx'
+
+// Colunas e textos do rodapé (painel → Logo e rodapé). Logo, texto da marca e redes ficam em store_settings.
+// Links: '{whatsapp}' = conversa no WhatsApp da loja; '{instagram}' = Instagram da loja. {ano} = ano atual.
+export const footerDefaults = {
+  columns: [
+    { title: 'Loja', links: [{ label: 'Todos os produtos', link: '/produtos' }, { label: 'Moda feminina', link: '/produtos?categoria=moda-feminina' }, { label: 'Promoções', link: '/promocoes' }] },
+    { title: 'Atendimento', links: [{ label: 'Como comprar', link: '/sobre#como-comprar' }, { label: 'Fale no WhatsApp', link: '{whatsapp}' }, { label: 'Sobre a Maré', link: '/sobre' }] },
+  ],
+  newsletterTitle: 'Receba novidades',
+  newsletterText: 'Lançamentos e promoções em primeira mão.',
+  copyright: '© {ano} Maré. Todos os direitos reservados.',
+}
+
+const FooterLink = ({ item }) => <SmartLink to={item.link} fallback="/">{item.label}</SmartLink>
 
 // Faixa de avisos do topo (painel → Textos das páginas → Faixa do topo). No celular só o 1º aparece.
 // {parcelas} = parcelas das Configurações; link '{instagram}' = Instagram da loja.
@@ -226,6 +240,10 @@ export default function Layout() {
   const [params] = useSearchParams()
   const [menuOpen, setMenuOpen] = useState(false)
   const { bagCount, openBag, toast, dismissToast, user } = useShop()
+  const footer = pageContent('footer', footerDefaults)
+  // Outras redes (o Instagram principal já aparece com o @ e não se repete).
+  const sameUrl = (a, b) => String(a || '').replace(/\/+$/, '').toLowerCase() === String(b || '').replace(/\/+$/, '').toLowerCase()
+  const social = (store.social || []).filter(s => s?.url && !sameUrl(s.url, store.instagram))
   useRevealObserver()
 
   // Ao trocar de página: volta ao topo (ou rola até a âncora #) e fecha o menu.
@@ -252,12 +270,10 @@ export default function Layout() {
       <a className="skip-link" href="#conteudo">Pular para o conteúdo</a>
       <div className="announcement" aria-label="Vantagens da loja">
         <div className="shell announcement-inner">
-          {pageContent('announcement', announcementDefaults).items.filter(item => item?.text).map((item, i) => {
+          {pageContent('announcement', announcementDefaults).items.filter(item => item?.text && !(store.installments <= 1 && item.text.includes('{parcelas}'))).map((item, i) => {
             const text = item.text.replace(/\{parcelas\}/g, store.installments)
-            const href = item.link === '{instagram}' ? store.instagram : item.link
-            if (!href) return <span key={i}><SiteIcon name={item.icon} /> {text}</span>
-            if (/^https?:\/\//.test(href)) return <a key={i} href={href} target="_blank" rel="noreferrer"><SiteIcon name={item.icon} /> {text}</a>
-            return <Link key={i} to={href}><SiteIcon name={item.icon} /> {text}</Link>
+            if (!item.link) return <span key={i}><SiteIcon name={item.icon} /> {text}</span>
+            return <SmartLink key={i} to={item.link}><SiteIcon name={item.icon} /> {text}</SmartLink>
           })}
         </div>
       </div>
@@ -300,12 +316,27 @@ export default function Layout() {
 
       <footer>
         <div className="shell footer-inner">
-          <div className="footer-brand" data-reveal><Brand footer /><p className="footer-text">{store.footerText}</p><p className="footer-handle"><a href={store.instagram} target="_blank" rel="noreferrer"><Instagram /> {store.instagramHandle}</a></p></div>
-          <div data-reveal style={{ '--i': 1 }}><h3>Loja</h3><Link to="/produtos">Todos os produtos</Link><Link to="/produtos?categoria=moda-feminina">Moda feminina</Link><Link to="/promocoes">Promoções</Link></div>
-          <div data-reveal style={{ '--i': 2 }}><h3>Atendimento</h3><Link to="/sobre#como-comprar">Como comprar</Link><a href={whatsappLink(helloMessage)} target="_blank" rel="noreferrer">Fale no WhatsApp</a><Link to="/sobre">Sobre a Maré</Link></div>
-          <div data-reveal style={{ '--i': 3 }}><h3>Receba novidades</h3><p>Lançamentos e promoções em primeira mão.</p><Newsletter /></div>
+          <div className="footer-brand" data-reveal>
+            <Brand footer />
+            {store.footerText && <p className="footer-text">{store.footerText}</p>}
+            <p className="footer-handle"><a href={store.instagram} target="_blank" rel="noreferrer"><Instagram /> {store.instagramHandle}</a></p>
+            {social.length > 0 && (
+              <ul className="footer-social" aria-label="Redes sociais">
+                {social.map((s, i) => (
+                  <li key={i}><a href={socialHref(s)} target={s.network === 'email' ? undefined : '_blank'} rel="noreferrer" aria-label={s.label || socialNetworks[s.network]?.label || 'Rede social'} title={s.label || socialNetworks[s.network]?.label}><SocialIcon network={s.network} /></a></li>
+                ))}
+              </ul>
+            )}
+          </div>
+          {footer.columns.map((column, c) => (
+            <div key={c} data-reveal style={{ '--i': c + 1 }}>
+              <h3>{column.title}</h3>
+              {(column.links || []).filter(l => l?.label).map((l, i) => <FooterLink key={i} item={l} />)}
+            </div>
+          ))}
+          <div data-reveal style={{ '--i': footer.columns.length + 1 }}><h3>{footer.newsletterTitle}</h3>{footer.newsletterText && <p>{footer.newsletterText}</p>}<Newsletter /></div>
         </div>
-        <div className="copyright"><div className="shell"><p>© 2026 Maré. Todos os direitos reservados.</p><AlphaCredit /></div></div>
+        <div className="copyright"><div className="shell"><p>{footer.copyright.replace(/\{ano\}/g, new Date().getFullYear())}</p><AlphaCredit /></div></div>
       </footer>
 
       <BagDrawer />

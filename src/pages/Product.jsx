@@ -284,7 +284,7 @@ export default function Product() {
             <h1>{product.name}</h1>
             <div className="pdp-price">
               <Price product={product} />
-              {product.available && <small>ou {product.installments} sem juros</small>}
+              {product.available && product.installments && <small>ou {product.installments} sem juros</small>}
             </div>
             <p className="pdp-intro">{intro}</p>
             <p className="pdp-description">{rest.join('\n\n')}</p>

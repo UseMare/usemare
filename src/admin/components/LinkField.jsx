@@ -7,6 +7,8 @@ const fixed = [
   { value: '/produtos', label: 'Catálogo completo' },
   { value: '/promocoes', label: 'Promoções' },
   { value: '/sobre', label: 'Sobre a Maré' },
+  { value: '/sobre#como-comprar', label: 'Como comprar' },
+  { value: '{whatsapp}', label: 'WhatsApp da loja (abre a conversa)' },
   { value: '{instagram}', label: 'Instagram da loja' },
 ]
 

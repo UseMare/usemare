@@ -2,7 +2,16 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Heart, ShoppingBag } from 'lucide-react'
 import { useShop } from './shop.jsx'
-import { store } from './store.js'
+import { helloMessage, store, whatsappLink } from './store.js'
+
+// Links escolhidos no painel: '/página' (dentro do site), 'https://…' (outro site, nova aba),
+// '{instagram}' (Instagram da loja) e '{whatsapp}' (conversa no WhatsApp da loja).
+export const resolveLink = link => link === '{instagram}' ? store.instagram : link === '{whatsapp}' ? whatsappLink(helloMessage) : link
+export function SmartLink({ to, className, children, fallback = '/produtos', ...rest }) {
+  const href = resolveLink(to) || fallback
+  if (/^(https?:|mailto:)/.test(href)) return <a className={className} href={href} target="_blank" rel="noreferrer" {...rest}>{children}</a>
+  return <Link className={className} to={href} {...rest}>{children}</Link>
+}
 
 // Imagens otimizadas. Cada banner tem duas versões (leve e grande); o navegador escolhe a ideal.
 // Fotos enviadas pelo painel seguem o mesmo padrão: nome.webp + nome-800.webp (ou -1200).
@@ -72,7 +81,7 @@ export function ProductCard({ product, index = 0, sizes = defaultSizes }) {
       </div>
       <h3><Link to={url}>{product.name}</Link></h3>
       <Price product={product} />
-      <small>{product.installments} sem juros</small>
+      {product.installments && <small>{product.installments} sem juros</small>}
     </article>
   )
 }

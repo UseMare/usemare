@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, UserPlus } from 'lucide-react'
 import { usePageTitle, useShop } from '../shop.jsx'
-import { HandHeart, Instagram, WhatsApp, responsive } from '../ui.jsx'
+import { HandHeart, Instagram, SmartLink, WhatsApp, responsive } from '../ui.jsx'
 import { helloMessage, store, whatsappLink } from '../store.js'
 import { pageContent } from '../content.js'
 import { SiteIcon } from '../icons.jsx'
@@ -127,14 +127,14 @@ export default function About() {
 
       <section className="lines shell" aria-label="Nossas linhas">
         {(c.lines || []).map((line, i) => (
-          <Link key={i} to={line.link || '/produtos'} className="line-card" data-reveal={i % 2 ? 'right' : 'left'}>
+          <SmartLink key={i} to={line.link} className="line-card" data-reveal={i % 2 ? 'right' : 'left'}>
             <img src={line.image} srcSet={responsive(line.image, 800)} sizes="(max-width: 900px) 100vw, 50vw" alt="" loading="lazy" />
             <div>
               {line.eyebrow && <p className="eyebrow">{line.eyebrow}</p>}
               <h2><Lines text={line.title} /></h2>
               {line.button && <span className="pill">{line.button} <ArrowRight /></span>}
             </div>
-          </Link>
+          </SmartLink>
         ))}
       </section>
 

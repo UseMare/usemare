@@ -58,7 +58,7 @@ const applySettings = settings => {
   store.logo = settings.logo_url || store.logo
   store.logoFooter = settings.logo_footer_url || null
   store.social = settings.social || []
-  if (settings.footer_text) store.footerText = settings.footer_text
+  if (settings.footer_text !== null && settings.footer_text !== undefined) store.footerText = settings.footer_text
   store.spotlight = { enabled: settings.spotlight_enabled !== false, ids: settings.spotlight_ids || [] }
 }
 

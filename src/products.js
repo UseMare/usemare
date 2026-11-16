@@ -19,8 +19,10 @@ const photos = (id, count) =>
 
 const thumbOf = photo => photo.replace(/\.webp$/, '-480.webp')
 
-const installments = (price, times = 6) =>
-  `${times}x de R$ ${(price / times).toFixed(2).replace('.', ',')}`
+// Parcelas (Configurações do painel). 1 = só à vista: não mostra parcela.
+const installments = (price, times = 6) => times > 1
+  ? `${times}x de R$ ${(price / times).toFixed(2).replace(".", ",")}`
+  : null
 
 const formatPrice = price => `R$ ${price.toFixed(2).replace('.', ',')}`
 

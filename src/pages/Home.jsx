@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
 import { categories, products } from '../products.js'
 import { usePageTitle, useShop } from '../shop.jsx'
-import { HandHeart, ProductCard, SectionHeading, responsive } from '../ui.jsx'
+import { HandHeart, ProductCard, SectionHeading, SmartLink, responsive } from '../ui.jsx'
 import { store } from '../store.js'
 import { savedContent } from '../content.js'
 import { SiteIcon } from '../icons.jsx'
@@ -76,13 +76,6 @@ export const Lines = ({ text, brClass }) => String(text || '').split('\n').map((
 ))
 
 const fill = text => String(text || '').replace(/\{parcelas\}/g, store.installments)
-
-// Link interno (/produtos…) usa o roteador; externo (https://…) abre em outra aba.
-function SmartLink({ to, className, children }) {
-  const href = to === '{instagram}' ? store.instagram : to
-  if (/^https?:\/\//.test(href || '')) return <a className={className} href={href} target="_blank" rel="noreferrer">{children}</a>
-  return <Link className={className} to={href || '/produtos'}>{children}</Link>
-}
 
 // Cards de categoria: categorias marcadas "mostrar na página inicial" no painel, na ordem escolhida.
 const homeCategories = () => categories
