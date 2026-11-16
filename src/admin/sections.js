@@ -16,10 +16,10 @@ export const sections = {
   configuracoes: { label: 'Configurações',   icon: Settings,        path: `${BASE}/configuracoes`,       stage: 11, description: 'WhatsApp da loja (atualiza todos os botões), Instagram e parcelamento.' },
 }
 
+// Configurações fica fixo no rodapé do menu (ver AdminApp).
 export const navGroups = [
   { label: null,       items: ['inicio'] },
   { label: 'Loja',     items: ['produtos', 'categorias', 'destaques'] },
   { label: 'Site',     items: ['paginaInicial', 'paginas', 'aparencia'] },
   { label: 'Clientes', items: ['avaliacoes', 'newsletter'] },
-  { label: 'Sistema',  items: ['configuracoes'] },
 ]

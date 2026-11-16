@@ -3,7 +3,7 @@
    Usa as cores da Maré, mas com escala compacta de ferramenta.
    ========================================================= */
 .adm, .adm-auth, .adm-loading, .adm-modal-root {
-  --adm-bg: #f7f2ee;
+  --adm-bg: #faf7f5;
   --adm-surface: #fff;
   --adm-line: #eadfd7;
   --adm-line-strong: #d9c8bc;
@@ -29,48 +29,80 @@
 .adm *:focus-visible, .adm-auth *:focus-visible, .adm-modal-root *:focus-visible { outline: 2px solid var(--adm-accent); outline-offset: 2px; }
 .adm svg, .adm-auth svg, .adm-modal-root svg { flex: none; width: 18px; height: 18px; stroke-width: 1.8; }
 
-/* ---------- Estrutura ---------- */
-.adm { min-height: 100vh; display: grid; grid-template-columns: 248px minmax(0, 1fr); background: var(--adm-bg); }
-.adm-sidebar { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; border-right: 1px solid var(--adm-line); background: var(--adm-surface); }
-.adm-sidebar-head { display: flex; align-items: center; justify-content: space-between; padding: 18px 18px 14px; }
+/* ---------- Estrutura (inspirada no painel da Nuvemshop) ---------- */
+.adm { --adm-sidebar: 278px; min-height: 100vh; display: grid; grid-template-columns: var(--adm-sidebar) minmax(0, 1fr); background: var(--adm-bg); transition: grid-template-columns .25s ease; }
+.adm-sidebar { position: sticky; top: 0; width: var(--adm-sidebar); height: 100vh; display: flex; flex-direction: column; overflow: hidden; border-right: 1px solid var(--adm-line); background: var(--adm-surface); transition: transform .25s ease; }
+.adm-sidebar-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 16px 12px 14px 16px; }
 .adm-brand { display: flex; align-items: center; gap: 10px; }
 .adm-brand img { width: 84px; height: auto; }
 .adm-brand span { padding: 3px 8px; border-radius: 999px; color: var(--adm-accent); background: var(--adm-soft); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
-.adm-nav { flex: 1; overflow-y: auto; padding: 4px 10px 12px; }
-.adm-nav-group + .adm-nav-group { margin-top: 14px; }
-.adm-nav-group p { margin: 0 0 4px; padding: 0 10px; color: var(--adm-muted); font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
-.adm-nav a { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; color: var(--adm-text); font-weight: 500; transition: background .15s, color .15s; }
-.adm-nav a svg { color: var(--adm-muted); }
-.adm-nav a:hover { background: var(--adm-soft); }
-.adm-nav a.active { color: var(--adm-wine); background: var(--adm-soft); font-weight: 600; }
-.adm-nav a.active svg { color: var(--adm-wine); }
-.adm-sidebar-foot { display: grid; gap: 10px; padding: 14px; border-top: 1px solid var(--adm-line); }
-.adm-user { display: flex; align-items: center; gap: 10px; min-width: 0; }
-.adm-user > span:last-child { display: flex; flex-direction: column; min-width: 0; }
-.adm-user b { font-size: 13px; }
-.adm-user small { overflow: hidden; color: var(--adm-muted); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
-.adm-avatar { width: 34px; height: 34px; display: grid; place-items: center; flex: none; border-radius: 50%; color: #fff; background: var(--adm-wine); font-weight: 700; }
+.adm-sidebar-head .adm-icon-btn { color: var(--adm-muted); }
+.adm-brand-mark { display: none; width: 34px; height: 34px; place-items: center; border-radius: 10px; color: var(--adm-wine); background: var(--adm-soft); font-family: var(--serif); font-size: 20px; font-weight: 500; line-height: 1; }
+
+/* Menu recolhido: faixa estreita só com os ícones (nome aparece ao passar o mouse) */
+@media (min-width: 961px) {
+  .adm.is-collapsed { --adm-sidebar: 64px; }
+  .adm.is-collapsed .adm-sidebar-head { flex-direction: column; gap: 10px; padding: 14px 0 10px; }
+  .adm.is-collapsed .adm-brand img, .adm.is-collapsed .adm-brand span { display: none; }
+  .adm.is-collapsed .adm-brand-mark { display: grid; }
+  .adm.is-collapsed .adm-nav { padding: 4px 10px 12px; }
+  .adm.is-collapsed .adm-nav-group p { display: none; }
+  .adm.is-collapsed .adm-nav-group + .adm-nav-group { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--adm-line); }
+  .adm.is-collapsed .adm-nav a, .adm.is-collapsed .adm-nav-foot a { justify-content: center; gap: 0; padding: 8px; }
+  .adm.is-collapsed .adm-nav a > span, .adm.is-collapsed .adm-nav-foot a > span, .adm.is-collapsed .adm-nav-foot a > svg:last-child { display: none; }
+  .adm.is-collapsed .adm-nav-foot { padding: 10px; border-top: 0; }
+}
+.adm-nav { flex: 1; overflow-y: auto; padding: 2px 8px 12px; }
+.adm-nav-group + .adm-nav-group { margin-top: 16px; }
+.adm-nav-group p { margin: 0 0 4px; padding: 0 10px; color: var(--adm-muted); font-size: 12.5px; font-weight: 500; }
+.adm-nav a, .adm-nav-foot a { display: flex; align-items: center; gap: 10px; min-height: 34px; padding: 6px 10px; border-radius: 8px; color: var(--adm-text); font-size: 14.5px; font-weight: 500; transition: background .15s, color .15s; }
+.adm-nav a svg, .adm-nav-foot a svg { color: var(--adm-text); }
+.adm-nav a:hover, .adm-nav-foot a:hover { background: var(--adm-soft); }
+.adm-nav a.active, .adm-nav-foot a.active { color: var(--adm-wine); background: var(--adm-soft); font-weight: 600; }
+.adm-nav a.active svg, .adm-nav-foot a.active svg { color: var(--adm-wine); }
+.adm-nav-foot { padding: 10px 8px 14px; border-top: 1px solid var(--adm-line); }
+.adm-nav-foot a > span { flex: 1; }
+.adm-nav-foot a > svg:last-child { color: var(--adm-muted); }
+.adm-avatar { width: 28px; height: 28px; display: grid; place-items: center; flex: none; border-radius: 50%; color: #fff; background: var(--adm-wine); font-size: 13px; font-weight: 700; }
 
 .adm-main { min-width: 0; display: flex; flex-direction: column; }
-.adm-topbar { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 10px clamp(16px, 3vw, 32px); border-bottom: 1px solid var(--adm-line); background: rgba(247, 242, 238, .92); backdrop-filter: blur(8px); }
-.adm-topbar h1 { flex: 1; margin: 0; font-family: var(--serif); font-size: 22px; font-weight: 500; color: var(--adm-wine); }
-.adm-content { width: 100%; max-width: 1180px; padding: clamp(16px, 3vw, 32px); }
+.adm-topbar { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 8px; min-height: 58px; padding: 10px clamp(16px, 2vw, 24px); border-bottom: 1px solid transparent; background: var(--adm-bg); transition: border-color .2s, background .2s; }
+.adm-topbar.scrolled { border-bottom-color: var(--adm-line); background: rgba(250, 247, 245, .92); backdrop-filter: blur(8px); }
+.adm-topbar-title { flex: 1; overflow: hidden; color: var(--adm-muted); font-size: 13px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; opacity: 0; transition: opacity .2s; }
+.adm-topbar.scrolled .adm-topbar-title { opacity: 1; }
+.adm-usermenu { position: relative; }
+.adm-usermenu > button { display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 8px 0 5px; border: 0; border-radius: 999px; color: var(--adm-text); background: transparent; font: inherit; font-weight: 600; cursor: pointer; }
+.adm-usermenu > button:hover, .adm-usermenu.open > button { background: var(--adm-soft); }
+.adm-usermenu > button svg { width: 16px; height: 16px; color: var(--adm-muted); }
+.adm-usermenu-pop { position: absolute; z-index: 30; top: calc(100% + 8px); right: 0; width: 290px; padding: 6px 0; border: 1px solid var(--adm-line); border-radius: 10px; background: var(--adm-surface); box-shadow: 0 12px 40px rgba(47, 26, 21, .14); animation: adm-fade .15s ease; }
+.adm-usermenu-group { display: grid; padding: 4px 0; }
+.adm-usermenu-group + .adm-usermenu-group { border-top: 1px solid var(--adm-line); }
+.adm-usermenu-group > a, .adm-usermenu-group > button { display: flex; align-items: center; gap: 6px; width: 100%; padding: 8px 16px; border: 0; color: var(--adm-text); background: none; font: inherit; font-size: 14.5px; text-align: left; cursor: pointer; }
+.adm-usermenu-group > a:hover, .adm-usermenu-group > button:hover { background: var(--adm-soft); }
+.adm-usermenu-group > a svg { width: 14px; height: 14px; color: var(--adm-muted); }
+.adm-usermenu-who { display: grid; gap: 2px; margin: 0; padding: 8px 16px 6px; }
+.adm-usermenu-who b { color: var(--adm-muted); font-size: 12.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.adm-usermenu-who small { overflow: hidden; color: var(--adm-text); font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+.adm-page-title { margin: 6px 0 22px; color: var(--adm-text); font-family: var(--sans); font-size: clamp(26px, 2.3vw, 32px); font-weight: 700; letter-spacing: -.01em; line-height: 1.15; }
+.adm-content { width: 100%; max-width: 1248px; margin-inline: auto; padding: 8px 24px 32px; }
 
 .adm-only-mobile { display: none !important; }
 .adm-backdrop { display: none; }
 
 @media (max-width: 960px) {
   .adm { grid-template-columns: minmax(0, 1fr); }
-  .adm-sidebar { position: fixed; z-index: 60; inset: 0 auto 0 0; width: min(84vw, 290px); transform: translateX(-102%); transition: transform .28s ease; box-shadow: 20px 0 50px rgba(47, 26, 21, .15); }
+  .adm-sidebar { position: fixed; z-index: 60; inset: 0 auto 0 0; width: min(84vw, var(--adm-sidebar)); transform: translateX(-102%); box-shadow: 20px 0 50px rgba(47, 26, 21, .15); }
   .adm-sidebar.open { transform: none; }
   .adm-backdrop { display: block; position: fixed; z-index: 55; inset: 0; border: 0; background: rgba(47, 26, 21, .35); }
   .adm-only-mobile { display: grid !important; }
-  .adm-topbar h1 { font-size: 19px; }
-  .adm-topbar .adm-btn span { display: none; }
+  .adm-only-desktop { display: none !important; }
+  .adm-content { padding: 4px 16px 24px; }
+  .adm-page-title { margin-bottom: 16px; }
+  .adm-topbar .adm-btn span, .adm-usermenu-name { display: none; }
 }
 
 /* ---------- Componentes ---------- */
-.adm-card { padding: 20px; border: 1px solid var(--adm-line); border-radius: var(--adm-radius); background: var(--adm-surface); box-shadow: var(--adm-shadow); }
+.adm-card { padding: 20px; border: 1px solid var(--adm-line); border-radius: var(--adm-radius); background: var(--adm-surface); }
 .adm-card + .adm-card { margin-top: 16px; }
 .adm-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
 .adm-card-head h2, .adm-card h2 { margin: 0; font-size: 16px; font-weight: 700; }
