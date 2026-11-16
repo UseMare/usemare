@@ -17,8 +17,8 @@
   --serif: 'Playfair Display', Georgia, serif;
   --sans: 'DM Sans', system-ui, sans-serif;
   --script: 'Ephesis', cursive;
-  --shell: 1240px;
-  --gutter: clamp(16px, 4vw, 48px);
+  --shell: 1210px;      /* largura máxima do conteúdo */
+  --gutter: clamp(16px, calc(5.5vw - 6px), 63px); /* respiro lateral: 16px no celular, 63px no computador */
   --radius: 10px;
 }
 
