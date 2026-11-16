@@ -10,7 +10,7 @@ import { spotlightIds, store } from './store.js'
 // Peça esgotada: adicione `available: false` — ela continua no site (coerente com o Instagram),
 // aparece com selo "Esgotado", vai para o fim da lista e não pode ser comprada.
 // Promoção: adicione `oldPrice: 119.9` (preço antigo) — a peça aparece riscada e entra na página Promoções.
-// type: conjunto | vestido | blusa | saia | calca | suplemento
+// type: conjunto | macaquinho | vestido | blusa | saia | calca | short | suplemento
 // line: fitness (Maré Move) | casual (Moda feminina) | suplementos
 // Suplementos usam `flavors` (sabores), `size`, `usage` (modo de uso) e `notice` (aviso) no lugar de cor/tamanho.
 
@@ -289,6 +289,168 @@ Sabor Frutas Vermelhas — pote de 240 g. ✨
 Seu momento de cuidado é na Maré! Chama a gente e garanta o seu. 🛍️`,
     photos: photos('14', 2),
   },
+  {
+    id: '15',
+    type: 'calca',
+    color: "Chocolate, preto e cinza",
+    swatch: 'linear-gradient(135deg,#4a2c22 33%,#1d1d1d 33% 66%,#6e6e72 66%)',
+    name: "Calça Alfaiataria Helena",
+    line: 'casual',
+    category: "Saias, calças & shorts",
+    price: 129.9,
+    description: `Elegância que acompanha o seu dia inteiro. 🤎
+
+Calça de alfaiataria de cintura alta, com pregas frontais, bolsos laterais e cinto com fivela dourada que já vem junto e finaliza o look. A modelagem reta alonga a silhueta e cai bem do trabalho ao jantar.
+
+Disponível em chocolate, preto e cinza: difícil escolher uma só. ✨
+
+Chama a Maré e garanta a sua! 🛍️`,
+    photos: photos('15', 5),
+  },
+  {
+    id: '16',
+    type: 'macaquinho',
+    color: "Azul royal",
+    swatch: '#1f5fd6',
+    name: "Macaquinho Maré Move Azul Royal",
+    line: 'fitness',
+    category: "Maré Move · Macaquinhos",
+    price: 99.9,
+    description: `💙 Um azul que ninguém esquece.
+
+Macaquinho de alcinhas finas com decote reto e costas abertas com tirinha, que valoriza as costas e deixa o treino mais fresquinho. A modelagem ajustada abraça o corpo e as costuras desenham a silhueta.
+
+Uma peça só, look pronto: é vestir e ir. 🌊
+
+MARÉ MOVE — seu movimento, sua melhor versão.`,
+    photos: photos('16', 4),
+  },
+  {
+    id: '17',
+    type: 'macaquinho',
+    color: "Vermelho",
+    swatch: '#e0352b',
+    name: "Macaquinho Maré Move Vermelho Retrô",
+    line: 'fitness',
+    category: "Maré Move · Macaquinhos",
+    price: 99.9,
+    description: `❤️ Ousado na medida certa.
+
+Macaquinho de manguinha curta, com decote arredondado e recorte nas costas, todo acabado com viés branco que traz um charme retrô. Ajustado no corpo, ele valoriza cada curva.
+
+Para treinar e para ser vista. 🔥✨
+
+MARÉ MOVE — seu movimento, sua melhor versão.`,
+    photos: photos('17', 4),
+  },
+  {
+    id: '18',
+    type: 'vestido',
+    color: "Azul bebê",
+    swatch: '#a9cdee',
+    name: "Vestido Maré Move Azul Bebê",
+    line: 'fitness',
+    category: "Maré Move · Vestidos fitness",
+    price: 109.9,
+    description: `🎾 Esportivo, leve e cheio de charme.
+
+Vestido fitness de regata cavada, com recortes que marcam a cintura e barra arredondada que balança a cada movimento. O azul bebê deixa o look delicado, do treino ao passeio.
+
+Prático como deve ser e lindo como você merece. 🩵
+
+MARÉ MOVE — seu movimento, sua melhor versão.`,
+    photos: photos('18', 3),
+  },
+  {
+    id: '19',
+    type: 'short',
+    color: "Verde menta",
+    swatch: '#bfe3d6',
+    name: "Short Alfaiataria Menta",
+    line: 'casual',
+    category: "Saias, calças & shorts",
+    price: 79.9,
+    description: `🍃 Frescor para os dias de sol.
+
+Short de alfaiataria de cintura alta, com bolsos frontais, botão dourado e cinto nude que já vem junto. O verde menta é tendência e combina com tudo, de regata básica a camisa.
+
+Leve, chique e confortável. ✨
+
+Chama a Maré e garanta o seu! 🛍️`,
+    photos: photos('19', 2),
+  },
+  {
+    id: '20',
+    type: 'macaquinho',
+    color: "Rosa",
+    swatch: '#f08cc0',
+    name: "Macaquinho Maré Move Rosa Candy",
+    line: 'fitness',
+    category: "Maré Move · Macaquinhos",
+    price: 99.9,
+    description: `🩷 Doce, mas com atitude.
+
+Macaquinho rosa de alcinhas com costas bem abertas, contornado por viés azul bebê que cria aquele contraste fofo. Ajustadinho no corpo, valoriza a silhueta do jeito certo.
+
+Para quem treina com estilo e não abre mão de cor. 🌸✨
+
+MARÉ MOVE — seu movimento, sua melhor versão.`,
+    photos: photos('20', 2),
+  },
+  {
+    id: '21',
+    type: 'conjunto',
+    color: "Café",
+    swatch: '#5a2e22',
+    name: "Conjunto Maré Move Café",
+    line: 'fitness',
+    category: "Maré Move · Conjuntos fitness",
+    price: 89.9,
+    description: `☕ Tons terrosos que nunca saem de moda.
+
+Regata cropped de gola alta e short soltinho de cós largo com barra arredondada, que dá liberdade total nos movimentos. O marrom café é elegante, combina com tudo e fica lindo com uma faixa no cabelo.
+
+Do treino ao café pós-academia. 🤎
+
+MARÉ MOVE — seu movimento, sua melhor versão.`,
+    photos: photos('21', 2),
+  },
+  {
+    id: '22',
+    type: 'conjunto',
+    color: "Verde musgo",
+    swatch: '#7c8a4a',
+    name: "Conjunto Maré Move Musgo",
+    line: 'fitness',
+    category: "Maré Move · Conjuntos fitness",
+    price: 89.9,
+    description: `🌿 Leveza para o seu dia a dia.
+
+Regata cropped com forro em tom rosé e short de cós com elástico, soltinho e confortável. O verde musgo traz um ar natural e sofisticado para o look.
+
+Para treinar, caminhar ou curtir o fim de semana. ✨
+
+MARÉ MOVE — seu movimento, sua melhor versão.`,
+    photos: photos('22', 2),
+  },
+  {
+    id: '23',
+    type: 'conjunto',
+    color: "Magenta",
+    swatch: '#c21fb8',
+    name: "Conjunto Maré Move Magenta",
+    line: 'fitness',
+    category: "Maré Move · Conjuntos fitness",
+    price: 89.9,
+    description: `💜 Energia para o seu treino!
+
+Regata de gola alta e short soltinho de cós largo, no mesmo modelo queridinho do conjunto Café. Agora no magenta vibrante, que ilumina a pele e levanta o astral.
+
+Combina com faixa no cabelo e muito sorriso. 😍✨
+
+MARÉ MOVE — seu movimento, sua melhor versão.`,
+    photos: photos('23', 2),
+  },
 ]
 
 const slugify = text => text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
@@ -318,7 +480,7 @@ export function setProducts(list) {
 }
 
 // ---------- Categorias usadas no menu, nos chips e nos filtros ----------
-export const typeLabels = { conjunto: 'Conjuntos', vestido: 'Vestidos', blusa: 'Blusas', saia: 'Saias & calças', calca: 'Saias & calças', suplemento: 'Suplementos' }
+export const typeLabels = { conjunto: 'Conjuntos', macaquinho: 'Macaquinhos', vestido: 'Vestidos', blusa: 'Blusas', saia: 'Saias, calças & shorts', calca: 'Saias, calças & shorts', short: 'Saias, calças & shorts', suplemento: 'Suplementos' }
 
 export const lineInfo = {
   fitness: { label: 'Maré Move', key: 'mare-move' },
@@ -332,8 +494,9 @@ export const collections = [
   { key: 'moda-feminina', label: 'Moda feminina', test: p => p.line === 'casual' },
   { key: 'vestidos', label: 'Vestidos', test: p => p.type === 'vestido' },
   { key: 'blusas', label: 'Blusas', test: p => p.type === 'blusa' },
-  { key: 'saias-calcas', label: 'Saias & calças', test: p => p.type === 'saia' || p.type === 'calca' },
+  { key: 'saias-calcas', label: 'Saias, calças & shorts', test: p => ['saia', 'calca', 'short'].includes(p.type) },
   { key: 'conjuntos', label: 'Conjuntos', test: p => p.type === 'conjunto' },
+  { key: 'macaquinhos', label: 'Macaquinhos', test: p => p.type === 'macaquinho' },
   { key: 'suplementos', label: 'Suplementos', test: p => p.type === 'suplemento' },
 ]
 

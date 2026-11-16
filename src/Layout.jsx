@@ -6,6 +6,7 @@ import { Brand, Instagram, WhatsApp } from './ui.jsx'
 import { bagMessage, helloMessage, store, whatsappLink } from './store.js'
 import { products } from './products.js'
 import { supabase } from './supabase.js'
+import AlphaCredit from './alpha-credit/AlphaCredit.jsx'
 
 export const navItems = [
   { label: 'Início', to: '/' },
@@ -247,7 +248,10 @@ export default function Layout() {
 
       <header className="header">
         <div className="shell header-inner">
-          <button className="icon-button mobile-only" onClick={() => setMenuOpen(true)} aria-label="Abrir menu"><Menu /></button>
+          <div className="header-left mobile-only">
+            <button className="icon-button" onClick={() => setMenuOpen(true)} aria-label="Abrir menu"><Menu /></button>
+            <Link to="/entrar" className={`icon-button account-link ${user ? 'logged' : ''}`} aria-label={user ? 'Minha conta' : 'Entrar na minha conta'}><UserRound />{user && <i aria-hidden="true" />}</Link>
+          </div>
           <Brand />
           <nav className="main-nav" aria-label="Menu principal">
             {navItems.map(item => (
@@ -285,7 +289,7 @@ export default function Layout() {
           <div data-reveal style={{ '--i': 2 }}><h3>Atendimento</h3><Link to="/sobre#como-comprar">Como comprar</Link><a href={whatsappLink(helloMessage)} target="_blank" rel="noreferrer">Fale no WhatsApp</a><Link to="/sobre">Sobre a Maré</Link></div>
           <div data-reveal style={{ '--i': 3 }}><h3>Receba novidades</h3><p>Lançamentos e promoções em primeira mão.</p><Newsletter /></div>
         </div>
-        <div className="copyright"><div className="shell">© 2026 Maré. Todos os direitos reservados.</div></div>
+        <div className="copyright"><div className="shell"><p>© 2026 Maré. Todos os direitos reservados.</p><AlphaCredit /></div></div>
       </footer>
 
       <BagDrawer />

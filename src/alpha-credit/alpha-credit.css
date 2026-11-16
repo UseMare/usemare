@@ -1,0 +1,72 @@
+/* ==========================================================================
+   Crédito do desenvolvedor — Alpha Studio
+   --------------------------------------------------------------------------
+   CORES: este componente NÃO tem cor própria.
+   Por padrão ele herda a cor do texto do rodapé onde for colocado
+   (currentColor), então funciona em rodapé escuro ou claro sem mudar nada.
+
+   Para usar a identidade de cores do site, defina as variáveis abaixo no
+   :root do site (ou no próprio rodapé) com as cores do projeto:
+
+     :root {
+       --alpha-credit-color:  #ffffff;   cor do texto, logo e ícone
+       --alpha-credit-border: #ffffff;   cor da linha divisória e do círculo
+       --alpha-credit-accent: #ffffff;   cor do ícone ao passar o mouse
+     }
+
+   A logo é aplicada como máscara, então ela também assume a cor definida.
+   ========================================================================== */
+
+.alpha-credit {
+  --_color: var(--alpha-credit-color, currentColor);
+  --_border: var(--alpha-credit-border, currentColor);
+  --_accent: var(--alpha-credit-accent, var(--_color));
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid color-mix(in srgb, var(--_border) 12%, transparent);
+  color: color-mix(in srgb, var(--_color) 65%, transparent);
+  font-size: 14px;
+  letter-spacing: .02em;
+  text-align: center;
+}
+
+.alpha-credit__logo {
+  display: inline-block;
+  width: 68px;          /* proporção da logo: 894 x 369 */
+  height: 28px;
+  background-color: currentColor;
+  -webkit-mask: url("./assets/alpha-studio.png") center / contain no-repeat;
+          mask: url("./assets/alpha-studio.png") center / contain no-repeat;
+}
+
+.alpha-credit__social {
+  display: inline-flex;
+  width: 25px;
+  height: 25px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--_border) 30%, transparent);
+  border-radius: 999px;
+  color: inherit;
+  transition: border-color .2s ease, color .2s ease, background-color .2s ease;
+}
+
+.alpha-credit__social:hover,
+.alpha-credit__social:focus-visible {
+  border-color: color-mix(in srgb, var(--_border) 65%, transparent);
+  background: color-mix(in srgb, var(--_accent) 10%, transparent);
+  color: var(--_accent);
+}
+
+.alpha-credit__social svg { width: 14px; height: 14px; }
+
+/* Logo clicável (mesmo link do ícone) */
+a.alpha-credit__logo { color: inherit; transition: color .2s ease, opacity .2s ease; }
+a.alpha-credit__logo:hover,
+a.alpha-credit__logo:focus-visible { color: var(--_accent); opacity: 1; }

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { ArrowRight, Check, ChevronDown, Heart, SlidersHorizontal, Truck, X } from 'lucide-react'
+import { ArrowRight, Check, ChevronDown, Heart, Plus, SlidersHorizontal, Truck, X } from 'lucide-react'
 import { collections, products, typeLabels } from '../products.js'
 import { usePageTitle, useShop } from '../shop.jsx'
 import { PageIntro, ProductCard, WhatsApp } from '../ui.jsx'
@@ -11,7 +11,8 @@ const banners = {
   'mare-move': { eyebrow: 'Maré Move', title: 'Seu movimento,\nsua melhor versão.', text: 'Conjuntos que unem conforto, segurança e aquele caimento que faz você se sentir linda para treinar.' },
   'moda-feminina': { eyebrow: 'Moda feminina', title: 'Leve, feminina\ne do seu jeito.', text: 'Peças escolhidas para trazer mais estilo para os seus dias — daquelas que você veste e se sente linda.' },
   blusas: { eyebrow: 'Blusas', title: 'O básico que não\ntem nada de básico.', text: 'Detalhes que fazem toda a diferença no look do dia a dia.' },
-  'saias-calcas': { eyebrow: 'Saias & calças', title: 'Elegância que\nnasce do simples.', text: 'Modelagens que acompanham você do trabalho ao fim de semana.' },
+  'saias-calcas': { eyebrow: 'Saias, calças & shorts', title: 'Elegância que\nnasce do simples.', text: 'Modelagens que acompanham você do trabalho ao fim de semana.' },
+  macaquinhos: { eyebrow: 'Macaquinhos', title: 'Uma peça só,\nlook pronto.', text: 'Macaquinhos Maré Move que abraçam o corpo e acompanham cada movimento.' },
   suplementos: { eyebrow: 'Suplementos', title: 'Seu momento de\ncuidado é na Maré.', text: 'Opções para complementar a sua rotina, escolhidas com o mesmo carinho das nossas peças.' },
   default: { eyebrow: 'Nossa coleção', title: 'Vista sua\nmelhor versão.', text: 'Moda feminina e Maré Move: peças leves, versáteis e escolhidas com carinho para cada momento.' },
 }
@@ -43,6 +44,9 @@ function FilterGroup({ title, children, defaultOpen = true }) {
     </div>
   )
 }
+
+// Quantas peças aparecem de início e a cada clique em "Carregar mais".
+const PAGE_SIZE = 9
 
 export default function Catalog() {
   const [params, setParams] = useSearchParams()
@@ -89,6 +93,13 @@ export default function Catalog() {
     if (sort === 'a-z') sorted.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'))
     return sorted.sort((a, b) => Number(b.available) - Number(a.available))
   }, [collection, busca, tipos.join(), cores.join(), maxPrice, onlyAvailable, sort, catalogVersion])
+
+  // Mostra 9 peças por vez; volta para 9 sempre que a categoria, a busca, um filtro ou a ordem mudam.
+  const [limit, setLimit] = useState(PAGE_SIZE)
+  const filterKey = params.toString()
+  useEffect(() => { setLimit(PAGE_SIZE) }, [filterKey])
+  const shown = result.slice(0, limit)
+  const remaining = result.length - shown.length
 
   const activeCount = tipos.length + cores.length + (maxPrice < priceCeil ? 1 : 0) + (onlyAvailable ? 1 : 0) + (busca ? 1 : 0)
 
@@ -205,7 +216,7 @@ export default function Catalog() {
 
             {result.length ? (
               <div className="catalog-grid" key={`${categoria}-${sort}`}>
-                {result.map((product, index) => <ProductCard key={product.id} product={product} index={index % 3} sizes="(max-width: 900px) 46vw, (max-width: 1200px) 30vw, 300px" />)}
+                {shown.map((product, index) => <ProductCard key={product.id} product={product} index={index % 3} sizes="(max-width: 900px) 46vw, (max-width: 1200px) 30vw, 300px" />)}
               </div>
             ) : (
               <div className="empty-state" data-reveal>
@@ -216,6 +227,18 @@ export default function Catalog() {
                   <button className="button outline small" onClick={() => update({ categoria: null }, { keepFilters: false })}>Ver todos os produtos</button>
                   <a className="button whatsapp small" href={whatsappLink(helloMessage)} target="_blank" rel="noreferrer"><WhatsApp /> Perguntar no WhatsApp</a>
                 </div>
+              </div>
+            )}
+
+            {result.length > PAGE_SIZE && (
+              <div className="load-more">
+                <p>Mostrando <b>{shown.length}</b> de <b>{result.length}</b> peças</p>
+                <span className="load-more-bar" aria-hidden="true"><i style={{ width: `${(shown.length / result.length) * 100}%` }} /></span>
+                {remaining > 0 && (
+                  <button className="button outline" onClick={() => setLimit(l => l + PAGE_SIZE)}>
+                    <Plus /> Carregar mais {Math.min(PAGE_SIZE, remaining)} {Math.min(PAGE_SIZE, remaining) === 1 ? 'peça' : 'peças'}
+                  </button>
+                )}
               </div>
             )}
           </section>

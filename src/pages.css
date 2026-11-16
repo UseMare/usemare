@@ -1012,3 +1012,262 @@ footer h3 { font-size: 21px; }
 .newsletter-ok { margin: 10px 0 0; color: var(--wine); font-size: 14px; line-height: 1.5; }
 .newsletter-error { margin: 8px 0 0; color: #9b3a35; font-size: 13px; }
 footer form input:disabled { opacity: .6; }
+
+/* Menu sanduíche (mobile): escala menor, botões limpos e acima dos flutuantes */
+@media (max-width: 900px) {
+  .drawer { z-index: 78; width: min(82vw, 320px); padding: 16px 20px max(20px, env(safe-area-inset-bottom)); overflow-y: auto; box-shadow: 20px 0 60px rgba(35, 18, 14, .18); }
+  .backdrop { z-index: 76; }
+  .drawer-head { margin-bottom: 8px; }
+  .drawer-head .brand img { width: 92px; }
+  .drawer-head .icon-button svg { width: 22px; height: 22px; }
+  .drawer > a { padding: 13px 0; font-size: 17px; }
+  .drawer > a svg { width: 16px; height: 16px; color: var(--wine); opacity: .7; }
+  .drawer > a.drawer-account,
+  .drawer > a.drawer-whats { justify-content: center; gap: 8px; height: 46px; padding: 0 18px; border-bottom: 0; font-family: inherit; font-size: 14px; font-weight: 600; letter-spacing: .02em; }
+  .drawer > a.drawer-account { margin-top: auto; margin-bottom: 10px; border: 1px solid var(--wine); color: var(--wine); background: transparent; }
+  .drawer > a.drawer-whats { margin-top: 0; color: #fff; background: var(--whats); }
+  .drawer > a.drawer-account svg,
+  .drawer > a.drawer-whats svg { width: 18px; height: 18px; color: currentColor; opacity: 1; }
+  body:has(.drawer.open) .spotlight,
+  body:has(.drawer.open) .whatsapp-float { opacity: 0; pointer-events: none; }
+}
+
+/* Hero no celular: foto primeiro, textos depois */
+@media (max-width: 900px) {
+  .hero > img { order: 1; height: 400px; }
+  .hero-inner { order: 2; padding-block: 8px 32px; }
+  .hero::after { top: 400px; bottom: auto; height: 80px; background: linear-gradient(transparent, var(--hero-bg)); transform: translateY(-100%); pointer-events: none; }
+  .hero .slider-arrow { top: 200px; }
+  .hero .hero-dots { top: 368px; bottom: auto; z-index: 3; }
+}
+
+/* Cards de categoria no celular: escala menor */
+@media (max-width: 640px) {
+  .category > div { gap: 8px; padding-left: 8%; }
+  .category h3 { font-size: 18px; line-height: 1.05; }
+  .category .pill { gap: 6px; padding: 6px 10px; font-size: 9.5px; letter-spacing: .08em; }
+  .category .pill svg { width: 12px; height: 12px; }
+}
+
+/* Card flutuante de destaques: respiro interno e nunca passa da tela */
+.spotlight { left: 16px; right: 22px; width: auto; max-width: 340px; margin-left: auto; padding: 14px 44px 14px 14px; overflow: hidden; }
+.spotlight-viewport { border-radius: 12px; }
+.spotlight-body { width: 100%; min-width: 0; gap: 14px; }
+.spotlight-body > div { flex: 1; gap: 4px; }
+.spotlight-eyebrow { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.spotlight-close { top: 12px; right: 12px; }
+.spotlight-dots { margin-top: 10px; }
+@media (max-width: 900px) {
+  .spotlight { left: 12px; right: 12px; bottom: max(12px, env(safe-area-inset-bottom)); max-width: 320px; padding: 12px 42px 12px 12px; }
+  .spotlight-body { gap: 12px; }
+  .spotlight-body img { width: 60px; height: 60px; border-radius: 10px; }
+  .spotlight-close { top: 10px; right: 10px; }
+  .spotlight-dots { margin-top: 8px; }
+}
+
+/* Hero no celular: a própria foto se dissolve no bege (acompanha o zoom, sem linha) */
+@media (max-width: 900px) {
+  .hero { overflow: hidden; }
+  .hero::after { display: none; }
+  .hero > img { -webkit-mask-image: linear-gradient(#000 70%, transparent 98%); mask-image: linear-gradient(#000 70%, transparent 98%); }
+}
+
+/* Banners de texto no celular: véu mais forte atrás do texto para dar contraste */
+@media (max-width: 640px) {
+  .promo.movement::before { background: linear-gradient(270deg, rgba(240, 232, 228, .97) 0%, rgba(240, 232, 228, .92) 50%, rgba(240, 232, 228, .55) 75%, transparent 100%); }
+  .promo.comfort::before { background: linear-gradient(90deg, rgba(243, 225, 220, .97) 0%, rgba(243, 225, 220, .92) 50%, rgba(243, 225, 220, .55) 75%, transparent 100%); }
+  .promo p { color: var(--ink); }
+}
+
+/* Sacola no celular: gaveta lateral como o menu, sem cobrir a tela toda */
+@media (max-width: 900px) {
+  .bag { width: min(86vw, 360px); padding-bottom: env(safe-area-inset-bottom); }
+  .bag-head { padding: 16px 18px; }
+  .bag-head h2 { font-size: 21px; }
+  .bag-list { padding: 4px 18px; }
+  .bag-list li { grid-template-columns: 62px 1fr auto; gap: 12px; padding: 14px 0; }
+  .bag-list img { width: 62px; }
+  .bag-list h3 { font-size: 14px; }
+  .bag-foot { gap: 10px; padding: 16px 18px 18px; }
+  .bag-foot p strong { font-size: 19px; }
+  .bag-foot .button { height: 48px; padding: 0 18px; font-size: 13px; }
+  .bag-empty p { font-size: 18px; }
+}
+/* Com a sacola aberta, o aviso "foi para a sacola" não cobre o botão de finalizar */
+body:has(.bag.open) .toast { display: none; }
+
+/* Rodapé no celular: compacto — marca em cima, Loja e Atendimento lado a lado, newsletter embaixo */
+@media (max-width: 640px) {
+  .footer-inner { grid-template-columns: 1fr 1fr; gap: 24px 16px; padding-block: 36px 28px; }
+  .footer-inner > .footer-brand,
+  .footer-inner > div:last-child { grid-column: 1 / -1; }
+  .footer-inner > div { gap: 2px; }
+  .footer-brand .brand img { width: 108px; margin: 0 0 6px; }
+  footer h3 { margin-bottom: 8px; font-size: 17px; }
+  footer p, footer a { font-size: 14px; line-height: 1.6; }
+  .footer-inner > div:not(.footer-brand) > a { padding-block: 3px; }
+  .footer-handle a { margin-top: 4px; }
+  footer form { margin-top: 4px; }
+  .copyright { padding: 14px 0; font-size: 12.5px; text-align: center; }
+}
+
+/* Sem rolagem lateral: nada pode empurrar a página para o lado
+   (clip, e não hidden, para não quebrar elementos sticky) */
+html, body { max-width: 100%; overflow-x: clip; }
+@media (max-width: 900px) {
+  /* No celular as animações laterais entram de baixo, sem sair da tela */
+  [data-reveal="left"], [data-reveal="right"] { transform: translateY(40px); }
+  [data-reveal="left"].is-visible, [data-reveal="right"].is-visible { transform: none; }
+}
+
+/* Banner "Maré é movimento" no celular: foto puxada para a esquerda, longe do texto */
+@media (max-width: 640px) {
+  .promo.movement > img { left: -40%; width: 140%; object-position: left center; }
+}
+
+/* Menu sanduíche: mais respiro em cima e embaixo */
+@media (max-width: 900px) {
+  .drawer { padding-top: 28px; padding-bottom: max(32px, calc(env(safe-area-inset-bottom) + 20px)); }
+  .drawer-head { margin-bottom: 20px; }
+}
+
+/* Cabeçalho no celular: conta + sacola + WhatsApp, com o logo sempre centralizado */
+@media (max-width: 900px) {
+  .header-inner { grid-template-columns: 1fr auto 1fr; }
+  .header-inner > .mobile-only { justify-self: start; }
+  .header-actions { justify-self: end; gap: 0; }
+  .header-actions .account-link.hide-small { display: grid; }
+  .header-actions .icon-button { width: 38px; height: 38px; }
+  .header-actions .icon-button svg { width: 22px; height: 22px; }
+  .header-actions .account-link i { top: 5px; right: 5px; }
+}
+@media (max-width: 360px) {
+  .header-actions .icon-button { width: 34px; height: 34px; }
+  .header-actions .icon-button svg { width: 20px; height: 20px; }
+  .header-inner > .brand img { width: 92px; }
+}
+
+/* Detalhes do produto: só as abas (a foto repetia a última da galeria) */
+.pdp-details { grid-template-columns: minmax(0, 860px); justify-content: center; }
+
+/* Quadro de serviços no desktop: 4 blocos suaves em 2x2, com respiro e sem texto colado na borda */
+@media (min-width: 1101px) {
+  .promo.services { gap: 10px; padding: 14px; align-content: stretch; }
+  .promo.services li,
+  .promo.services li + li,
+  .promo.services li:nth-child(odd),
+  .promo.services li:nth-child(-n+2) { border: 0; }
+  .promo.services li { min-width: 0; gap: 12px; padding: 14px 16px; border-radius: 12px; background: rgba(255, 255, 255, .5); font-size: 13.5px; line-height: 1.35; white-space: normal; transition: background .25s; }
+  .promo.services li:hover { background: rgba(255, 255, 255, .8); }
+  .promo.services li span { min-width: 0; }
+  .promo.services svg { width: 24px; height: 24px; }
+}
+/* Desktop estreito: ícone em cima do texto, centralizado, para não quebrar em 3 linhas */
+@media (min-width: 1101px) and (max-width: 1300px) {
+  .promo.services li { flex-direction: column; justify-content: center; gap: 8px; padding: 12px 10px; text-align: center; font-size: 13px; }
+}
+
+/* Banners de texto (todas as telas): véu forte atrás do texto para dar contraste */
+.promo.movement::before { background: linear-gradient(270deg, rgba(240, 232, 228, .97) 0%, rgba(240, 232, 228, .9) 48%, rgba(240, 232, 228, .5) 72%, transparent 92%); }
+.promo.comfort::before { background: linear-gradient(90deg, rgba(243, 225, 220, .97) 0%, rgba(243, 225, 220, .9) 48%, rgba(243, 225, 220, .5) 72%, transparent 92%); }
+.promo.movement p, .promo.comfort p { color: var(--ink); }
+
+/* Limites do layout: cabeçalho e detalhes do produto respeitam a mesma largura do conteúdo */
+@media (min-width: 901px) {
+  .header-inner { gap: clamp(14px, 1.8vw, 32px); }
+  .header-inner > * { min-width: 0; }
+  .header-inner .main-nav { flex: 1 1 auto; gap: clamp(12px, 1.8vw, 30px); }
+  .header-inner .search { flex: 0 1 240px; width: auto; min-width: 150px; }
+  .header-actions { flex: none; }
+}
+.pdp-details { grid-template-columns: minmax(0, 1fr); justify-content: stretch; }
+
+/* Celular: títulos de seção que cabem na tela e textos dos cards com respiro */
+@media (max-width: 640px) {
+  .section-heading { gap: 12px; align-items: flex-end; }
+  .section-heading h2 { flex: 1; min-width: 0; white-space: normal; font-size: 13px; line-height: 1.35; letter-spacing: .12em; }
+  .section-heading > span { display: none; }
+  .section-heading a, .section-heading button { flex: none; gap: 4px; font-size: 11px; letter-spacing: .08em; }
+  .section-heading a svg, .section-heading button svg { width: 14px; height: 14px; }
+
+  .product h3 { margin: 12px 0 6px; font-size: 14px; line-height: 1.35; }
+  .product .price { margin-bottom: 4px; }
+  .product .price strong, .product strong { font-size: 16px; line-height: 1.25; }
+  .product small { display: block; font-size: 12px; line-height: 1.4; }
+}
+/* Página do produto: o fim da página não fica escondido atrás da barra fixa de compra */
+@media (max-width: 900px) {
+  body:has(.pdp-sticky) footer { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
+}
+
+/* Foto em tela cheia: sempre centralizada (a foto cabia em 92vw mas a caixa tinha 24px de margem) */
+.lightbox img { max-width: min(100%, 960px); max-height: calc(100vh - 120px); margin-inline: auto; }
+.lightbox-count { left: 50%; transform: translateX(-50%); }
+@media (max-width: 640px) {
+  .lightbox { padding: 64px 12px 56px; }
+  .lightbox .gallery-arrow { width: 40px; height: 40px; }
+  .lightbox .gallery-arrow.left { left: 8px; } .lightbox .gallery-arrow.right { right: 8px; }
+  .lightbox-close { top: 12px; right: 12px; }
+}
+
+/* Página do produto (celular): rodapé compensa só a altura exata da barra de compra; sem card flutuante sobre ela */
+@media (max-width: 900px) {
+  body:has(.pdp-sticky) footer { padding-bottom: calc(70px + env(safe-area-inset-bottom)); }
+  body:has(.pdp-sticky) .spotlight { display: none; }
+  .related { padding-bottom: 56px; }
+}
+
+/* Respiro entre seções e textos */
+.copyright .shell { display: flex; flex-direction: column; align-items: center; }
+.copyright p { margin: 0; }
+.copyright .alpha-credit { width: 100%; margin-top: 14px; padding-top: 14px; font-size: 13px; }
+@media (max-width: 640px) {
+  .copyright .alpha-credit { gap: 8px; font-size: 12px; }
+  .copyright .alpha-credit__logo { width: 58px; height: 24px; }
+}
+
+/* Cabeçalho do celular equilibrado: menu + conta à esquerda, sacola + WhatsApp à direita */
+@media (max-width: 900px) {
+  .header-left { display: flex; align-items: center; gap: 0; justify-self: start; }
+  .header-left .icon-button { width: 38px; height: 38px; }
+  .header-left .icon-button svg { width: 22px; height: 22px; }
+  .header-left .account-link i { top: 5px; right: 5px; }
+  .header-actions .account-link.hide-small { display: none; }
+  .header-actions { gap: 6px; }
+  .header-whats { width: 36px; height: 36px; margin-left: 0; box-shadow: none; }
+  .header-whats svg { width: 19px; height: 19px; }
+}
+@media (min-width: 901px) { .header-left { display: none; } }
+@media (max-width: 640px) {
+  .copyright .alpha-credit { gap: 6px 8px; font-size: 11px; letter-spacing: 0; }
+  .copyright .alpha-credit__logo { width: 50px; height: 21px; }
+  .copyright .alpha-credit__social { width: 23px; height: 23px; }
+}
+
+/* Cabeçalho desktop: respiro proporcional entre logo, menu e busca.
+   O menu ocupa só o próprio tamanho (nunca encolhe por cima do logo); quem cede espaço é a busca. */
+@media (min-width: 901px) {
+  .header-inner > .brand { margin-right: clamp(4px, 1vw, 16px); }
+  .header-inner { gap: clamp(12px, 1.1vw, 20px); }
+  .header-inner .main-nav { flex: 1 0 auto; justify-content: center; gap: clamp(14px, 1.3vw, 22px); }
+  .header-inner .search { flex: 0 1 240px; min-width: 214px; margin-left: clamp(4px, 1vw, 16px); }
+}
+@media (min-width: 901px) and (max-width: 1280px) {
+  .header-inner { gap: 12px; }
+  .header-inner .main-nav { gap: 13px; }
+  .header-inner .main-nav a { font-size: 11.5px; letter-spacing: .04em; }
+  .header-inner .search { min-width: 196px; padding-inline: 14px; gap: 8px; }
+  .header-inner .search input { font-size: 13px; }
+}
+
+/* Catálogo: "Carregar mais" (9 peças por vez) */
+.load-more { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-top: clamp(40px, 5vw, 64px); text-align: center; }
+.load-more p { margin: 0; color: var(--muted); font-size: 14px; }
+.load-more p b { color: var(--wine); font-weight: 600; }
+.load-more-bar { width: min(220px, 60%); height: 3px; overflow: hidden; border-radius: 999px; background: var(--line); }
+.load-more-bar i { display: block; height: 100%; border-radius: inherit; background: var(--wine); transition: width .6s var(--ease-out); }
+.load-more .button { margin-top: 6px; gap: 10px; }
+.load-more .button svg { width: 18px; height: 18px; }
+@media (max-width: 640px) {
+  .load-more .button { width: 100%; justify-content: center; }
+}

@@ -261,7 +261,6 @@ export default function Product() {
     ...products.filter(p => p.id !== product.id && p.available && p.line === product.line),
     ...products.filter(p => p.id !== product.id && p.available && p.line !== product.line),
   ].slice(0, 4)
-  const detailPhoto = product.photos[product.photos.length - 1]
 
   return (
     <div className="pdp-page" key={product.id}>
@@ -331,10 +330,6 @@ export default function Product() {
 
         <div className="pdp-details">
           <InfoTabs product={product} />
-          <figure className="pdp-detail-photo" data-reveal="zoom">
-            <img src={detailPhoto} alt={`Detalhe de ${product.name}`} loading="lazy" />
-            <figcaption>Cada detalhe pensado para você. ✨</figcaption>
-          </figure>
         </div>
       </div>
 
@@ -347,11 +342,13 @@ export default function Product() {
         </div>
       </section>
 
-      {product.available && (
+      {/* Direto no <body>: dentro da página animada o "position: fixed" ficava preso ao fim do conteúdo, não à tela. */}
+      {product.available && createPortal(
         <div className="pdp-sticky">
           <div><b>{product.name}</b><span>{product.priceLabel}</span></div>
           <a className="button whatsapp small" href={whatsappLink(productMessage(product))} target="_blank" rel="noreferrer"><WhatsApp /> Comprar</a>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   )
