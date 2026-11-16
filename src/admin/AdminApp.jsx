@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
-import { ChevronDown, ChevronRight, ExternalLink, LogOut, Menu, PanelLeftClose, PanelLeftOpen, X } from 'lucide-react'
+import { ChevronDown, ChevronRight, CircleHelp, ExternalLink, LogOut, Menu, PanelLeftClose, PanelLeftOpen, X } from 'lucide-react'
 import './admin.css'
 import { logo } from '../ui.jsx'
 import AdminLogin, { AdminDenied, AdminOffline } from './AdminLogin.jsx'
@@ -18,6 +18,7 @@ import Settings from './pages/Settings.jsx'
 import Appearance from './pages/Appearance.jsx'
 import Reviews from './pages/Reviews.jsx'
 import Newsletter from './pages/Newsletter.jsx'
+import Help from './pages/Help.jsx'
 import { supabase } from '../supabase.js'
 import { ConfirmProvider, ToastProvider } from './ui.jsx'
 import PasswordModal from './components/PasswordModal.jsx'
@@ -37,6 +38,7 @@ const pages = {
   configuracoes: Settings,
   avaliacoes: Reviews,
   newsletter: Newsletter,
+  ajuda: Help,
 }
 
 // Página atual = seção cujo endereço é o maior prefixo do endereço aberto.
@@ -128,6 +130,7 @@ function UserMenu({ email, name }) {
             <a href="/" target="_blank" rel="noreferrer" role="menuitem">Ver loja <ExternalLink /></a>
             <Link to={sections.configuracoes.path} role="menuitem">Configurações da loja</Link>
             <Link to={sections.aparencia.path} role="menuitem">Logo e rodapé</Link>
+            <Link to={sections.ajuda.path} role="menuitem">Ajuda do painel</Link>
           </div>
           <div className="adm-usermenu-group">
             <p className="adm-usermenu-who"><b>{display}</b><small>{email}</small></p>
@@ -177,6 +180,7 @@ function Shell({ session, profile }) {
         <header className={`adm-topbar ${scrolled ? 'scrolled' : ''}`}>
           <button className="adm-icon-btn adm-only-mobile" onClick={() => setMenuOpen(true)} aria-label="Abrir menu"><Menu /></button>
           <span className="adm-topbar-title">{title}</span>
+          <Link className="adm-icon-btn adm-help-btn" to={sections.ajuda.path} aria-label="Ajuda do painel" title="Ajuda do painel"><CircleHelp /></Link>
           <a className="adm-btn outline small" href="/" target="_blank" rel="noreferrer"><ExternalLink /> <span>Ver loja</span></a>
           <UserMenu email={session.user.email} name={profile?.full_name} />
         </header>

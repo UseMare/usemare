@@ -569,3 +569,19 @@ a.adm-stat:hover { border-color: var(--adm-wine); }
 .adm-table-actions { width: 1%; text-align: right; }
 .adm-table td a { color: var(--adm-text); }
 .adm-table td a:hover { color: var(--adm-wine); text-decoration: underline; }
+
+/* ---------- Ajuda ---------- */
+.adm-help-btn { color: var(--adm-muted); }
+.adm-help { display: grid; gap: 10px; }
+.adm-help > details.adm-card { margin: 0; padding: 0; }
+.adm-help summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; font-size: 15px; font-weight: 700; list-style: none; cursor: pointer; }
+.adm-help summary::-webkit-details-marker { display: none; }
+.adm-help summary svg { color: var(--adm-muted); transition: transform .2s; }
+.adm-help details[open] summary svg { transform: rotate(180deg); }
+.adm-help-body { padding: 0 20px 18px; line-height: 1.6; }
+.adm-help-body p { margin: 0 0 10px; }
+.adm-help-body ul, .adm-help-body ol { margin: 0 0 12px; padding-left: 20px; }
+.adm-help-body li + li { margin-top: 6px; }
+.adm-help-link { display: inline-flex; align-items: center; gap: 6px; color: var(--adm-wine); font-weight: 600; }
+.adm-help-link svg { width: 15px; height: 15px; }
+.adm-help-body ul { list-style: disc; } .adm-help-body ol { list-style: decimal; } .adm-help-body li::marker { color: var(--adm-accent); }

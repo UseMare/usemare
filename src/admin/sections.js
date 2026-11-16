@@ -1,4 +1,4 @@
-import { FileText, House, LayoutDashboard, Mail, Package, PanelsTopLeft, Settings, Sparkles, Star, Tags } from 'lucide-react'
+import { CircleHelp, FileText, House, LayoutDashboard, Mail, Package, PanelsTopLeft, Settings, Sparkles, Star, Tags } from 'lucide-react'
 
 export const BASE = '/painel-loja'
 
@@ -14,6 +14,7 @@ export const sections = {
   newsletter:    { label: 'Newsletter',      icon: Mail,            path: `${BASE}/newsletter`,          stage: 12, description: 'E-mails cadastrados no rodapé, com exportação.' },
   aparencia:     { label: 'Logo e rodapé',   icon: PanelsTopLeft,   path: `${BASE}/logo-e-rodape`,       stage: 11, description: 'Logotipo, texto e colunas do rodapé, newsletter e outras redes sociais.' },
   configuracoes: { label: 'Configurações',   icon: Settings,        path: `${BASE}/configuracoes`,       stage: 11, description: 'WhatsApp da loja (atualiza todos os botões), Instagram e parcelamento.' },
+  ajuda:         { label: 'Ajuda',           icon: CircleHelp,      path: `${BASE}/ajuda`,               stage: 13, description: 'Guia rápido de como usar cada parte do painel.' },
 }
 
 // Configurações fica fixo no rodapé do menu (ver AdminApp).
