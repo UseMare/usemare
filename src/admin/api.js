@@ -97,7 +97,8 @@ export async function removeUnusedFiles(urls) {
   unique.filter(u => !stillUsed.has(u)).map(storageRef).filter(Boolean).forEach(({ bucket, path }) => {
     (byBucket[bucket] ||= []).push(path)
   })
-  await Promise.all(Object.entries(byBucket).map(([bucket, paths]) => supabase.storage.from(bucket).remove(paths)))
+  const results = await Promise.all(Object.entries(byBucket).map(([bucket, paths]) => supabase.storage.from(bucket).remove(paths)))
+  results.forEach(({ error }) => { if (error) console.warn('Não foi possível apagar arquivo do Storage:', error.message) })
 }
 
 export async function deleteProduct(product) {
