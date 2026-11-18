@@ -541,8 +541,11 @@ a.adm-stat:hover { border-color: var(--adm-wine); }
 .adm-allgood { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--adm-ok); font-weight: 600; }
 .adm-section-title { margin: 24px 0 12px; font-size: 16px; font-weight: 700; }
 @media (max-width: 720px) {
-  .adm-todo li { flex-wrap: wrap; }
-  .adm-todo li > .adm-btn { margin-left: 30px; }
+  /* ícone à esquerda, texto ocupando a largura toda e o botão embaixo do texto */
+  .adm-todo li { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; gap: 8px 10px; padding: 12px; }
+  .adm-todo li > svg { width: 18px; height: 18px; margin-top: 2px; }
+  .adm-todo li > span { font-size: 14px; line-height: 1.45; }
+  .adm-todo li > .adm-btn { grid-column: 2; justify-self: start; }
 }
 
 /* ---------- Avaliações ---------- */
