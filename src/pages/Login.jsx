@@ -1,44 +1,15 @@
-import React, { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { ChevronLeft, Eye, EyeOff, Heart, KeyRound, LogIn, LogOut, Mail, Save, ShieldCheck, UserPlus } from 'lucide-react'
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { ChevronLeft, KeyRound, LogIn, Mail, UserPlus } from 'lucide-react'
 import { usePageTitle, useShop } from '../shop.jsx'
-import { HandHeart, ProductCard, WhatsApp } from '../ui.jsx'
+import { HandHeart, WhatsApp } from '../ui.jsx'
 import { helloMessage, whatsappLink } from '../store.js'
-import { products } from '../products.js'
 import { supabase } from '../supabase.js'
+import { backHere, emailOk, friendly, PasswordField } from './authShared.jsx'
+import Account from './Account.jsx'
 
-// Login / criar conta / recuperar senha / minha conta — tudo pelo Supabase Auth.
+// Login / criar conta / recuperar senha — tudo pelo Supabase Auth. Logada, mostra Minha conta (Account.jsx).
 // O nome vai em options.data.full_name: o banco cria o perfil (public.profiles) sozinho.
-
-const emailOk = value => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value.trim())
-const backHere = () => `${window.location.origin}/entrar`
-
-// Mensagens do Supabase traduzidas para o tom da Maré.
-const friendly = error => {
-  const code = error?.code || ''
-  const text = (error?.message || '').toLowerCase()
-  if (code === 'invalid_credentials' || text.includes('invalid login')) return 'E-mail ou senha incorretos.'
-  if (code === 'email_not_confirmed' || text.includes('not confirmed')) return 'Falta confirmar seu e-mail: abra o link que enviamos para a sua caixa de entrada. 💌'
-  if (code === 'user_already_exists' || text.includes('already registered')) return 'Esse e-mail já tem conta. Que tal entrar?'
-  if (code === 'weak_password') return 'Escolha uma senha mais forte (misture letras e números).'
-  if (code.includes('rate_limit') || text.includes('rate limit')) return 'Muitas tentativas seguidas. Espere alguns minutinhos e tente de novo.'
-  if (code === 'same_password') return 'A nova senha precisa ser diferente da atual.'
-  return 'Não deu certo agora. Tente de novo em instantes. 🤍'
-}
-
-function PasswordField({ value, onChange, error, autoComplete, placeholder, label = 'Senha' }) {
-  const [show, setShow] = useState(false)
-  return (
-    <label className={`field ${error ? 'invalid' : ''}`}>
-      <span>{label}</span>
-      <div className="field-password">
-        <input type={show ? 'text' : 'password'} value={value} onChange={onChange} autoComplete={autoComplete} placeholder={placeholder} />
-        <button type="button" onClick={() => setShow(!show)} aria-label={show ? 'Esconder senha' : 'Mostrar senha'}>{show ? <EyeOff /> : <Eye />}</button>
-      </div>
-      {error && <small>{error}</small>}
-    </label>
-  )
-}
 
 // ---------- Formulário de entrada / cadastro / esqueci a senha ----------
 function AuthForm() {
@@ -180,76 +151,10 @@ function NewPassword() {
   )
 }
 
-// ---------- Minha conta ----------
-function Account() {
-  const { user, profile, setProfile, signOut, liked } = useShop()
-  const [form, setForm] = useState({ full_name: '', phone: '' })
-  const [notice, setNotice] = useState(null)
-  const [busy, setBusy] = useState(false)
-  usePageTitle('Minha conta')
-
-  useEffect(() => {
-    setForm({ full_name: profile?.full_name || '', phone: profile?.phone || '' })
-  }, [profile?.full_name, profile?.phone])
-
-  const favorites = products.filter(p => liked.includes(p.id))
-  const firstName = (profile?.full_name || '').split(' ')[0]
-
-  const save = async event => {
-    event.preventDefault()
-    const phone = form.phone.replace(/\D/g, '')
-    if (phone && (phone.length < 10 || phone.length > 13)) { setNotice({ type: 'error', text: 'Telefone com DDD, só números. Ex.: 11999998888' }); return }
-    setBusy(true)
-    const changes = { full_name: form.full_name.trim() || null, phone: phone || null }
-    const { error } = await supabase.from('profiles').update(changes).eq('id', user.id)
-    setBusy(false)
-    if (error) { setNotice({ type: 'error', text: friendly(error) }); return }
-    setProfile(p => ({ ...p, ...changes }))
-    setNotice({ type: 'ok', text: 'Dados salvos! 🤎' })
-  }
-
-  return (
-    <div className="login-card account-card">
-      <p className="eyebrow">Minha conta</p>
-      <h2>Oi{firstName ? `, ${firstName}` : ''}! 🌊</h2>
-      <p className="login-sub">{user.email}</p>
-
-      {profile?.role === 'admin' && (
-        <p className="account-admin"><ShieldCheck /> Você é administradora da loja. <Link to="/painel-loja">Abrir o painel da loja →</Link></p>
-      )}
-
-      <form onSubmit={save} noValidate>
-        <label className="field">
-          <span>Nome</span>
-          <input value={form.full_name} onChange={e => setForm(f => ({ ...f, full_name: e.target.value }))} autoComplete="name" />
-        </label>
-        <label className="field">
-          <span>WhatsApp</span>
-          <input value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} autoComplete="tel" inputMode="tel" placeholder="DDD + número" />
-        </label>
-        {notice && <p className={`login-notice ${notice.type === 'error' ? 'is-error' : ''}`} role="status">{notice.text}</p>}
-        <button className="button dark login-submit" type="submit" disabled={busy}><Save /> {busy ? 'Salvando…' : 'Salvar meus dados'}</button>
-      </form>
-
-      <div className="account-favorites">
-        <h3><Heart /> Meus favoritos <small>{favorites.length}</small></h3>
-        {favorites.length ? (
-          <div className="account-fav-grid">
-            {favorites.map((p, i) => <ProductCard key={p.id} product={p} index={i} sizes="200px" />)}
-          </div>
-        ) : (
-          <p className="muted">Toque no coração das peças que você amar — elas ficam guardadas aqui. <Link to="/produtos">Ver peças</Link></p>
-        )}
-      </div>
-
-      <button className="button outline login-whats account-logout" onClick={signOut}><LogOut /> Sair da conta</button>
-    </div>
-  )
-}
-
 export default function Login() {
   const { user, authReady, recovering } = useShop()
   const view = recovering ? 'nova-senha' : user ? 'conta' : 'entrar'
+  if (authReady && view === 'conta') return <Account />
 
   return (
     <section className="login-page">
@@ -257,7 +162,7 @@ export default function Login() {
         <span className="login-script" aria-hidden="true">maré</span>
         <div className="login-brand-inner">
           <p className="eyebrow">Sua conta Maré</p>
-          <h1>{view === 'conta' ? <>Que bom ter<br /><em>você aqui.</em></> : <>Faça parte<br /><em>da nossa história.</em></>}</h1>
+          <h1>Faça parte<br /><em>da nossa história.</em></h1>
           <div className="login-photos" aria-hidden="true">
             {['04-01', '02-01', '08-01'].map(id => <img key={id} src={`/img/produtos/${id}-480.webp`} alt="" />)}
             <p>Vista sua melhor versão<HandHeart className="hand-heart small" /></p>
@@ -268,7 +173,6 @@ export default function Login() {
       <div className="login-form-side">
         {!authReady ? <p className="login-sub">Carregando…</p>
           : view === 'nova-senha' ? <NewPassword />
-          : view === 'conta' ? <Account />
           : <AuthForm />}
       </div>
     </section>

@@ -74,7 +74,7 @@ export function ShopProvider({ children }) {
     let alive = true
     ;(async () => {
       const [{ data: prof }, { data: favs }] = await Promise.all([
-        supabase.from('profiles').select('full_name, phone, role').eq('id', user.id).maybeSingle(),
+        supabase.from('profiles').select('full_name, phone, role, avatar_url, created_at').eq('id', user.id).maybeSingle(),
         supabase.from('favorites').select('product_id'),
       ])
       if (!alive) return

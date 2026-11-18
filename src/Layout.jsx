@@ -239,7 +239,8 @@ export default function Layout() {
   const location = useLocation()
   const [params] = useSearchParams()
   const [menuOpen, setMenuOpen] = useState(false)
-  const { bagCount, openBag, toast, dismissToast, user } = useShop()
+  const { bagCount, openBag, toast, dismissToast, user, profile } = useShop()
+  const accountIcon = profile?.avatar_url ? <img className="account-photo" src={profile.avatar_url} alt="" /> : <UserRound />
   const footer = pageContent('footer', footerDefaults)
   // Outras redes (o Instagram principal já aparece com o @ e não se repete).
   const sameUrl = (a, b) => String(a || '').replace(/\/+$/, '').toLowerCase() === String(b || '').replace(/\/+$/, '').toLowerCase()
@@ -282,7 +283,7 @@ export default function Layout() {
         <div className="shell header-inner">
           <div className="header-left mobile-only">
             <button className="icon-button" onClick={() => setMenuOpen(true)} aria-label="Abrir menu"><Menu /></button>
-            <Link to="/entrar" className={`icon-button account-link ${user ? 'logged' : ''}`} aria-label={user ? 'Minha conta' : 'Entrar na minha conta'}><UserRound />{user && <i aria-hidden="true" />}</Link>
+            <Link to="/entrar" className={`icon-button account-link ${user ? 'logged' : ''}`} aria-label={user ? 'Minha conta' : 'Entrar na minha conta'}>{accountIcon}{user && <i aria-hidden="true" />}</Link>
           </div>
           <Brand />
           <nav className="main-nav" aria-label="Menu principal">
@@ -292,7 +293,7 @@ export default function Layout() {
           </nav>
           <SearchBox />
           <div className="header-actions">
-            <Link to="/entrar" className={`icon-button hide-small account-link ${location.pathname === '/entrar' ? 'active' : ''} ${user ? 'logged' : ''}`} aria-label={user ? 'Minha conta' : 'Entrar na minha conta'} title={user ? 'Minha conta' : 'Entrar / criar conta'}><UserRound />{user && <i aria-hidden="true" />}</Link>
+            <Link to="/entrar" className={`icon-button hide-small account-link ${location.pathname === '/entrar' ? 'active' : ''} ${user ? 'logged' : ''}`} aria-label={user ? 'Minha conta' : 'Entrar na minha conta'} title={user ? 'Minha conta' : 'Entrar / criar conta'}>{accountIcon}{user && <i aria-hidden="true" />}</Link>
             <button className="icon-button cart" onClick={openBag} aria-label={`Sacola com ${bagCount} itens`}><ShoppingBag /><b key={bagCount} className={bagCount ? 'bump' : ''}>{bagCount}</b></button>
             <a className="header-whats" href={whatsappLink(helloMessage)} target="_blank" rel="noreferrer" aria-label="Falar com a Maré no WhatsApp">
               <WhatsApp />
