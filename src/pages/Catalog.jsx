@@ -40,11 +40,10 @@ const sorts = [
 
 // Opções dos filtros, calculadas a partir do catálogo atual.
 const filterOptions = () => ({
-  // tipos na ordem das categorias; cores de todas as peças (cada peça pode ter várias)
+  // tipos na ordem das categorias
   allTypes: [...new Set([...categories].sort((a, b) => a.sort_order - b.sort_order).filter(c => c.kind === 'tipo').map(c => c.name))]
     .filter(name => products.some(p => productTypeName(p) === name))
     .concat(products.some(p => productTypeName(p) === 'Suplementos') && !categories.some(c => c.kind === 'tipo' && c.name === 'Suplementos') ? ['Suplementos'] : []),
-  allColors: [...new Map(products.flatMap(p => p.colors).map(c => [c.name, c.hex])).entries()],
   priceFloor: Math.floor(Math.min(...products.map(p => p.price)) / 10) * 10,
   priceCeil: Math.ceil(Math.max(...products.map(p => p.price)) / 10) * 10,
 })
@@ -89,12 +88,11 @@ export default function Catalog() {
   const [params, setParams] = useSearchParams()
   const [filtersOpen, setFiltersOpen] = useState(false)
   const { catalogVersion } = useShop()
-  const { allTypes, allColors, priceFloor, priceCeil } = useMemo(filterOptions, [catalogVersion])
+  const { allTypes, priceFloor, priceCeil } = useMemo(filterOptions, [catalogVersion])
 
   const categoria = params.get('categoria') || 'todos'
   const busca = params.get('busca') || ''
   const tipos = listParam(params, 'tipo')
-  const cores = listParam(params, 'cor')
   const maxPrice = Number(params.get('ate')) || priceCeil
   const onlyAvailable = params.get('disponiveis') === '1'
   const sort = params.get('ordem') || 'destaques'
@@ -122,7 +120,6 @@ export default function Catalog() {
       collection.test(p) &&
       (!term || normalize(`${p.name} ${p.colors.map(c => c.name).join(' ')} ${(p.flavors || []).join(' ')} ${productTypeName(p)} ${p.categorySlugs.map(s => categoryBySlug(s)?.name || '').join(' ')}`).includes(term)) &&
       (!tipos.length || tipos.includes(productTypeName(p))) &&
-      (!cores.length || p.colors.some(c => cores.includes(c.name))) &&
       p.price <= maxPrice &&
       (!onlyAvailable || p.available))
     const sorted = [...list]
@@ -130,7 +127,7 @@ export default function Catalog() {
     if (sort === 'maior-preco') sorted.sort((a, b) => b.price - a.price)
     if (sort === 'a-z') sorted.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'))
     return sorted // indisponíveis ficam no lugar delas, sem preço (ver Price em ui.jsx)
-  }, [collection, busca, tipos.join(), cores.join(), maxPrice, onlyAvailable, sort, catalogVersion])
+  }, [collection, busca, tipos.join(), maxPrice, onlyAvailable, sort, catalogVersion])
 
   // Paginação: ?pagina=2 na URL (o botão voltar do navegador funciona).
   const totalPages = Math.max(1, Math.ceil(result.length / PAGE_SIZE))
@@ -151,7 +148,7 @@ export default function Catalog() {
     }, 450)
   }
 
-  const activeCount = tipos.length + cores.length + (maxPrice < priceCeil ? 1 : 0) + (onlyAvailable ? 1 : 0) + (busca ? 1 : 0)
+  const activeCount = tipos.length + (maxPrice < priceCeil ? 1 : 0) + (onlyAvailable ? 1 : 0) + (busca ? 1 : 0)
 
   useEffect(() => {
     document.body.style.overflow = filtersOpen ? 'hidden' : ''
@@ -205,16 +202,6 @@ export default function Catalog() {
               ))}
             </FilterGroup>
 
-            <FilterGroup title="Cor">
-              <div className="swatches">
-                {allColors.map(([color, swatch]) => (
-                  <button key={color} className={`swatch ${cores.includes(color) ? 'active' : ''}`} onClick={() => toggleIn('cor', cores, color)} aria-pressed={cores.includes(color)} title={color}>
-                    <i style={{ background: swatch }} /><span>{color}</span>
-                  </button>
-                ))}
-              </div>
-            </FilterGroup>
-
             <FilterGroup title="Preço">
               <div className="price-range">
                 <input type="range" min={priceFloor} max={priceCeil} step="10" value={maxPrice} onChange={e => update({ ate: Number(e.target.value) >= priceCeil ? null : e.target.value })} aria-label="Preço máximo" style={{ '--fill': `${((maxPrice - priceFloor) / (priceCeil - priceFloor)) * 100}%` }} />
@@ -258,7 +245,6 @@ export default function Catalog() {
               <div className="active-filters">
                 {busca && <button onClick={() => update({ busca: null })}>“{busca}” <X /></button>}
                 {tipos.map(t => <button key={t} onClick={() => toggleIn('tipo', tipos, t)}>{t} <X /></button>)}
-                {cores.map(c => <button key={c} onClick={() => toggleIn('cor', cores, c)}>{c} <X /></button>)}
                 {maxPrice < priceCeil && <button onClick={() => update({ ate: null })}>Até R$ {maxPrice} <X /></button>}
                 {onlyAvailable && <button onClick={() => update({ disponiveis: null })}>Disponíveis <X /></button>}
               </div>

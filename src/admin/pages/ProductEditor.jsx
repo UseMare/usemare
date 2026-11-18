@@ -257,7 +257,7 @@ export default function ProductEditor() {
 
           {form.kind === 'roupa' ? (
             <section className="adm-card adm-ed-kind">
-              <div className="adm-card-head"><div><h2>Cores e tamanhos</h2><p>Aparecem na página do produto e no filtro de cores do catálogo.</p></div></div>
+              <div className="adm-card-head"><div><h2>Cores e tamanhos</h2><p>Aparecem na página do produto.</p></div></div>
               <div className={`adm-field ${errors.colors ? 'has-error' : ''}`}>
                 <span>Cores</span>
                 <div className="adm-colors">
