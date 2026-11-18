@@ -230,7 +230,7 @@ export default function ProductEditor() {
 
       <div className="adm-editor-grid">
         <div className="adm-editor-main">
-          <section className="adm-card">
+          <section className="adm-card adm-ed-info">
             <div className="adm-card-head"><div><h2>{isNew ? 'Novo produto' : 'Informações'}</h2>{!isNew && <p>Código {row.code}</p>}</div></div>
             <Field label="Nome do produto *" error={errors.name}>
               <input value={form.name} onChange={e => setName(e.target.value)} placeholder="Ex.: Conjunto Maré Move Lilás" maxLength={120} />
@@ -241,8 +241,8 @@ export default function ProductEditor() {
             <div className="adm-field">
               <span>Tipo de ficha</span>
               <div className="adm-segmented" role="radiogroup">
-                <button type="button" role="radio" aria-checked={form.kind === 'roupa'} className={form.kind === 'roupa' ? 'active' : ''} onClick={() => setKind('roupa')}>Roupa (cores e tamanhos)</button>
-                <button type="button" role="radio" aria-checked={form.kind === 'suplemento'} className={form.kind === 'suplemento' ? 'active' : ''} onClick={() => setKind('suplemento')}>Suplemento (sabores e embalagem)</button>
+                <button type="button" role="radio" aria-checked={form.kind === 'roupa'} className={form.kind === 'roupa' ? 'active' : ''} onClick={() => setKind('roupa')} title="Roupa (cores e tamanhos)">Roupa (cores e tamanhos)</button>
+                <button type="button" role="radio" aria-checked={form.kind === 'suplemento'} className={form.kind === 'suplemento' ? 'active' : ''} onClick={() => setKind('suplemento')} title="Suplemento (sabores e embalagem)">Suplemento (sabores e embalagem)</button>
               </div>
             </div>
             <Field label="Descrição" hint="A primeira frase (até a primeira linha em branco) aparece em destaque. Deixe uma linha em branco entre os parágrafos.">
@@ -250,13 +250,13 @@ export default function ProductEditor() {
             </Field>
           </section>
 
-          <section className="adm-card">
+          <section className="adm-card adm-ed-photos">
             <div className="adm-card-head"><div><h2>Fotos</h2><p>Proporção do site: 3 × 4 (retrato). A primeira foto é a capa.</p></div></div>
             <ProductPhotos photos={form.photos} onChange={photos => set('photos', photos)} />
           </section>
 
           {form.kind === 'roupa' ? (
-            <section className="adm-card">
+            <section className="adm-card adm-ed-kind">
               <div className="adm-card-head"><div><h2>Cores e tamanhos</h2><p>Aparecem na página do produto e no filtro de cores do catálogo.</p></div></div>
               <div className={`adm-field ${errors.colors ? 'has-error' : ''}`}>
                 <span>Cores</span>
@@ -285,7 +285,7 @@ export default function ProductEditor() {
               </div>
             </section>
           ) : (
-            <section className="adm-card">
+            <section className="adm-card adm-ed-kind">
               <div className="adm-card-head"><div><h2>Ficha do suplemento</h2></div></div>
               <div className="adm-grid-2">
                 <Field label="Marca"><input value={form.brand} onChange={e => set('brand', e.target.value)} placeholder="Ex.: Lifemore" /></Field>
@@ -297,7 +297,7 @@ export default function ProductEditor() {
             </section>
           )}
 
-          <section className="adm-card">
+          <section className="adm-card adm-ed-details">
             <div className="adm-card-head"><div><h2>Detalhes extras</h2><p>Linhas a mais na aba "Sobre a peça" (ex.: Tecido → Suplex; Forro → Sim).</p></div></div>
             <div className={`adm-details ${errors.details ? 'has-error' : ''}`}>
               {form.details.map((d, i) => (
@@ -314,7 +314,7 @@ export default function ProductEditor() {
         </div>
 
         <aside className="adm-editor-side">
-          <section className="adm-card">
+          <section className="adm-card adm-ed-visibility">
             <h2>Visibilidade</h2>
             <div className="adm-side-switches">
               <Switch checked={form.active} onChange={v => set('active', v)} label={form.active ? 'Aparece no site' : 'Oculto (não aparece no site)'} />
@@ -322,32 +322,34 @@ export default function ProductEditor() {
             </div>
           </section>
 
-          <section className="adm-card">
+          <section className="adm-card adm-ed-price">
             <h2>Preço</h2>
-            <Field label="Preço *" error={errors.price}>
-              <div className="adm-money"><span>R$</span><input inputMode="decimal" value={form.price} onChange={e => set('price', e.target.value.replace(/[^0-9,.]/g, ''))} placeholder="89,90" /></div>
-            </Field>
-            <Field label="Preço antigo (promoção)" error={errors.old_price} hint={promo ? 'Em promoção: aparece riscado e o produto entra em Promoções.' : 'Opcional. Preencha com um valor MAIOR para colocar em promoção.'}>
-              <div className="adm-money"><span>R$</span><input inputMode="decimal" value={form.old_price} onChange={e => set('old_price', e.target.value.replace(/[^0-9,.]/g, ''))} placeholder="119,90" /></div>
-            </Field>
+            <div className="adm-price-pair">
+              <Field label="Preço *" error={errors.price}>
+                <div className="adm-money"><span>R$</span><input inputMode="decimal" value={form.price} onChange={e => set('price', e.target.value.replace(/[^0-9,.]/g, ''))} placeholder="89,90" /></div>
+              </Field>
+              <Field label="Preço antigo" error={errors.old_price}>
+                <div className="adm-money"><span>R$</span><input inputMode="decimal" value={form.old_price} onChange={e => set('old_price', e.target.value.replace(/[^0-9,.]/g, ''))} placeholder="119,90" /></div>
+              </Field>
+            </div>
+            <p className={`adm-hint adm-price-hint ${promo ? 'is-promo' : ''}`}>{promo ? 'Em promoção: aparece riscado e o produto entra em Promoções.' : 'Preço antigo é opcional. Preencha com um valor MAIOR para colocar em promoção.'}</p>
           </section>
 
-          <section className={`adm-card ${errors.categories ? 'has-error-card' : ''}`}>
+          <section className={`adm-card adm-ed-cats ${errors.categories ? 'has-error-card' : ''}`}>
             <h2>Categorias</h2>
             <p className="adm-hint">Coleção = selo e caminho da página. Tipo = filtro "Tipo de peça".</p>
             <p className="adm-group-label">Coleção</p>
-            {colecoes.map(c => <label key={c.id} className="adm-check"><input type="checkbox" checked={form.categoryIds.includes(c.id)} onChange={() => toggleCategory(c.id)} /> {c.name}{!c.active && <em> (oculta)</em>}</label>)}
+            <div className="adm-check-grid">{colecoes.map(c => <label key={c.id} className="adm-check" title={c.name}><input type="checkbox" checked={form.categoryIds.includes(c.id)} onChange={() => toggleCategory(c.id)} /> <span>{c.name}{!c.active && <em> (oculta)</em>}</span></label>)}</div>
             <p className="adm-group-label">Tipo de peça</p>
-            {tipos.map(c => <label key={c.id} className="adm-check"><input type="checkbox" checked={form.categoryIds.includes(c.id)} onChange={() => toggleCategory(c.id)} /> {c.name}{!c.active && <em> (oculta)</em>}</label>)}
+            <div className="adm-check-grid">{tipos.map(c => <label key={c.id} className="adm-check" title={c.name}><input type="checkbox" checked={form.categoryIds.includes(c.id)} onChange={() => toggleCategory(c.id)} /> <span>{c.name}{!c.active && <em> (oculta)</em>}</span></label>)}</div>
             {errors.categories && <small className="adm-field-error">{errors.categories}</small>}
             <Link className="adm-link" to={`${BASE}/categorias`}>Gerenciar categorias</Link>
           </section>
 
           {!isNew && (
-            <section className="adm-card">
-              <h2>Excluir</h2>
+            <section className="adm-card adm-ed-delete">
               <p className="adm-hint">Para tirar do site só por um tempo, prefira desligar "Aparece no site".</p>
-              <button className="adm-btn danger-text block" onClick={remove} disabled={saving}><Trash2 /> Excluir produto</button>
+              <button className="adm-btn danger-text" onClick={remove} disabled={saving}><Trash2 /> Excluir produto</button>
             </section>
           )}
         </aside>

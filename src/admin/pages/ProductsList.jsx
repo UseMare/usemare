@@ -192,8 +192,9 @@ export default function ProductsList() {
                 <Link to={`${BASE}/produtos/${p.id}`} className="adm-prow-main">
                   <span className="adm-thumb">{thumb ? <img src={thumb} alt="" loading="lazy" /> : <ImageOff />}</span>
                   <span className="adm-prow-info">
-                    <b>{p.name}</b>
-                    <small>Cód. {p.code}{cats.length ? ` · ${cats.join(', ')}` : ' · sem categoria'}</small>
+                    <b title={p.name}>{p.name}</b>
+                    <small title={`Cód. ${p.code}${cats.length ? ` · ${cats.join(', ')}` : ' · sem categoria'}`}>Cód. {p.code}{cats.length ? ` · ${cats.join(', ')}` : ' · sem categoria'}</small>
+                    <span className="adm-prow-price-inline">{promo && <s>{formatBRL(p.old_price)}</s>}<b>{formatBRL(p.price)}</b></span>
                     <span className="adm-prow-badges">
                       {!p.active && <span className="adm-badge">Oculto</span>}
                       {!p.available && <span className="adm-badge warn">Esgotado</span>}
