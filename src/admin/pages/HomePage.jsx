@@ -190,7 +190,7 @@ export default function HomePage() {
       <Section title="Cards de categoria" text="Os cards logo abaixo do banner (imagem, texto e ordem) são editados em Categorias."
         aside={<Link className="adm-btn outline small" to={`${BASE}/categorias`}>Abrir Categorias <ArrowRight /></Link>} />
 
-      <Section title="Vitrine de produtos" text="Mostra as 4 primeiras peças disponíveis, na ordem da lista de Produtos.">
+      <Section title="Vitrine de produtos" text="Mostra as 4 primeiras peças da lista de Produtos (as indisponíveis aparecem com o selo).">
         <Field label="Título da vitrine *"><input value={form.highlightsTitle} onChange={e => set('highlightsTitle', e.target.value)} maxLength={50} /></Field>
       </Section>
 

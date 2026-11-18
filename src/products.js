@@ -522,16 +522,14 @@ const enrich = product => {
   }
 }
 
-// disponíveis primeiro, esgotadas no fim (mantendo a ordem do catálogo)
-const availableFirst = list => list.sort((a, b) => Number(b.available) - Number(a.available))
-
 // Lista viva: setProducts() troca o conteúdo sem trocar o array, então todo o site enxerga a versão nova.
-export const products = availableFirst(catalog.map(enrich))
+// Indisponíveis ficam na mesma posição da lista do painel (não vão para o fim).
+export const products = catalog.map(enrich)
 rebuildCollections()
 
 export function setProducts(list) {
   if (!list?.length) return
-  products.splice(0, products.length, ...availableFirst(list.map(enrich)))
+  products.splice(0, products.length, ...list.map(enrich))
 }
 
 export function setCategories(list) {

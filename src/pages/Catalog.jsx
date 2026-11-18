@@ -108,7 +108,7 @@ export default function Catalog() {
     if (sort === 'menor-preco') sorted.sort((a, b) => a.price - b.price)
     if (sort === 'maior-preco') sorted.sort((a, b) => b.price - a.price)
     if (sort === 'a-z') sorted.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'))
-    return sorted.sort((a, b) => Number(b.available) - Number(a.available))
+    return sorted // indisponíveis ficam no lugar delas, sem preço (ver Price em ui.jsx)
   }, [collection, busca, tipos.join(), cores.join(), maxPrice, onlyAvailable, sort, catalogVersion])
 
   // Mostra 9 peças por vez; volta para 9 sempre que a categoria, a busca, um filtro ou a ordem mudam.

@@ -148,8 +148,8 @@ export default function Home() {
   usePageTitle(null)
   useShop() // redesenha quando o catálogo do Supabase chega
   const content = homeContent()
-  // Prévia na página inicial: só as 4 primeiras peças disponíveis. O catálogo completo fica em /produtos.
-  const highlights = products.filter(product => product.available).slice(0, 4)
+  // Prévia na página inicial: as 4 primeiras peças da lista (indisponíveis aparecem com o selo). O catálogo completo fica em /produtos.
+  const highlights = products.slice(0, 4)
   const [comfort, movement] = content.promos
 
   return (
