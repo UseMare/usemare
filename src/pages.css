@@ -1251,18 +1251,6 @@ html, body { max-width: 100%; overflow-x: clip; }
   .header-inner .search input { font-size: 13px; }
 }
 
-/* Catálogo: "Carregar mais" (9 peças por vez) */
-.load-more { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-top: clamp(40px, 5vw, 64px); text-align: center; }
-.load-more p { margin: 0; color: var(--muted); font-size: 14px; }
-.load-more p b { color: var(--wine); font-weight: 600; }
-.load-more-bar { width: min(220px, 60%); height: 3px; overflow: hidden; border-radius: 999px; background: var(--line); }
-.load-more-bar i { display: block; height: 100%; border-radius: inherit; background: var(--wine); transition: width .6s var(--ease-out); }
-.load-more .button { margin-top: 6px; gap: 10px; }
-.load-more .button svg { width: 18px; height: 18px; }
-@media (max-width: 640px) {
-  .load-more .button { width: 100%; justify-content: center; }
-}
-
 /* Textos editáveis no painel: respeitam a quebra de linha digitada */
 .footer-text { white-space: pre-line; }
 
@@ -1410,4 +1398,14 @@ html, body { max-width: 100%; overflow-x: clip; }
 .price.is-unavailable::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #b9a59c; }
 .pdp-main .badge-soldout { left: 50%; top: auto; bottom: 18px; padding: 9px 20px; font-size: 12.5px; }
 .pdp-price .price.is-unavailable { font-size: 14px; }
+
+/* ---------- Paginação do catálogo ---------- */
+.pagination { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: clamp(40px, 5vw, 64px); }
+.pagination button { display: grid; place-items: center; min-width: 42px; height: 42px; padding: 0 6px; border: 0; border-radius: 12px; background: none; color: var(--muted); font-size: 15px; font-weight: 600; transition: background .2s, color .2s; }
+.pagination button:hover:not(:disabled):not(.active) { background: var(--sand-soft); color: var(--wine); }
+.pagination button.active { background: var(--wine); color: #fff; cursor: default; }
+.pagination-arrow svg { width: 20px; height: 20px; }
+.pagination-arrow:disabled { opacity: .35; cursor: default; }
+.pagination-gap { min-width: 26px; color: var(--muted); text-align: center; letter-spacing: .1em; }
+.catalog-results { scroll-margin-top: 100px; }
 

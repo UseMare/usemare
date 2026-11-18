@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { ArrowRight, Check, ChevronDown, Heart, Plus, SlidersHorizontal, Truck, X } from 'lucide-react'
+import { ArrowRight, Check, ChevronDown, ChevronLeft, ChevronRight, Heart, SlidersHorizontal, Truck, X } from 'lucide-react'
 import { categories, categoryBySlug, collections, productTypeName, products } from '../products.js'
 import { usePageTitle, useShop } from '../shop.jsx'
 import { PageIntro, ProductCard, WhatsApp } from '../ui.jsx'
@@ -62,8 +62,28 @@ function FilterGroup({ title, children, defaultOpen = true }) {
   )
 }
 
-// Quantas peças aparecem de início e a cada clique em "Carregar mais".
-const PAGE_SIZE = 9
+// Quantas peças por página (12 = linhas cheias com 2, 3 ou 4 colunas).
+const PAGE_SIZE = 12
+
+// Números que aparecem na paginação: 1 … 4 5 6 … 20 (sempre a primeira, a última e as vizinhas da atual).
+function pageList(current, total) {
+  const pages = new Set([1, total, current - 1, current, current + 1].filter(n => n >= 1 && n <= total))
+  const sorted = [...pages].sort((a, b) => a - b)
+  return sorted.flatMap((n, i) => (i && n - sorted[i - 1] > 1 ? ['…', n] : [n]))
+}
+
+function Pagination({ page, total, onChange }) {
+  if (total < 2) return null
+  return (
+    <nav className="pagination" aria-label="Páginas de produtos">
+      <button className="pagination-arrow" onClick={() => onChange(page - 1)} disabled={page === 1} aria-label="Página anterior"><ChevronLeft /></button>
+      {pageList(page, total).map((n, i) => n === '…'
+        ? <span key={`gap-${i}`} className="pagination-gap" aria-hidden="true">…</span>
+        : <button key={n} className={n === page ? 'active' : ''} onClick={() => onChange(n)} aria-current={n === page ? 'page' : undefined} aria-label={`Página ${n}`}>{n}</button>)}
+      <button className="pagination-arrow" onClick={() => onChange(page + 1)} disabled={page === total} aria-label="Próxima página"><ChevronRight /></button>
+    </nav>
+  )
+}
 
 export default function Catalog() {
   const [params, setParams] = useSearchParams()
@@ -86,6 +106,7 @@ export default function Catalog() {
   // Atualiza um filtro na URL (assim o link filtrado pode ser compartilhado).
   const update = (changes, { keepFilters = true } = {}) => {
     const next = new URLSearchParams(keepFilters ? params : {})
+    next.delete('pagina') // qualquer filtro novo volta para a página 1
     Object.entries(changes).forEach(([key, value]) => {
       if (value === null || value === '' || (Array.isArray(value) && !value.length)) next.delete(key)
       else next.set(key, Array.isArray(value) ? value.join(',') : value)
@@ -111,12 +132,16 @@ export default function Catalog() {
     return sorted // indisponíveis ficam no lugar delas, sem preço (ver Price em ui.jsx)
   }, [collection, busca, tipos.join(), cores.join(), maxPrice, onlyAvailable, sort, catalogVersion])
 
-  // Mostra 9 peças por vez; volta para 9 sempre que a categoria, a busca, um filtro ou a ordem mudam.
-  const [limit, setLimit] = useState(PAGE_SIZE)
-  const filterKey = params.toString()
-  useEffect(() => { setLimit(PAGE_SIZE) }, [filterKey])
-  const shown = result.slice(0, limit)
-  const remaining = result.length - shown.length
+  // Paginação: ?pagina=2 na URL (o botão voltar do navegador funciona).
+  const totalPages = Math.max(1, Math.ceil(result.length / PAGE_SIZE))
+  const page = Math.min(Math.max(1, Number(params.get('pagina')) || 1), totalPages)
+  const shown = result.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+  const goToPage = n => {
+    const next = new URLSearchParams(params)
+    if (n <= 1) next.delete('pagina'); else next.set('pagina', n)
+    setParams(next)
+    document.querySelector('.catalog-results')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
 
   const activeCount = tipos.length + cores.length + (maxPrice < priceCeil ? 1 : 0) + (onlyAvailable ? 1 : 0) + (busca ? 1 : 0)
 
@@ -232,7 +257,7 @@ export default function Catalog() {
             )}
 
             {result.length ? (
-              <div className="catalog-grid" key={`${categoria}-${sort}`}>
+              <div className="catalog-grid" key={`${categoria}-${sort}-${page}`}>
                 {shown.map((product, index) => <ProductCard key={product.id} product={product} index={index % 3} sizes="(max-width: 900px) 46vw, (max-width: 1200px) 30vw, 300px" />)}
               </div>
             ) : (
@@ -247,17 +272,7 @@ export default function Catalog() {
               </div>
             )}
 
-            {result.length > PAGE_SIZE && (
-              <div className="load-more">
-                <p>Mostrando <b>{shown.length}</b> de <b>{result.length}</b> peças</p>
-                <span className="load-more-bar" aria-hidden="true"><i style={{ width: `${(shown.length / result.length) * 100}%` }} /></span>
-                {remaining > 0 && (
-                  <button className="button outline" onClick={() => setLimit(l => l + PAGE_SIZE)}>
-                    <Plus /> Carregar mais {Math.min(PAGE_SIZE, remaining)} {Math.min(PAGE_SIZE, remaining) === 1 ? 'peça' : 'peças'}
-                  </button>
-                )}
-              </div>
-            )}
+            <Pagination page={page} total={totalPages} onChange={goToPage} />
           </section>
         </div>
       </div>
