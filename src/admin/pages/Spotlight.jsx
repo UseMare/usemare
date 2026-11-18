@@ -94,7 +94,7 @@ export default function Spotlight() {
 
   return (
     <>
-      <p className="adm-muted adm-intro">O card de destaques aparece no canto da tela, alguns segundos depois que a cliente abre o site, e troca de produto a cada 5 segundos. Escolha até {MAX} produtos e a ordem em que aparecem.</p>
+      <p className="adm-muted adm-intro">Até {MAX} produtos que aparecem em um card no canto do site, trocando a cada 5 segundos.</p>
 
       <div className="adm-spot-grid">
         <section className="adm-card">
