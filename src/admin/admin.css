@@ -587,3 +587,23 @@ a.adm-stat:hover { border-color: var(--adm-wine); }
 .adm-help-link { display: inline-flex; align-items: center; gap: 6px; color: var(--adm-wine); font-weight: 600; }
 .adm-help-link svg { width: 15px; height: 15px; }
 .adm-help-body ul { list-style: disc; } .adm-help-body ol { list-style: decimal; } .adm-help-body li::marker { color: var(--adm-accent); }
+
+/* ---------- Celular: blocos lado a lado para a página não ficar comprida ---------- */
+@media (max-width: 720px) {
+  /* números da loja (Início) e da newsletter: 2 por linha, mais baixinhos */
+  .adm-stats, .adm-stats-small { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .adm-stat { gap: 4px; padding: 10px 12px; }
+  .adm-stat span { overflow: hidden; font-size: 12px; line-height: 1.3; text-overflow: ellipsis; white-space: nowrap; }
+  .adm-stat b { font-size: 22px; }
+
+  /* atalhos (Início): 2 por linha, ícone em cima e só o nome */
+  .adm-shortcuts { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .adm-card.adm-shortcut { flex-direction: column; gap: 8px; padding: 12px; }
+  .adm-shortcut small, .adm-shortcut-arrow { display: none; }
+  .adm-shortcut b { font-size: 14px; line-height: 1.25; }
+  .adm-shortcut-icon { width: 34px; height: 34px; }
+
+  /* cards da página inicial: 2 por linha */
+  .adm-homecards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .adm-homecard-img b { font-size: 13px; }
+}
