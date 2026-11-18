@@ -8,6 +8,9 @@ import { store } from '../store.js'
 import { savedContent } from '../content.js'
 import { SiteIcon } from '../icons.jsx'
 
+// Recortes do banner feitos para o celular (quadrados, em alta), por foto do computador.
+const MOBILE_HERO = { '/img/banners/hero.webp': '/img/banners/hero-mobile.webp' }
+
 // Textos e imagens da página inicial. Este é o padrão; o painel (Página inicial) substitui
 // campo a campo pelo que a dona salvar (tabela site_content, chave 'home').
 // Nos textos, Enter (\n) vira quebra de linha. No texto de apoio do hero a quebra só vale no computador.
@@ -100,7 +103,12 @@ function Hero({ content }) {
   return (
     <section className="hero" id="inicio">
       {slides.map((slide, index) => (
-        <img key={slide.image} className={index === current ? 'active' : ''} src={slide.image} srcSet={responsive(slide.image, 1200)} sizes="100vw" alt={index === current ? (slide.alt || '') : ''} fetchPriority={index === 0 ? 'high' : 'auto'} />
+        // No celular a foto aparece quase quadrada e cortada: usa um recorte próprio em alta (MOBILE_HERO)
+        // ou, se não houver, a versão grande da foto, para não ficar esticada e borrada.
+        <picture key={slide.image}>
+          <source media="(max-width: 600px)" srcSet={MOBILE_HERO[slide.image] || slide.image} />
+          <img className={`hero-photo ${index === current ? 'active' : ''}`} src={slide.image} srcSet={responsive(slide.image, 1200)} sizes="100vw" alt={index === current ? (slide.alt || '') : ''} fetchPriority={index === 0 ? 'high' : 'auto'} />
+        </picture>
       ))}
       <div className="hero-inner">
         <div className="hero-copy">

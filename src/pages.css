@@ -12,7 +12,7 @@
 [data-reveal].is-visible { transform: none; }
 .section-heading > span { transition-duration: 1.8s; transition-delay: .45s; }
 .header { animation-duration: 1.2s; }
-.hero > img.active { animation-duration: 12s; }
+.hero .hero-photo.active { animation-duration: 12s; }
 .hero-copy > * { animation-duration: 1.4s; }
 .hero-copy > :nth-child(1) { animation-delay: .35s; }
 .hero-copy > :nth-child(2) { animation-delay: .6s; }
@@ -946,7 +946,7 @@ footer h3 { font-size: 21px; }
 
 /* ---------- Hero: modelos mais à direita + frase menor ---------- */
 @media (min-width: 901px) {
-  .hero > img { object-position: 22% 30%; }
+  .hero .hero-photo { object-position: 22% 30%; }
   .hero-script { right: clamp(16px, 2.2vw, 44px); font-size: clamp(34px, 2.9vw, 50px); transform: translateY(-50%) rotate(-12deg); }
 }
 /* abaixo de 1560px não sobra espaço à direita das modelos: esconde a frase para não cobrir ninguém */
@@ -1025,7 +1025,7 @@ footer form input:disabled { opacity: .6; }
 
 /* Hero no celular: foto primeiro, textos depois */
 @media (max-width: 900px) {
-  .hero > img { order: 1; height: 400px; }
+  .hero .hero-photo { order: 1; height: 400px; }
   .hero-inner { order: 2; padding-block: 8px 32px; }
   .hero::after { top: 400px; bottom: auto; height: 80px; background: linear-gradient(transparent, var(--hero-bg)); transform: translateY(-100%); pointer-events: none; }
   .hero .slider-arrow { top: 200px; }
@@ -1060,7 +1060,7 @@ footer form input:disabled { opacity: .6; }
 @media (max-width: 900px) {
   .hero { overflow: hidden; }
   .hero::after { display: none; }
-  .hero > img { -webkit-mask-image: linear-gradient(#000 70%, transparent 98%); mask-image: linear-gradient(#000 70%, transparent 98%); }
+  .hero .hero-photo { -webkit-mask-image: linear-gradient(#000 70%, transparent 98%); mask-image: linear-gradient(#000 70%, transparent 98%); }
 }
 
 /* Banners de texto no celular: véu mais forte atrás do texto para dar contraste */

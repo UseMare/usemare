@@ -80,8 +80,9 @@ ul { list-style: none; margin: 0; padding: 0; }
 
 /* ============ Hero ============ */
 .hero { position: relative; overflow: hidden; height: clamp(500px, 38vw, 620px); background: var(--hero-bg); }
-.hero > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 78% 30%; opacity: 0; transition: opacity .8s ease; }
-.hero > img.active { opacity: 1; }
+.hero .hero-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 78% 30%; opacity: 0; transition: opacity .8s ease; }
+.hero .hero-photo.active { opacity: 1; }
+.hero > picture { display: contents; } /* a <picture> não ocupa espaço: a <img> continua sendo filha direta no layout */
 .hero-inner { position: relative; z-index: 2; height: 100%; max-width: calc(var(--shell) + var(--gutter) * 2); margin-inline: auto; padding-inline: var(--gutter); display: flex; align-items: center; }
 .hero-copy { max-width: 560px; }
 .hero h1 { margin: 16px 0 18px; color: var(--wine); font-family: var(--serif); font-size: clamp(48px, 5.4vw, 76px); font-weight: 500; line-height: .98; letter-spacing: -.02em; }
@@ -257,8 +258,8 @@ footer form button svg { width: 20px; }
   /* Hero empilhado: texto no bege, foto embaixo */
   .hero { height: auto; display: flex; flex-direction: column; }
   .hero-inner { order: 1; height: auto; padding-block: 40px 28px; }
-  .hero > img { position: relative; order: 2; inset: auto; height: 380px; object-position: 70% 20%; display: none; }
-  .hero > img.active { display: block; }
+  .hero .hero-photo { position: relative; order: 2; inset: auto; height: 380px; object-position: 70% 20%; display: none; }
+  .hero .hero-photo.active { display: block; }
   .hero::after { content: ''; position: absolute; left: 0; right: 0; bottom: 380px; height: 70px; z-index: 1; background: linear-gradient(var(--hero-bg), transparent); transform: translateY(100%); }
   .hero-script { display: none; } /* no celular a frase cobriria o rosto das modelos */
   .hero-benefits { gap: 14px 22px; }
@@ -300,7 +301,7 @@ footer form button svg { width: 20px; }
 /* Entrada da página */
 .announcement { animation: fade .8s ease both; }
 .header { animation: drop .8s var(--ease-out) .1s both; }
-.hero > img.active { animation: kenburns 9s var(--ease-out) both; }
+.hero .hero-photo.active { animation: kenburns 9s var(--ease-out) both; }
 .hero-copy > * { animation: rise .9s var(--ease-out) both; }
 .hero-copy > :nth-child(1) { animation-delay: .25s; }
 .hero-copy > :nth-child(2) { animation-delay: .38s; }
