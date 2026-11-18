@@ -82,7 +82,7 @@ function BagDrawer() {
 
   return (
     <>
-      <aside className={`bag ${bagOpen ? 'open' : ''}`} aria-hidden={!bagOpen} aria-label="Sacola">
+      <aside className={`bag ${bagOpen ? 'open' : ''}`} inert={!bagOpen} aria-label="Sacola">
         <div className="bag-head">
           <h2>Minha sacola</h2>
           <button className="icon-button" onClick={closeBag} aria-label="Fechar sacola"><X /></button>
@@ -303,7 +303,7 @@ export default function Layout() {
         </div>
       </header>
 
-      <div className={`drawer ${menuOpen ? 'open' : ''}`} aria-hidden={!menuOpen}>
+      <div className={`drawer ${menuOpen ? 'open' : ''}`} inert={!menuOpen}>
         <div className="drawer-head"><Brand onClick={() => setMenuOpen(false)} /><button className="icon-button" onClick={() => setMenuOpen(false)} aria-label="Fechar menu"><X /></button></div>
         {navItems.map(item => <Link to={item.to} key={item.label} className={isActive(item, location, params) ? 'active' : ''}>{item.label}<ArrowRight /></Link>)}
         <Link to="/entrar" className="drawer-account"><UserRound /> {user ? 'Minha conta' : 'Entrar / criar conta'}</Link>
