@@ -657,3 +657,39 @@ a.adm-stat:hover { border-color: var(--adm-wine); }
   .adm-ed-cats .adm-check-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .adm-segmented button { padding: 9px 6px; font-size: 12.5px; }
 }
+
+/* ---------- Página inicial (painel): mais compacta ---------- */
+/* caixas de texto com a altura das linhas pedidas (rows), sem o mínimo de 110px */
+.adm-home .adm-field textarea { min-height: 0; }
+.adm-home .adm-field { margin-bottom: 12px; }
+.adm-home .adm-subtitle { margin-top: 18px; padding-top: 14px; }
+
+/* fotos do banner: prévia + botões à esquerda, descrição à direita */
+.adm-home .adm-slides > li { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 16px; align-items: start; padding: 12px 12px 0; }
+.adm-home .adm-slides .adm-imagefield-box { flex-direction: column; gap: 8px; }
+.adm-home .adm-slides .adm-imagefield-preview { width: 100%; }
+.adm-home .adm-slides .adm-imagefield-actions, .adm-home .adm-promo-edit .adm-imagefield-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-width: 0; }
+.adm-home .adm-slides > li > .adm-field:not(.adm-imagefield) { margin-top: 0; }
+.adm-home .adm-slides > li > .adm-field:not(.adm-imagefield) { padding-right: 112px; }
+
+/* benefícios: cards lado a lado */
+.adm-home .adm-benefits { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+.adm-home .adm-benefits > li { position: relative; grid-template-columns: minmax(0, 1fr); gap: 0; padding: 10px 10px 0; }
+.adm-home .adm-benefits > li > .adm-icon-btn { position: absolute; top: 4px; right: 4px; margin: 0; width: 30px; height: 30px; }
+.adm-home .adm-benefits .adm-iconpicker { margin-right: 30px; }
+
+/* banners do meio: imagem baixa e botões na mesma linha */
+.adm-home .adm-promo-edit { padding: 12px 12px 0; }
+.adm-home .adm-promo-edit .adm-imagefield-box { gap: 8px; }
+.adm-home .adm-promo-edit .adm-imagefield-preview { max-height: 160px; }
+
+/* quadro de serviços */
+.adm-home .adm-repeat > li { padding: 10px 10px 0; }
+
+@media (max-width: 720px) {
+  .adm-home .adm-slides > li { grid-template-columns: minmax(0, 1fr); padding-top: 44px; }
+  .adm-home .adm-slides > li > .adm-field:not(.adm-imagefield) { padding-right: 0; }
+  .adm-home .adm-benefits { grid-template-columns: minmax(0, 1fr); }
+  .adm-home .adm-services > li { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 10px; }
+  .adm-home .adm-services .adm-iconpicker, .adm-home .adm-services .adm-iconpicker-current { min-width: 0; width: 100%; }
+}

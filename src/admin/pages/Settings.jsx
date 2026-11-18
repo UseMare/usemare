@@ -122,7 +122,7 @@ export default function Settings() {
       </section>
 
       <section className="adm-card">
-        <div className="adm-card-head"><div><h2>Parcelamento</h2><p>Mostrado nos preços ("ou 6x de R$ …") e nos textos que usam {'{parcelas}'}. Em "só à vista", os preços ficam sem parcela e os avisos da faixa do topo com {'{parcelas}'} somem; revise o quadro de serviços da página inicial.</p></div></div>
+        <div className="adm-card-head"><div><h2>Parcelamento</h2><p>Aparece nos preços ("ou 6x de R$ …") e onde houver {'{parcelas}'}.</p></div></div>
         <label className="adm-field adm-field-narrow">
           <span>Parcelas sem juros</span>
           <select value={form.installments} onChange={e => set('installments', e.target.value)}>

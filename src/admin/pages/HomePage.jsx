@@ -124,7 +124,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="adm-editor">
+    <div className="adm-editor adm-home">
       <div className="adm-page-head">
         <p className="adm-muted">Textos e imagens da página inicial. Campos marcados com * não podem ficar vazios.</p>
         <span className="adm-head-actions">
@@ -160,18 +160,20 @@ export default function HomePage() {
           <Field label="Texto pequeno (acima do título)" hint="Vazio = não mostra."><input value={form.heroEyebrow} onChange={e => set('heroEyebrow', e.target.value)} placeholder={homeDefaults.heroEyebrow} maxLength={60} /></Field>
           <Field label="Título *" hint="Enter = quebra de linha."><textarea rows={2} value={form.heroTitle} onChange={e => set('heroTitle', e.target.value)} maxLength={80} /></Field>
         </div>
-        <Field label="Texto de apoio" hint="Enter = quebra de linha (só no computador). Vazio = não mostra."><textarea rows={2} value={form.heroText} onChange={e => set('heroText', e.target.value)} maxLength={180} /></Field>
+        <div className="adm-grid-2">
+          <Field label="Texto de apoio" hint="Enter = quebra de linha (só no computador). Vazio = não mostra."><textarea rows={2} value={form.heroText} onChange={e => set('heroText', e.target.value)} maxLength={180} /></Field>
+          <Field label="Frase em letra cursiva (lado direito)" hint="Cada linha com Enter. Aparece só no computador, sobre a foto. Vazio = não mostra.">
+            <textarea rows={3} value={form.heroScript} onChange={e => set('heroScript', e.target.value)} maxLength={60} />
+          </Field>
+        </div>
         <div className="adm-grid-2">
           <Field label="Texto do botão" hint="Vazio = sem botão."><input value={form.heroButton} onChange={e => set('heroButton', e.target.value)} maxLength={40} /></Field>
           {form.heroButton.trim() ? <LinkField value={form.heroLink} onChange={v => set('heroLink', v)} /> : <span />}
         </div>
-        <Field label="Frase em letra cursiva (lado direito)" hint="Cada linha com Enter. Aparece só no computador, sobre a foto. Vazio = não mostra.">
-          <textarea rows={3} value={form.heroScript} onChange={e => set('heroScript', e.target.value)} maxLength={60} />
-        </Field>
 
         <h3 className="adm-subtitle">Benefícios (abaixo do botão)</h3>
         <p className="adm-hint">Até {MAX_BENEFITS}, com ícone. Enter = quebra de linha.</p>
-        <ul className="adm-repeat">
+        <ul className="adm-repeat adm-benefits">
           {form.heroBenefits.map((b, i) => (
             <li key={i}>
               <IconPicker value={b.icon} onChange={v => setItem('heroBenefits', i, 'icon', v)} />
