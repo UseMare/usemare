@@ -304,11 +304,15 @@ select.adm-input { appearance: auto; }
   /* divisor único em cima da linha 2 (cobre também o espaço entre as duas partes) */
   .adm-prow-switches, .adm-prow .adm-prow-actions { align-self: stretch; align-items: center; padding-top: 8px; border-top: 1px solid var(--adm-line); }
   .adm-prow .adm-prow-actions { margin-left: -10px; padding-left: 10px; }
-  .adm-prow-switches { grid-area: switches; display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; }
-  .adm-prow-switches .adm-switch { gap: 6px; }
+  /* "No site" e "Disponível" sempre lado a lado: chave e texto menores para caber */
+  .adm-prow-switches { grid-area: switches; display: flex; flex-wrap: nowrap; gap: 10px; min-width: 0; font-size: 11.5px; white-space: nowrap; }
+  .adm-prow-switches .adm-switch { gap: 5px; }
+  .adm-prow-switches .adm-switch i { width: 28px; height: 16px; }
+  .adm-prow-switches .adm-switch i::after { top: 2px; left: 2px; width: 12px; height: 12px; }
+  .adm-prow-switches .adm-switch input:checked + i::after { transform: translateX(12px); }
   .adm-prow .adm-prow-actions { grid-area: actions; justify-content: flex-end; gap: 0; }
-  .adm-prow .adm-prow-actions .adm-icon-btn { width: 32px; height: 32px; }
-  .adm-prow .adm-prow-actions .adm-icon-btn svg { width: 17px; height: 17px; }
+  .adm-prow .adm-prow-actions .adm-icon-btn { width: 30px; height: 30px; }
+  .adm-prow .adm-prow-actions .adm-icon-btn svg { width: 16px; height: 16px; }
 }
 
 /* ---------- Editor de produto ---------- */
