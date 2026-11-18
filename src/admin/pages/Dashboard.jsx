@@ -34,7 +34,7 @@ export default function Dashboard() {
   const visible = p.filter(x => x.active)
   const stats = data && [
     { label: 'Produtos no site', value: visible.length, to: `${BASE}/produtos` },
-    { label: 'Esgotados', value: visible.filter(x => !x.available).length, to: `${BASE}/produtos` },
+    { label: 'Indisponíveis', value: visible.filter(x => !x.available).length, to: `${BASE}/produtos` },
     { label: 'Em promoção', value: visible.filter(x => x.old_price > x.price).length, to: `${BASE}/produtos` },
     { label: 'Ocultos', value: p.filter(x => !x.active).length, to: `${BASE}/produtos` },
     { label: 'Avaliações pendentes', value: data.pending, to: `${BASE}/avaliacoes`, hot: data.pending > 0 },

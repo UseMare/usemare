@@ -52,10 +52,12 @@ export function Brand({ onClick, footer = false }) {
 }
 
 export function Price({ product, className = '' }) {
+  // Indisponível: não mostra preço, só o aviso.
+  if (!product.available) return <span className={`price is-unavailable ${className}`}>Indisponível</span>
   return (
     <span className={`price ${className}`}>
       {product.oldPriceLabel && <s>{product.oldPriceLabel}</s>}
-      <strong className={product.available ? '' : 'struck'}>{product.priceLabel}</strong>
+      <strong>{product.priceLabel}</strong>
     </span>
   )
 }
@@ -77,7 +79,7 @@ export function ProductCard({ product, index = 0, sizes = defaultSizes }) {
         <button className={`like ${isLiked ? 'liked' : ''}`} onClick={() => toggleLike(product.id)} aria-label={isLiked ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}><Heart fill={isLiked ? 'currentColor' : 'none'} /></button>
         {product.available
           ? <button className="add" onClick={() => addToBag(product)} aria-label={`Adicionar ${product.name} à sacola`}><ShoppingBag /></button>
-          : <span className="badge-soldout">Esgotado</span>}
+          : <span className="badge-soldout">Indisponível</span>}
       </div>
       <h3><Link to={url}>{product.name}</Link></h3>
       <Price product={product} />

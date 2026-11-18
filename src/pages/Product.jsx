@@ -51,13 +51,13 @@ function Gallery({ product }) {
           </button>
         ))}
       </div>
-      <div className="pdp-main">
+      <div className={`pdp-main ${product.available ? '' : 'is-unavailable'}`}>
         <div className="pdp-strip" ref={strip} onScroll={onScroll}>
           {product.photos.map((photo, index) => (
             <img key={photo} src={photo} alt={`${product.name} — foto ${index + 1} de ${total}`} className={index === active ? 'active' : ''} loading={index ? 'lazy' : 'eager'} />
           ))}
         </div>
-        {!product.available && <span className="badge-soldout">Esgotado</span>}
+        {!product.available && <span className="badge-soldout">Indisponível</span>}
         {total > 1 && <>
           <button className="gallery-arrow left" onClick={() => select((active - 1 + total) % total)} aria-label="Foto anterior"><ChevronLeft /></button>
           <button className="gallery-arrow right" onClick={() => select((active + 1) % total)} aria-label="Próxima foto"><ChevronRight /></button>
@@ -320,7 +320,7 @@ export default function Product() {
               </>
             ) : (
               <div className="soldout-notice" role="status">
-                <strong>Esta peça esgotou 🤍</strong>
+                <strong>Peça indisponível no momento 🤍</strong>
                 <p>No momento ela está indisponível, mas fica registrada aqui para você se inspirar. Novidades chegam sempre primeiro no nosso Instagram.</p>
                 <div className="modal-actions">
                   <a className="button outline" href={whatsappLink(restockMessage(product))} target="_blank" rel="noreferrer"><WhatsApp /> Avise-me se voltar</a>

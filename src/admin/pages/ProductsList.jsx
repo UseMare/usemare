@@ -9,7 +9,7 @@ const STATUS = [
   { key: 'todos', label: 'Todos os status', test: () => true },
   { key: 'visiveis', label: 'Visíveis no site', test: p => p.active },
   { key: 'ocultos', label: 'Ocultos', test: p => !p.active },
-  { key: 'esgotados', label: 'Esgotados', test: p => !p.available },
+  { key: 'esgotados', label: 'Indisponíveis', test: p => !p.available },
   { key: 'promocao', label: 'Em promoção', test: p => p.old_price > p.price },
 ]
 
@@ -131,7 +131,7 @@ export default function ProductsList() {
     <>
       <div className="adm-page-head">
         <div>
-          <p className="adm-muted">{counts.total} produtos · {counts.ocultos} ocultos · {counts.esgotados} esgotados</p>
+          <p className="adm-muted">{counts.total} produtos · {counts.ocultos} ocultos · {counts.esgotados} indisponíveis</p>
         </div>
         <Link className="adm-btn primary" to={`${BASE}/produtos/novo`}><Plus /> Novo produto</Link>
       </div>
@@ -197,7 +197,7 @@ export default function ProductsList() {
                     <span className="adm-prow-price-inline">{promo && <s>{formatBRL(p.old_price)}</s>}<b>{formatBRL(p.price)}</b></span>
                     <span className="adm-prow-badges">
                       {!p.active && <span className="adm-badge">Oculto</span>}
-                      {!p.available && <span className="adm-badge warn">Esgotado</span>}
+                      {!p.available && <span className="adm-badge warn">Indisponível</span>}
                       {promo && <span className="adm-badge ok">Promoção</span>}
                       {!p.product_images.length && <span className="adm-badge danger">Sem foto</span>}
                     </span>
@@ -209,7 +209,7 @@ export default function ProductsList() {
                 </span>
                 <span className="adm-prow-switches">
                   <Switch checked={p.active} onChange={v => patch(p, { active: v }, v ? 'Produto visível no site.' : 'Produto oculto: não aparece mais no site.')} label="No site" />
-                  <Switch checked={p.available} onChange={v => patch(p, { available: v }, v ? 'Produto disponível para compra.' : 'Produto marcado como esgotado.')} label="Disponível" />
+                  <Switch checked={p.available} onChange={v => patch(p, { available: v }, v ? 'Produto disponível para compra.' : 'Produto indisponível: continua no site, sem preço.')} label="Disponível" />
                 </span>
                 <span className="adm-prow-actions">
                   <Link className="adm-icon-btn" to={`${BASE}/produtos/${p.id}`} title="Editar" aria-label={`Editar ${p.name}`}><Pencil /></Link>

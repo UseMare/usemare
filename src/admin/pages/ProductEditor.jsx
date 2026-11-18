@@ -318,7 +318,7 @@ export default function ProductEditor() {
             <h2>Visibilidade</h2>
             <div className="adm-side-switches">
               <Switch checked={form.active} onChange={v => set('active', v)} label={form.active ? 'Aparece no site' : 'Oculto (não aparece no site)'} />
-              <Switch checked={form.available} onChange={v => set('available', v)} label={form.available ? 'Disponível para compra' : 'Esgotado'} />
+              <Switch checked={form.available} onChange={v => set('available', v)} label={form.available ? 'Disponível para compra' : 'Indisponível (no site, sem preço)'} />
             </div>
           </section>
 
