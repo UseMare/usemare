@@ -47,14 +47,16 @@ function AuthForm() {
       } else if (isSignup) {
         const { data, error } = await supabase.auth.signUp({
           email, password: form.senha,
-          options: { data: { full_name: form.nome.trim() }, emailRedirectTo: backHere() },
+          options: { data: { full_name: form.nome.trim() }, emailRedirectTo: window.location.origin + '/' }, // confirmou o e-mail: cai no Início já logada
         })
         if (error) throw error
         if (data.user && !data.user.identities?.length) throw { code: 'user_already_exists' }
-        if (!data.session) setNotice({ type: 'ok', text: 'Conta criada! Enviamos um link de confirmação para o seu e-mail. É só clicar nele para entrar. 🌊' })
+        if (data.session) { navigate('/', { replace: true }); return }
+        setNotice({ type: 'ok', text: 'Conta criada! Enviamos um link de confirmação para o seu e-mail. É só clicar nele para entrar. 🌊' })
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password: form.senha })
         if (error) throw error
+        navigate('/', { replace: true }) // entrou: vai para o Início
       }
     } catch (error) {
       setNotice({ type: 'error', text: friendly(error) })
