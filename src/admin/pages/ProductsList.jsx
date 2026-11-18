@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ArrowDown, ArrowUp, Copy, ExternalLink, GripVertical, ImageOff, Package, Pencil, Plus, Search, Trash2 } from 'lucide-react'
+import { ArrowDown, ArrowUp, ChevronDown, Copy, ExternalLink, GripVertical, ImageOff, Package, Pencil, Plus, Search, Trash2 } from 'lucide-react'
 import { deleteProduct, duplicateProduct, listCategories, listProducts, reorderProducts, updateProduct } from '../api.js'
 import { BASE } from '../sections.js'
 import { Loading, Switch, errorText, formatBRL, useConfirm, useToast } from '../ui.jsx'
@@ -12,6 +12,9 @@ const STATUS = [
   { key: 'esgotados', label: 'Esgotados', test: p => !p.available },
   { key: 'promocao', label: 'Em promoção', test: p => p.old_price > p.price },
 ]
+
+// Quantos produtos aparecem de cada vez (o resto vem no "Ver mais").
+const PAGE = 7
 
 const normalize = t => (t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
 
@@ -28,6 +31,7 @@ export default function ProductsList() {
   const [order, setOrder] = useState(null)          // ids na ordem nova (enquanto não salvou)
   const [dragId, setDragId] = useState(null)
   const [busy, setBusy] = useState(null)
+  const [shown, setShown] = useState(PAGE)          // quantos produtos estão na tela
 
   const load = async () => {
     try {
@@ -51,6 +55,11 @@ export default function ProductsList() {
       st.test(p))
   }, [products, order, search, category, status])
 
+  // Mudou a busca ou os filtros: volta a mostrar só o começo da lista.
+  useEffect(() => { setShown(PAGE) }, [search, category, status])
+  const onScreen = visible.slice(0, shown)
+  const remaining = visible.length - onScreen.length
+
   // Altera um campo na hora (com volta atrás se der erro).
   const patch = async (product, fields, okText) => {
     setProducts(list => list.map(p => p.id === product.id ? { ...p, ...fields } : p))
@@ -70,7 +79,11 @@ export default function ProductsList() {
     ids.splice(Math.max(0, Math.min(to, ids.length)), 0, id)
     setOrder(ids)
   }
-  const moveBy = (id, delta) => { const ids = currentIds(); move(id, ids.indexOf(id) + delta) }
+  const moveBy = (id, delta) => {
+    const to = currentIds().indexOf(id) + delta
+    move(id, to)
+    setShown(n => Math.max(n, to + 1)) // desceu o último da tela: mostra mais um para ele não sumir
+  }
   const saveOrder = async () => {
     setBusy('order')
     try {
@@ -156,7 +169,7 @@ export default function ProductsList() {
         </div>
       ) : (
         <ul className="adm-plist">
-          {visible.map((p, index) => {
+          {onScreen.map((p, index) => {
             const thumb = p.product_images[0]?.thumb_path
             const cats = p.product_categories.map(pc => categoryName[pc.category_id]).filter(Boolean)
             const promo = p.old_price > p.price
@@ -207,6 +220,13 @@ export default function ProductsList() {
             )
           })}
         </ul>
+      )}
+
+      {remaining > 0 && (
+        <div className="adm-more">
+          <span className="adm-muted">Mostrando {onScreen.length} de {visible.length}</span>
+          <button className="adm-btn outline" onClick={() => setShown(n => n + PAGE)}><ChevronDown /> Ver mais {Math.min(PAGE, remaining)}</button>
+        </div>
       )}
     </>
   )

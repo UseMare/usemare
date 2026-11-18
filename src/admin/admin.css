@@ -251,6 +251,8 @@ select.adm-input { appearance: auto; }
 
 /* ---------- Lista de produtos ---------- */
 .adm-plist { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.adm-more { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 20px; }
+.adm-more .adm-btn svg { width: 17px; height: 17px; }
 .adm-prow { display: grid; grid-template-columns: auto minmax(0, 1fr) 110px auto auto; align-items: center; gap: 14px; padding: 10px 12px; border: 1px solid var(--adm-line); border-radius: var(--adm-radius); background: var(--adm-surface); transition: box-shadow .15s, opacity .15s, border-color .15s; }
 .adm-prow:not(:has(.adm-prow-order)) { grid-template-columns: minmax(0, 1fr) 110px auto auto; }
 .adm-prow:hover { border-color: var(--adm-line-strong); box-shadow: var(--adm-shadow); }
