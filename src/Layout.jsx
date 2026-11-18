@@ -253,7 +253,7 @@ export default function Layout() {
   const navigationType = useNavigationType()
   useEffect(() => {
     setMenuOpen(false)
-    if (navigationType === 'REPLACE') return
+    if (navigationType === 'REPLACE' || location.state?.keepScroll) return // keepScroll: troca de página do catálogo (ela mesma rola)
     if (location.hash) {
       requestAnimationFrame(() => document.querySelector(location.hash)?.scrollIntoView({ behavior: 'smooth' }))
     } else {

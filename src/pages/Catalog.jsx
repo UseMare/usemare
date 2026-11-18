@@ -136,11 +136,19 @@ export default function Catalog() {
   const totalPages = Math.max(1, Math.ceil(result.length / PAGE_SIZE))
   const page = Math.min(Math.max(1, Number(params.get('pagina')) || 1), totalPages)
   const shown = result.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+  // Troca de página suave: os cards atuais somem enquanto a tela desliza até o topo da lista;
+  // depois entram os novos (com o data-reveal, um após o outro). keepScroll impede o Layout de pular para o topo do site.
+  const [leaving, setLeaving] = useState(false)
   const goToPage = n => {
+    if (leaving || n === page) return
     const next = new URLSearchParams(params)
     if (n <= 1) next.delete('pagina'); else next.set('pagina', n)
-    setParams(next)
+    setLeaving(true)
     document.querySelector('.catalog-results')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    setTimeout(() => {
+      setParams(next, { state: { keepScroll: true } })
+      setLeaving(false)
+    }, 450)
   }
 
   const activeCount = tipos.length + cores.length + (maxPrice < priceCeil ? 1 : 0) + (onlyAvailable ? 1 : 0) + (busca ? 1 : 0)
@@ -257,7 +265,7 @@ export default function Catalog() {
             )}
 
             {result.length ? (
-              <div className="catalog-grid" key={`${categoria}-${sort}-${page}`}>
+              <div className={`catalog-grid ${leaving ? 'is-leaving' : ''}`} key={`${categoria}-${sort}-${page}`}>
                 {shown.map((product, index) => <ProductCard key={product.id} product={product} index={index % 3} sizes="(max-width: 900px) 46vw, (max-width: 1200px) 30vw, 300px" />)}
               </div>
             ) : (

@@ -1409,3 +1409,6 @@ html, body { max-width: 100%; overflow-x: clip; }
 .pagination-gap { min-width: 26px; color: var(--muted); text-align: center; letter-spacing: .1em; }
 .catalog-results { scroll-margin-top: 100px; }
 
+
+/* troca de página do catálogo: os cards atuais somem juntos, de leve, antes dos novos entrarem */
+.catalog-grid.is-leaving > * { opacity: 0 !important; transform: translateY(-14px) !important; transition: opacity .4s ease, transform .4s ease !important; transition-delay: 0s !important; pointer-events: none; }
