@@ -6,7 +6,7 @@ import { usePageTitle, useShop } from '../shop.jsx'
 import { HandHeart, WhatsApp } from '../ui.jsx'
 import { helloMessage, whatsappLink } from '../store.js'
 import { supabase } from '../supabase.js'
-import { backHere, emailOk, friendly, PasswordField } from './authShared.jsx'
+import { backHere, emailOk, formatPhone, friendly, PasswordField, PHONE_ERROR, phoneDigits, phoneOk } from './authShared.jsx'
 import Account from './Account.jsx'
 
 // Login / criar conta / recuperar senha — tudo pelo Supabase Auth. Logada, mostra Minha conta (Account.jsx).
@@ -16,7 +16,7 @@ import Account from './Account.jsx'
 function AuthForm({ checkout }) {
   const navigate = useNavigate()
   const [mode, setMode] = useState(checkout ? 'criar' : 'entrar') // entrar | criar | esqueci
-  const [form, setForm] = useState({ nome: '', email: '', senha: '' })
+  const [form, setForm] = useState({ nome: '', whatsapp: '', email: '', senha: '' })
   const [errors, setErrors] = useState({})
   const [notice, setNotice] = useState(null)
   const [busy, setBusy] = useState(false)
@@ -24,13 +24,17 @@ function AuthForm({ checkout }) {
 
   const isSignup = mode === 'criar'
   const isForgot = mode === 'esqueci'
-  const set = key => event => { setForm(f => ({ ...f, [key]: event.target.value })); setErrors(e => ({ ...e, [key]: null })) }
+  const set = key => event => {
+    const value = key === 'whatsapp' ? formatPhone(event.target.value) : event.target.value
+    setForm(f => ({ ...f, [key]: value })); setErrors(e => ({ ...e, [key]: null }))
+  }
   const switchMode = value => { setMode(value); setErrors({}); setNotice(null) }
 
   const submit = async event => {
     event.preventDefault()
     const next = {}
     if (isSignup && form.nome.trim().length < 2) next.nome = 'Conta pra gente o seu nome 🤍'
+    if (isSignup && !phoneOk(form.whatsapp)) next.whatsapp = PHONE_ERROR
     if (!emailOk(form.email)) next.email = 'Digite um e-mail válido.'
     if (!isForgot && form.senha.length < (isSignup ? 8 : 1)) next.senha = isSignup ? 'A senha precisa ter pelo menos 8 caracteres.' : 'Digite sua senha.'
     setErrors(next)
@@ -48,7 +52,8 @@ function AuthForm({ checkout }) {
       } else if (isSignup) {
         const { data, error } = await supabase.auth.signUp({
           email, password: form.senha,
-          options: { data: { full_name: form.nome.trim() }, emailRedirectTo: window.location.origin + '/' }, // confirmou o e-mail: cai no Início já logada
+          // phone: o banco grava no perfil (handle_new_user), só os 11 dígitos.
+          options: { data: { full_name: form.nome.trim(), phone: phoneDigits(form.whatsapp) }, emailRedirectTo: window.location.origin + '/' },
         })
         if (error) throw error
         if (data.user && !data.user.identities?.length) throw { code: 'user_already_exists' }
@@ -96,6 +101,14 @@ function AuthForm({ checkout }) {
             <span>Nome</span>
             <input value={form.nome} onChange={set('nome')} autoComplete="name" placeholder="Como podemos te chamar?" />
             {errors.nome && <small>{errors.nome}</small>}
+          </label>
+        )}
+        {isSignup && (
+          <label className={`field ${errors.whatsapp ? 'invalid' : ''}`}>
+            <span>WhatsApp</span>
+            <input type="tel" inputMode="numeric" value={form.whatsapp} onChange={set('whatsapp')} autoComplete="tel-national"
+              placeholder="(85) 99999-9999" maxLength={15} />
+            {errors.whatsapp && <small>{errors.whatsapp}</small>}
           </label>
         )}
         <label className={`field ${errors.email ? 'invalid' : ''}`}>

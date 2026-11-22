@@ -4,6 +4,7 @@ import { useShop } from './shop.jsx'
 import { WhatsApp } from './ui.jsx'
 import { orderMessage, whatsappLink } from './store.js'
 import { productTypeName, products } from './products.js'
+import { formatPhone } from './pages/authShared.jsx'
 
 // Finalizar pedido: só com conta. Logada → abre o WhatsApp com o pedido pronto.
 // Sem conta → guarda o pedido nesta aba e leva para /entrar?finalizar=1 (criar conta ou entrar);
@@ -24,7 +25,8 @@ export const takePendingOrder = () => {
     .filter(item => item.product?.available && item.quantity > 0)
 }
 
-export const orderLink = (items, customer) => whatsappLink(orderMessage(items, customer, productTypeName))
+export const orderLink = (items, customer) =>
+  whatsappLink(orderMessage(items, { ...customer, phone: formatPhone(customer.phone) }, productTypeName))
 
 export const customerOf = (user, profile) => ({
   name: profile?.full_name || user?.user_metadata?.full_name || '',

@@ -6,7 +6,7 @@ import { ProductCard, WhatsApp } from '../ui.jsx'
 import { helloMessage, whatsappLink } from '../store.js'
 import { products } from '../products.js'
 import { supabase } from '../supabase.js'
-import { backHere, emailOk, friendly, PasswordField } from './authShared.jsx'
+import { backHere, emailOk, formatPhone, friendly, PasswordField, PHONE_ERROR, phoneDigits, phoneOk } from './authShared.jsx'
 
 // Minha conta (cliente logada): cabeçalho com foto, abas Perfil / Favoritos / E-mail e senha
 // e o cartão de ações rápidas. A foto fica no bucket "avatares", na pasta com o id da cliente.
@@ -116,16 +116,16 @@ function ProfileTab({ avatar, goTo }) {
   const [busy, setBusy] = useState(false)
 
   useEffect(() => {
-    setForm({ full_name: profile?.full_name || '', phone: profile?.phone || '' })
+    setForm({ full_name: profile?.full_name || '', phone: formatPhone(profile?.phone) })
   }, [profile?.full_name, profile?.phone])
 
-  const dirty = form.full_name.trim() !== (profile?.full_name || '') || form.phone.replace(/\D/g, '') !== (profile?.phone || '')
+  const dirty = form.full_name.trim() !== (profile?.full_name || '') || phoneDigits(form.phone) !== phoneDigits(profile?.phone)
 
   const save = async event => {
     event.preventDefault()
-    const phone = form.phone.replace(/\D/g, '')
+    const phone = phoneDigits(form.phone)
     if (form.full_name.trim().length < 2) { setNotice({ type: 'error', text: 'Conta pra gente o seu nome 🤍' }); return }
-    if (phone && (phone.length < 10 || phone.length > 13)) { setNotice({ type: 'error', text: 'WhatsApp com DDD, só números. Ex.: 85999998888' }); return }
+    if (phone && !phoneOk(phone)) { setNotice({ type: 'error', text: PHONE_ERROR }); return }
     setBusy(true)
     const changes = { full_name: form.full_name.trim(), phone: phone || null }
     const { error } = await supabase.from('profiles').update(changes).eq('id', user.id)
@@ -135,7 +135,10 @@ function ProfileTab({ avatar, goTo }) {
     setNotice({ type: 'ok', text: 'Dados salvos! 🤎' })
   }
 
-  const set = key => event => { setForm(f => ({ ...f, [key]: event.target.value })); setNotice(null) }
+  const set = key => event => {
+    const value = key === 'phone' ? formatPhone(event.target.value) : event.target.value
+    setForm(f => ({ ...f, [key]: value })); setNotice(null)
+  }
 
   return (
     <section className="acc-card">
@@ -155,7 +158,7 @@ function ProfileTab({ avatar, goTo }) {
           </div>
           <label className="acc-field">
             <span>WhatsApp</span>
-            <div className="acc-input editable"><input value={form.phone} onChange={set('phone')} autoComplete="tel" inputMode="tel" placeholder="DDD + número" /><Pencil /></div>
+            <div className="acc-input editable"><input type="tel" value={form.phone} onChange={set('phone')} autoComplete="tel-national" inputMode="numeric" placeholder="(85) 99999-9999" maxLength={15} /><Pencil /></div>
           </label>
           <div className="acc-field">
             <span>Tipo de conta</span>

@@ -6,6 +6,19 @@ import { Eye, EyeOff } from 'lucide-react'
 export const emailOk = value => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value.trim())
 export const backHere = () => `${window.location.origin}/entrar`
 
+// Celular/WhatsApp: DDD (2 dígitos) + 9 dígitos começando com 9 → "(85) 99951-9515".
+// No banco fica só com os dígitos: "85999519515".
+export const phoneDigits = value => String(value || '').replace(/\D/g, '').replace(/^55(?=\d{11}$)/, '').slice(0, 11)
+export const phoneOk = value => /^[1-9]{2}9\d{8}$/.test(phoneDigits(value))
+export const formatPhone = value => {
+  const d = phoneDigits(value)
+  if (!d) return ''
+  if (d.length <= 2) return `(${d}`
+  if (d.length <= 7) return `(${d.slice(0, 2)}) ${d.slice(2)}`
+  return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`
+}
+export const PHONE_ERROR = 'Digite o WhatsApp com DDD: 2 dígitos do DDD + 9 dígitos do número. Ex.: (85) 99951-9515'
+
 // Mensagens do Supabase traduzidas para o tom da Maré.
 export const friendly = error => {
   const code = error?.code || ''
