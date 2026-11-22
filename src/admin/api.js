@@ -5,7 +5,7 @@ import { supabase } from '../supabase.js'
 
 const must = ({ data, error }) => { if (error) throw error; return data }
 
-export const PRODUCT_COLUMNS = `id, code, slug, name, kind, brand, price, old_price, available, active, sort_order, description,
+export const PRODUCT_COLUMNS = `id, code, slug, old_slugs, name, kind, brand, price, old_price, available, active, sort_order, description,
   colors, sizes, details, flavors, package_size, usage, notice, created_at, updated_at,
   product_images ( id, path, thumb_path, alt, position ),
   product_categories ( category_id )`
@@ -62,7 +62,7 @@ export async function duplicateProduct(product, sortOrder) {
   const code = await nextProductCode()
   const name = `${product.name} (cópia)`.slice(0, 120)
   const slug = await uniqueSlug(name)
-  const { id, product_images, product_categories, created_at, updated_at, code: _c, slug: _s, ...fields } = product
+  const { id, product_images, product_categories, created_at, updated_at, code: _c, slug: _s, old_slugs: _o, ...fields } = product
   const copy = must(await supabase.from('products').insert({ ...fields, code, slug, name, active: false, sort_order: sortOrder }).select('id').single())
   if (product_categories?.length) {
     must(await supabase.from('product_categories').insert(product_categories.map(pc => ({ product_id: copy.id, category_id: pc.category_id }))))

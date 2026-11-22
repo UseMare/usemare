@@ -10,7 +10,7 @@ import { setContent } from './content.js'
 
 const CACHE_KEY = 'mare-catalogo-v2'
 
-const PRODUCT_FIELDS = `id, code, slug, name, kind, brand, price, old_price, available, sort_order, description,
+const PRODUCT_FIELDS = `id, code, slug, old_slugs, name, kind, brand, price, old_price, available, sort_order, description,
   colors, sizes, details, flavors, package_size, usage, notice,
   product_images ( path, thumb_path, position ),
   product_categories ( category_id )`
@@ -28,6 +28,7 @@ const fromRow = (row, slugById) => {
     id: row.code,
     uuid: row.id,
     slug: row.slug,
+    oldSlugs: row.old_slugs || [], // endereços antigos: ainda abrem e redirecionam para o atual
     name: row.name,
     kind: row.kind,
     brand: row.brand,

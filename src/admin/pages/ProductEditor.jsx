@@ -45,6 +45,19 @@ const sortSizes = sizes => [...sizes].sort((a, b) => {
 
 
 // Confere o formulário e devolve os problemas (campo → mensagem).
+// Endereço atual ainda serve para o nome? (igual ao nome, ou nome + "-2", "-3"… quando já existia outro igual)
+const slugMatchesName = (slug, name) => { const root = slugify(name); return slug === root || new RegExp(`^${root}-\\d+$`).test(slug) }
+const slugPreview = (name, row) => (row && slugMatchesName(row.slug, name)) ? row.slug : (slugify(name) || '…')
+
+// Campos de endereço a gravar: novo produto ganha um; renomeado ganha outro e guarda o antigo em old_slugs.
+const slugFields = async (name, row) => {
+  if (!row) return { slug: await uniqueSlug(name, 'products') }
+  if (slugMatchesName(row.slug, name)) return {}
+  const slug = await uniqueSlug(name, 'products', row.id)
+  const old_slugs = [...new Set([...(row.old_slugs || []), row.slug])].filter(s => s !== slug)
+  return { slug, old_slugs }
+}
+
 const validate = (form, categories) => {
   const errors = {}
   if (form.name.trim().length < 2) errors.name = 'Escreva o nome do produto.'
@@ -153,9 +166,9 @@ export default function ProductEditor() {
       const isRoupa = form.kind === 'roupa'
       const fields = {
         name: form.name.trim(),
-        // Endereço da página: criado sozinho pelo nome no cadastro e depois fixo (renomear o produto
-        // não muda o link, para não quebrar links já compartilhados ou guardados pelo Google).
-        slug: isNew ? await uniqueSlug(form.name, 'products') : row.slug,
+        // Endereço da página acompanha o nome. Ao renomear, o endereço antigo vai para old_slugs
+        // e continua abrindo (o site redireciona para o novo), então nenhum link compartilhado quebra.
+        ...(await slugFields(form.name, row)),
         kind: form.kind,
         price: toNumber(form.price),
         old_price: form.old_price ? toNumber(form.old_price) : null,
@@ -235,8 +248,9 @@ export default function ProductEditor() {
               <input value={form.name} onChange={e => setName(e.target.value)} placeholder="Ex.: Conjunto Maré Move Lilás" maxLength={120} />
             </Field>
             <p className="adm-hint adm-slug-info">
-              Endereço da página: <b>usemare.com.br/produto/{isNew ? (slugify(form.name) || '…') : row.slug}</b>
-              {isNew ? ' — criado sozinho a partir do nome.' : ' — fica fixo mesmo se o nome mudar, para não quebrar links já compartilhados.'}
+              Endereço da página: <b>usemare.com.br/produto/{slugPreview(form.name, row)}</b>
+              {' — acompanha o nome sozinho.'}
+              {!isNew && slugPreview(form.name, row) !== row.slug && ' Links antigos continuam funcionando e levam para o novo endereço.'}
             </p>
             <div className="adm-field">
               <span>Tipo de ficha</span>

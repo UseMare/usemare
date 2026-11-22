@@ -543,4 +543,6 @@ export const spotlightProducts = () => store.spotlight.enabled
   ? store.spotlight.ids.map(id => products.find(p => p.uuid === id || p.id === id)).filter(p => p?.available).slice(0, 5)
   : []
 
+// Procura pelo endereço atual; se não achar, por um endereço antigo (produto renomeado).
 export const findProduct = slug => products.find(product => product.slug === slug)
+  || products.find(product => product.oldSlugs?.includes(slug))

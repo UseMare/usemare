@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { Link, useParams } from 'react-router-dom'
+import { Link, Navigate, useLocation, useParams } from 'react-router-dom'
 import { ArrowRight, ChevronLeft, ChevronRight, Heart, MessageCircleHeart, Ruler, ShoppingBag, Star, Truck, X, ZoomIn } from 'lucide-react'
 import { collectionLabel, collectionLink, findProduct, productCollection, productTypeName, products } from '../products.js'
 import { usePageTitle, useShop } from '../shop.jsx'
@@ -257,10 +257,13 @@ function Reviews({ product }) {
 
 export default function Product() {
   const { slug } = useParams()
+  const loc = useLocation()
   const product = findProduct(slug)
   const { addToBag, liked, toggleLike } = useShop()
   usePageTitle(product?.name)
   if (!product) return <NotFound />
+  // Link antigo (produto renomeado): leva para o endereço atual, sem deixar o antigo no histórico.
+  if (product.slug !== slug) return <Navigate to={`/produto/${product.slug}${loc.search}${loc.hash}`} replace />
 
   const isLiked = liked.includes(product.id)
   const [intro, ...rest] = product.description.split('\n\n')
