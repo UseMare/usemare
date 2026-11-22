@@ -168,7 +168,7 @@ export default function Categories() {
   return (
     <>
       <div className="adm-page-head">
-        <p className="adm-muted">A ordem aqui é a ordem dos botões de categoria no catálogo do site.</p>
+        <p className="adm-muted adm-title-info">Coleções e tipos de peça da loja.<InfoTip>A ordem aqui é a ordem dos botões de categoria no catálogo do site.</InfoTip></p>
         <span className="adm-head-actions">
           <button className="adm-btn outline" onClick={() => setEditing(blank('tipo'))}><Plus /> Novo tipo de peça</button>
           <button className="adm-btn primary" onClick={() => setEditing(blank('colecao'))}><Plus /> Nova coleção</button>

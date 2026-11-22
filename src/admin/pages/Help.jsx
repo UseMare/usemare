@@ -124,7 +124,7 @@ const topics = [
 export default function Help() {
   return (
     <>
-      <p className="adm-muted adm-intro">Guia rápido de cada parte do painel. Clique num assunto para abrir.</p>
+      <p className="adm-muted adm-intro">Guia rápido de cada parte do painel.</p>
       <div className="adm-help">
         {topics.map((t, i) => (
           <details key={t.title} className="adm-card" open={i === 0}>

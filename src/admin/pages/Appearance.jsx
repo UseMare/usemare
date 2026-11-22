@@ -114,7 +114,7 @@ export default function Appearance() {
   return (
     <div className="adm-editor">
       <div className="adm-page-head">
-        <p className="adm-muted">Logotipo do site e tudo o que aparece no rodapé.</p>
+        <p className="adm-muted">Logo do site e rodapé.</p>
         <span className="adm-head-actions">
           <button className="adm-btn ghost small" onClick={restoreFooter} disabled={saving}>Voltar o rodapé ao padrão</button>
           <a className="adm-btn outline small" href="/#conteudo" target="_blank" rel="noreferrer"><ExternalLink /> Ver no site</a>

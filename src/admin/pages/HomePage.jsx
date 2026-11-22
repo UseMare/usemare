@@ -136,7 +136,7 @@ export default function HomePage() {
   return (
     <div className="adm-editor adm-home">
       <div className="adm-page-head">
-        <p className="adm-muted">Textos e imagens da página inicial. Campos marcados com * não podem ficar vazios.</p>
+        <p className="adm-muted adm-title-info">Textos e imagens do Início.<InfoTip>Campos marcados com * não podem ficar vazios.</InfoTip></p>
         <span className="adm-head-actions">
           <button className="adm-btn ghost small" onClick={restoreDefaults} disabled={saving}>Voltar ao padrão</button>
           <a className="adm-btn outline small" href="/" target="_blank" rel="noreferrer"><ExternalLink /> Ver página inicial</a>
