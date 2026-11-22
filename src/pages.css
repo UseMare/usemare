@@ -1357,3 +1357,9 @@ html, body { max-width: 100%; overflow-x: clip; }
   .button svg, .button.small svg, .button.outline svg { width: 16px; height: 16px; }
   .button.whatsapp svg { width: 17px; height: 17px; }
 }
+
+/* Galeria (computador): as fotos ficam empilhadas; só a visível recebe clique / "Salvar imagem".
+   Antes a última foto (invisível) ficava por cima e era sempre a que o navegador salvava. */
+.pdp-strip img { pointer-events: none; }
+.pdp-strip img.active { position: relative; z-index: 1; pointer-events: auto; }
+@media (max-width: 900px) { .pdp-strip img { pointer-events: auto; } } /* celular: fotos lado a lado, deslizáveis */
