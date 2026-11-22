@@ -1363,3 +1363,14 @@ html, body { max-width: 100%; overflow-x: clip; }
 .pdp-strip img { pointer-events: none; }
 .pdp-strip img.active { position: relative; z-index: 1; pointer-events: auto; }
 @media (max-width: 900px) { .pdp-strip img { pointer-events: auto; } } /* celular: fotos lado a lado, deslizáveis */
+
+/* Busca do topo mais estreita (texto 15% menor), liberando espaço no cabeçalho (pedido de 22/11) */
+@media (min-width: 901px) {
+  .header-inner .search { flex: 0 1 188px; min-width: 170px; height: 38px; padding-inline: 13px; gap: 7px; }
+  .header-inner .search input { font-size: 12.3px; }
+  .header-inner .search svg { width: 15px; height: 15px; }
+}
+@media (min-width: 901px) and (max-width: 1280px) {
+  .header-inner .search { min-width: 158px; padding-inline: 12px; }
+  .header-inner .search input { font-size: 11.5px; }
+}
