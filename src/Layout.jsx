@@ -5,6 +5,7 @@ import { useRevealObserver, useShop } from './shop.jsx'
 import { Brand, Instagram, SmartLink, WhatsApp } from './ui.jsx'
 import { helloMessage, store, whatsappLink } from './store.js'
 import { CheckoutButton } from './checkout.jsx'
+import { legalPages } from './pages/Legal.jsx'
 import { spotlightProducts } from './products.js'
 import { supabase } from './supabase.js'
 import AlphaCredit from './alpha-credit/AlphaCredit.jsx'
@@ -338,7 +339,11 @@ export default function Layout() {
           ))}
           <div data-reveal style={{ '--i': footer.columns.length + 1 }}><h3>{footer.newsletterTitle}</h3>{footer.newsletterText && <p>{footer.newsletterText}</p>}<Newsletter /></div>
         </div>
-        <div className="copyright"><div className="shell"><p>{footer.copyright.replace(/\{ano\}/g, new Date().getFullYear())}</p><AlphaCredit /></div></div>
+        <div className="copyright"><div className="shell">
+          <p>{footer.copyright.replace(/\{ano\}/g, new Date().getFullYear())}</p>
+          <nav className="legal-links" aria-label="Políticas da loja">{legalPages.map(p => <Link key={p.path} to={p.path}>{p.label}</Link>)}</nav>
+          <AlphaCredit />
+        </div></div>
       </footer>
 
       <BagDrawer />

@@ -6,6 +6,7 @@ import { aboutDefaults, howtoDefaults } from '../../pages/About.jsx'
 import { catalogDefaults } from '../../pages/Catalog.jsx'
 import { promotionsDefaults } from '../../pages/Promotions.jsx'
 import { announcementDefaults } from '../../Layout.jsx'
+import { exchangeDefaults, legalPages, privacyDefaults, termsDefaults } from '../../pages/Legal.jsx'
 
 // Textos das páginas: uma aba por página. Cada aba é um esquema de campos (ver ContentEditor).
 
@@ -119,6 +120,27 @@ const tabs = [
         ] },
     ],
   },
+  ...[
+    { key: 'privacidade', contentKey: 'legal_privacidade', defaults: privacyDefaults },
+    { key: 'trocas', contentKey: 'legal_trocas', defaults: exchangeDefaults },
+    { key: 'termos', contentKey: 'legal_termos', defaults: termsDefaults },
+  ].map(t => {
+    const page = legalPages.find(p => p.contentKey === t.contentKey)
+    return {
+      ...t, label: page.label, previewUrl: page.path,
+      intro: `Página "${page.label}" (${page.path}). O link fica só no rodapé, na linha de baixo. Ao mudar regras, atualize também a data.`,
+      schema: [
+        { key: 'title', label: 'Título', type: 'text', required: true, max: 60 },
+        { key: 'updated', label: 'Atualizada em', type: 'text', max: 40, hint: 'Ex.: 22 de novembro de 2026.' },
+        { key: 'intro', label: 'Introdução', type: 'textarea', rows: 4, max: 800 },
+        { key: 'sections', label: 'Seções', type: 'list', min: 1, max: 15, itemLabel: 'Seção', addLabel: 'Adicionar seção',
+          hint: 'Linha em branco separa parágrafos. Comece a linha com "- " para virar item de lista.', item: [
+            { key: 'title', label: 'Título da seção', type: 'text', required: true, max: 80 },
+            { key: 'text', label: 'Texto', type: 'textarea', rows: 8, required: true, max: 3000 },
+          ] },
+      ],
+    }
+  }),
 ]
 
 export default function PageTexts() {

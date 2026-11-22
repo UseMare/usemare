@@ -12,6 +12,7 @@ import About from './pages/About.jsx'
 import Promotions from './pages/Promotions.jsx'
 import NotFound from './pages/NotFound.jsx'
 import Login from './pages/Login.jsx'
+import LegalPage, { legalPages } from './pages/Legal.jsx'
 
 // Painel da loja: só é baixado quando alguém abre /painel-loja.
 const AdminApp = lazy(() => import('./admin/AdminApp.jsx'))
@@ -23,6 +24,7 @@ const AdminApp = lazy(() => import('./admin/AdminApp.jsx'))
 //   /promocoes            Promoções
 //   /sobre                Sobre nós (+ #como-comprar)
 //   /entrar               Login / criar conta
+//   /politica-de-privacidade, /trocas-e-devolucoes, /termos-de-uso   (links só no rodapé)
 //   /painel-loja          Painel de administração (só contas admin)
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -39,6 +41,7 @@ createRoot(document.getElementById('root')).render(
                 <Route path="promocoes" element={<Promotions />} />
                 <Route path="sobre" element={<About />} />
                 <Route path="entrar" element={<Login />} />
+                {legalPages.map(p => <Route key={p.path} path={p.path.slice(1)} element={<LegalPage contentKey={p.contentKey} />} />)}
                 <Route path="*" element={<NotFound />} />
               </Route>
             </Routes>
