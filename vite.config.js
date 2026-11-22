@@ -24,12 +24,27 @@ const preloadFonts = {
   },
 }
 
+// Desempenho: o CSS principal não trava a primeira pintura. Vira um preload que se aplica
+// sozinho ao chegar (baixa em paralelo com o JS); o main.jsx espera ele antes de desenhar.
+const cssSemBloqueio = {
+  name: 'mare-css-sem-bloqueio',
+  transformIndexHtml: {
+    order: 'post',
+    handler(html, ctx) {
+      if (!ctx.bundle) return html
+      return html.replace(/<link rel="stylesheet" crossorigin href="(\/assets\/index-[\w-]+\.css)">/, (_, href) =>
+        `<link rel="preload" as="style" crossorigin href="${href}" id="css-principal" onload="this.onload=null;this.rel='stylesheet'">` +
+        `<noscript><link rel="stylesheet" crossorigin href="${href}"></noscript>`)
+    },
+  },
+}
+
 // O react-router só aponta para a versão de desenvolvimento (com avisos e checagens extras).
 // No build do site usamos a versão de produção, que é menor e mais rápida.
 const routerProd = name => fileURLToPath(new URL(`./node_modules/react-router/dist/production/${name}`, import.meta.url))
 
 export default defineConfig(({ command }) => ({
-  plugins: [preloadFonts],
+  plugins: [preloadFonts, cssSemBloqueio],
   resolve: command === 'build' ? {
     alias: [
       { find: /^react-router$/, replacement: routerProd('index.mjs') },
