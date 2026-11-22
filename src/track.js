@@ -30,13 +30,15 @@ const origin = () => {
 }
 
 let last = ''
+let firstLoad = true // origem (Instagram, Google…) vale para a página que abriu o site nesta aba
 export function trackPage(path) {
   if (!hasSupabase || path === last || path.startsWith('/painel-loja')) return
   if (navigator.webdriver || BOT.test(navigator.userAgent)) return
   if (read(localStorage, 'mare-nao-contar')) return // aparelho de quem administra a loja
   last = path
-  const entry = !read(sessionStorage, 'mare-visita')
-  if (entry) write(sessionStorage, 'mare-visita', '1')
+  // Quem decide se é visita nova é o banco: só depois de 3 h sem acesso deste aparelho.
+  const entry = firstLoad
+  firstLoad = false
   const params = {
     p_visitor: visitorId(),
     p_path: path,
