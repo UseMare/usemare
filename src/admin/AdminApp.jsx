@@ -3,7 +3,7 @@ import { Link, NavLink, Navigate, Route, Routes, useLocation } from 'react-route
 import { ChevronDown, ChevronRight, CircleHelp, ExternalLink, LogOut, Menu, PanelLeftClose, PanelLeftOpen, X } from 'lucide-react'
 import './admin.css'
 import { logo } from '../ui.jsx'
-import AdminLogin, { AdminDenied, AdminOffline } from './AdminLogin.jsx'
+import AdminLogin, { AcceptInvite, AdminDenied, AdminOffline } from './AdminLogin.jsx'
 import { signOut, useAdminAuth } from './useAdminAuth.js'
 import { BASE, navGroups, sections } from './sections.js'
 import Dashboard from './pages/Dashboard.jsx'
@@ -204,6 +204,7 @@ function Shell({ session, profile }) {
 
 export default function AdminApp() {
   const auth = useAdminAuth()
+  const { pathname } = useLocation()
 
   // O painel não deve aparecer no Google.
   useEffect(() => {
@@ -214,6 +215,8 @@ export default function AdminApp() {
     return () => meta.remove()
   }, [])
 
+  if (auth.status === 'offline') return <AdminOffline />
+  if (pathname.replace(/\/$/, '') === `${BASE}/convite`) return <AcceptInvite />
   if (auth.status === 'loading') return <div className="adm-loading" role="status"><span className="adm-spinner" /> Carregando painel…</div>
   if (auth.status === 'offline') return <AdminOffline />
   if (auth.status === 'signed-out') return <AdminLogin />

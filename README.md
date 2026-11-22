@@ -33,8 +33,17 @@ produtos e fotos (com recorte), categorias, destaques, página inicial, textos d
 logo e rodapé, WhatsApp/Instagram/parcelas, avaliações e newsletter. O próprio painel tem
 uma página **Ajuda** (ícone **?** no topo) com o passo a passo.
 
-Quem pode entrar: contas com `role = 'admin'` em `profiles` (os e-mails em `private.admin_emails`
-viram admin ao se cadastrar). Todas as gravações passam pelas policies RLS do banco.
+Quem pode entrar: contas com `role = 'admin'` em `profiles`. **Só vira admin quem entra por convite**:
+no Supabase, Authentication → Users → **Invite user** com o e-mail da pessoa. Ela recebe o e-mail
+"Aceitar convite", cria a senha em `/painel-loja/convite` e já entra no painel. Quem se cadastra
+pelo site (`/entrar`) é sempre cliente: entra na hora, sem e-mail de confirmação. Todas as gravações
+passam pelas policies RLS do banco.
+
+## E-mails de conta
+
+Saem pelo Resend como "Maré" <nao-responda@usemare.com.br>. Os modelos ficam em
+`supabase/email-templates/` (gerados por `gerar.mjs`, no estilo dos e-mails da Coaph) e estão
+aplicados no Supabase (Authentication → Email Templates).
 
 Onde cada coisa fica no banco (para referência técnica):
 

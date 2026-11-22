@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { ArrowLeft, Eye, EyeOff, LockKeyhole, LogOut, ShieldAlert } from 'lucide-react'
+import React, { useEffect, useRef, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { ArrowLeft, Eye, EyeOff, LockKeyhole, LogOut, MailCheck, ShieldAlert } from 'lucide-react'
 import { supabase } from '../supabase.js'
 import { logo } from '../ui.jsx'
 import { signOut } from './useAdminAuth.js'
@@ -74,6 +74,82 @@ export default function AdminLogin() {
 
         <button className="adm-btn primary block" disabled={busy}>{busy ? 'Entrando…' : 'Entrar'}</button>
         <button type="button" className="adm-link" onClick={forgot} disabled={busy}>Esqueci minha senha</button>
+      </form>
+    </AuthCard>
+  )
+}
+
+// Convite de admin (/painel-loja/convite?token_hash=...&type=invite), vindo do e-mail
+// "Aceitar convite". Valida o convite, a pessoa cria a senha e já entra no painel.
+// Quem vira admin é decidido no banco (só contas criadas por convite), não aqui.
+export function AcceptInvite() {
+  const navigate = useNavigate()
+  const [step, setStep] = useState('checking') // checking | password | invalid
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [repeat, setRepeat] = useState('')
+  const [show, setShow] = useState(false)
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState(null)
+  const started = useRef(false)
+
+  useEffect(() => {
+    if (started.current) return // o link só pode ser usado uma vez; evita validar duas vezes
+    started.current = true
+    const params = new URLSearchParams(window.location.search)
+    const token_hash = params.get('token_hash')
+    if (!token_hash || params.get('type') !== 'invite') { setStep('invalid'); return }
+    supabase.auth.verifyOtp({ token_hash, type: 'invite' }).then(({ data, error: e }) => {
+      if (e || !data.session) { setStep('invalid'); return }
+      window.history.replaceState(null, '', window.location.pathname) // tira o código do endereço
+      setEmail(data.user?.email || '')
+      setStep('password')
+    })
+  }, [])
+
+  const save = async event => {
+    event.preventDefault()
+    if (password.length < 8) return setError('A senha precisa ter pelo menos 8 caracteres.')
+    if (!/[a-zA-Z]/.test(password) || !/\d/.test(password)) return setError('Use letras e números na senha.')
+    if (password !== repeat) return setError('As duas senhas não são iguais.')
+    setBusy(true); setError(null)
+    const { error: e } = await supabase.auth.updateUser({ password })
+    setBusy(false)
+    if (e) return setError(/weak|characters/i.test(e.message) ? 'Senha fraca. Use pelo menos 8 caracteres, misturando letras e números.' : 'Não foi possível salvar a senha. Tente de novo.')
+    navigate('/painel-loja', { replace: true })
+  }
+
+  if (step === 'checking') return <div className="adm-loading" role="status"><span className="adm-spinner" /> Validando convite…</div>
+
+  if (step === 'invalid') return (
+    <AuthCard>
+      <p className="adm-eyebrow is-warn"><ShieldAlert /> Convite inválido</p>
+      <h1>Este convite não vale mais</h1>
+      <p className="adm-auth-sub">O link já foi usado ou expirou. Peça para a administração enviar um novo convite. Se você já criou sua senha, é só entrar normalmente.</p>
+      <Link className="adm-btn primary block" to="/painel-loja">Ir para o login do painel</Link>
+    </AuthCard>
+  )
+
+  return (
+    <AuthCard>
+      <p className="adm-eyebrow"><MailCheck /> Convite aceito</p>
+      <h1>Crie sua senha</h1>
+      <p className="adm-auth-sub">Bem-vinda à equipe da Maré! Escolha a senha que você vai usar para entrar no painel com <b>{email}</b>.</p>
+      <form onSubmit={save} noValidate>
+        <label className="adm-field">
+          <span>Nova senha</span>
+          <div className="adm-input-icon">
+            <input type={show ? 'text' : 'password'} value={password} onChange={e => { setPassword(e.target.value); setError(null) }} autoComplete="new-password" autoFocus />
+            <button type="button" onClick={() => setShow(s => !s)} aria-label={show ? 'Esconder senha' : 'Mostrar senha'}>{show ? <EyeOff /> : <Eye />}</button>
+          </div>
+          <small>Pelo menos 8 caracteres, com letras e números.</small>
+        </label>
+        <label className="adm-field">
+          <span>Repita a senha</span>
+          <input type={show ? 'text' : 'password'} value={repeat} onChange={e => { setRepeat(e.target.value); setError(null) }} autoComplete="new-password" />
+        </label>
+        {error && <p className="adm-notice is-error" role="alert">{error}</p>}
+        <button className="adm-btn primary block" disabled={busy}>{busy ? 'Salvando…' : 'Salvar senha e entrar'}</button>
       </form>
     </AuthCard>
   )
