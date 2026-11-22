@@ -24,8 +24,8 @@ const preloadFonts = {
   },
 }
 
-// Desempenho: o CSS principal não trava a primeira pintura. Vira um preload que se aplica
-// sozinho ao chegar (baixa em paralelo com o JS); o main.jsx espera ele antes de desenhar.
+// Desempenho: o CSS principal não trava a primeira pintura. Vira um preload (baixa em paralelo
+// com o JS) e o main.jsx o aplica e espera antes de desenhar. Sem onload no HTML: a CSP bloqueia.
 const cssSemBloqueio = {
   name: 'mare-css-sem-bloqueio',
   transformIndexHtml: {
@@ -33,7 +33,7 @@ const cssSemBloqueio = {
     handler(html, ctx) {
       if (!ctx.bundle) return html
       return html.replace(/<link rel="stylesheet" crossorigin href="(\/assets\/index-[\w-]+\.css)">/, (_, href) =>
-        `<link rel="preload" as="style" crossorigin href="${href}" id="css-principal" onload="this.onload=null;this.rel='stylesheet'">` +
+        `<link rel="preload" as="style" crossorigin href="${href}" id="css-principal">` +
         `<noscript><link rel="stylesheet" crossorigin href="${href}"></noscript>`)
     },
   },

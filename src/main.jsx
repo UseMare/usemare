@@ -50,13 +50,14 @@ const AdminApp = lazy(() => import('./admin/AdminApp.jsx'))
 // O site só é desenhado quando ele já está aplicado, para nada aparecer sem estilo.
 const cssReady = new Promise(resolve => {
   const link = document.getElementById('css-principal')
-  const applied = () => link && [...document.styleSheets].some(sheet => sheet.href === link.href)
-  if (!link || applied()) return resolve()
-  const check = () => { if (applied()) resolve() }
-  link.addEventListener('load', () => requestAnimationFrame(check))
-  new MutationObserver(() => link.addEventListener('load', check)).observe(link, { attributes: true, attributeFilter: ['rel'] })
-  link.addEventListener('error', resolve)
-  setTimeout(resolve, 4000) // garantia: nunca deixa o site em branco
+  if (!link) return resolve()
+  const applied = () => [...document.styleSheets].some(sheet => sheet.href === link.href)
+  if (link.rel === 'stylesheet' && applied()) return resolve()
+  link.addEventListener('load', () => resolve())
+  link.addEventListener('error', () => resolve())
+  link.rel = 'stylesheet' // já baixado pelo preload: aplica na hora
+  if (applied()) resolve()
+  setTimeout(resolve, 3000) // garantia: nunca deixa o site em branco
 })
 
 cssReady.then(() => createRoot(document.getElementById('root')).render(
