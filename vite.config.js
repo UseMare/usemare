@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite'
 
 // Desempenho no celular: avisa o navegador logo no <head> para já baixar as duas fontes
@@ -23,6 +24,16 @@ const preloadFonts = {
   },
 }
 
-export default defineConfig({
+// O react-router só aponta para a versão de desenvolvimento (com avisos e checagens extras).
+// No build do site usamos a versão de produção, que é menor e mais rápida.
+const routerProd = name => fileURLToPath(new URL(`./node_modules/react-router/dist/production/${name}`, import.meta.url))
+
+export default defineConfig(({ command }) => ({
   plugins: [preloadFonts],
-})
+  resolve: command === 'build' ? {
+    alias: [
+      { find: /^react-router$/, replacement: routerProd('index.mjs') },
+      { find: /^react-router\/dom$/, replacement: routerProd('dom-export.mjs') },
+    ],
+  } : {},
+}))

@@ -190,7 +190,7 @@ export default function Home() {
         <div className="shell">
           <SectionHeading id="highlights-title" title={content.highlightsTitle} to="/produtos" />
           <div className="highlight-grid">
-            {highlights.map((product, index) => <ProductCard key={product.id} product={product} index={index} sizes="(max-width: 900px) 46vw, 300px" />)}
+            {highlights.map((product, index) => <ProductCard key={product.id} product={product} index={index} sizes="(max-width: 900px) 44vw, 300px" />)}
           </div>
           <div className="highlights-more" data-reveal>
             <Link className="button outline" to="/produtos">Ver todos os produtos <ArrowRight /></Link>

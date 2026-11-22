@@ -8,6 +8,7 @@ import { products } from '../products.js'
 import { supabase } from '../supabase.js'
 import AvatarCropper from './AvatarCropper.jsx'
 import { backHere, emailOk, formatPhone, friendly, PasswordField, PHONE_ERROR, phoneDigits, phoneOk } from './authShared.jsx'
+import './account.css'
 
 // Minha conta (cliente logada): cabeçalho com foto, abas Perfil / Favoritos / E-mail e senha
 // e o cartão de ações rápidas. A foto fica no bucket "avatares", na pasta com o id da cliente.

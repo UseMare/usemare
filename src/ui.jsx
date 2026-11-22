@@ -53,10 +53,12 @@ const LOGO_SMALL = { '/img/logo/mare.webp': '/img/logo/mare-240.webp', '/img/log
 export function Brand({ onClick, footer = false }) {
   const src = (footer && store.logoFooter) || store.logo || logo
   const small = LOGO_SMALL[src]
+  // Logo do painel guarda o tamanho no nome (…-300x197.webp): vira width/height (sem pulo de layout).
+  const [, w, h] = src.match(/-(\d+)x(\d+)\.webp$/) || []
   return (
     <Link to="/" className="brand" aria-label="Maré, página inicial" onClick={onClick}>
       <img src={small || src} srcSet={small ? `${small} 240w, ${src} 480w` : undefined} sizes={small ? '(max-width: 900px) 108px, 150px' : undefined}
-        width={small ? 480 : undefined} height={small ? 289 : undefined} alt="Maré — Moda feminina e fitness" />
+        width={small ? 480 : w} height={small ? 289 : h} alt="Maré — Moda feminina e fitness" />
     </Link>
   )
 }
@@ -74,6 +76,11 @@ export function Price({ product, className = '' }) {
 
 const defaultSizes = '(max-width: 900px) 42vw, (max-width: 1100px) 24vw, 210px'
 
+// Miniatura de 320px (ao lado da de 480px): no celular o card tem ~180px de largura, então a de 320
+// já fica nítida e pesa metade. Toda miniatura "-480.webp" tem a irmã "-320.webp" (o painel gera as duas).
+export const thumb320 = thumb => /-480\.webp$/.test(thumb) ? thumb.replace(/-480\.webp$/, '-320.webp') : thumb
+const cardSrcSet = (thumb, photo) => `${thumb320(thumb) !== thumb ? `${thumb320(thumb)} 320w, ` : ''}${thumb} 480w, ${photo} 900w`
+
 export function ProductCard({ product, index = 0, sizes = defaultSizes }) {
   const { liked, toggleLike, addToBag } = useShop()
   const isLiked = liked.includes(product.id)
@@ -82,8 +89,8 @@ export function ProductCard({ product, index = 0, sizes = defaultSizes }) {
     <article className={`product ${product.available ? '' : 'sold-out'}`} data-reveal style={{ '--i': index % 6 }}>
       <div className="product-image">
         <Link className="product-open" to={url} aria-label={`Ver detalhes de ${product.name}`}>
-          <img src={product.thumbs[0]} srcSet={`${product.thumbs[0]} 480w, ${product.photos[0]} 1000w`} sizes={sizes} alt={product.name} loading="lazy" />
-          {product.photos[1] && <img className="alt" src={product.thumbs[1]} srcSet={`${product.thumbs[1]} 480w, ${product.photos[1]} 1000w`} sizes={sizes} alt="" loading="lazy" />}
+          <img src={product.thumbs[0]} srcSet={cardSrcSet(product.thumbs[0], product.photos[0])} sizes={sizes} alt={product.name} loading="lazy" />
+          {product.photos[1] && <img className="alt" src={product.thumbs[1]} srcSet={cardSrcSet(product.thumbs[1], product.photos[1])} sizes={sizes} alt="" loading="lazy" />}
         </Link>
         {product.oldPrice && product.available && <span className="badge-tag">Promo</span>}
         <button className={`like ${isLiked ? 'liked' : ''}`} onClick={() => toggleLike(product.id)} aria-label={isLiked ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}><Heart fill={isLiked ? 'currentColor' : 'none'} /></button>

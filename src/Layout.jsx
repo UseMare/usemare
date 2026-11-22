@@ -2,11 +2,11 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation, useNavigate, useNavigationType, useSearchParams } from 'react-router-dom'
 import { ArrowRight, ArrowUpRight, CreditCard, LockKeyhole, Menu, Minus, Plus, Search, ShoppingBag, Trash2, Truck, UserRound, X } from 'lucide-react'
 import { useRevealObserver, useShop } from './shop.jsx'
-import { Brand, Instagram, SmartLink, WhatsApp } from './ui.jsx'
+import { Brand, Instagram, SmartLink, WhatsApp, thumb320 } from './ui.jsx'
 import { helloMessage, store, whatsappLink } from './store.js'
 import { CheckoutButton } from './checkout.jsx'
 import { spotlightProducts } from './products.js'
-import { supabase } from './supabase.js'
+import { hasSupabase, loadSupabase } from './supabaseLazy.js'
 import AlphaCredit from './alpha-credit/AlphaCredit.jsx'
 import { pageContent } from './content.js'
 import { SiteIcon, SocialIcon, socialHref, socialNetworks } from './icons.jsx'
@@ -101,7 +101,7 @@ function BagDrawer() {
             <ul className="bag-list">
               {bagItems.map(({ product, quantity }) => (
                 <li key={product.id}>
-                  <Link to={`/produto/${product.slug}`} onClick={closeBag}><img src={product.thumbs[0]} alt="" /></Link>
+                  <Link to={`/produto/${product.slug}`} onClick={closeBag}><img src={thumb320(product.thumbs[0])} alt="" /></Link>
                   <div>
                     <h3><Link to={`/produto/${product.slug}`} onClick={closeBag}>{product.name}</Link></h3>
                     <strong>{product.priceLabel}</strong>
@@ -168,6 +168,7 @@ function Newsletter() {
   const [status, setStatus] = useState(null) // null | 'sending' | 'ok' | 'error'
   const submit = async event => {
     event.preventDefault()
+    const supabase = hasSupabase && await loadSupabase()
     if (!supabase) { setStatus('error'); return }
     setStatus('sending')
     const { error } = await supabase.rpc('subscribe_newsletter', { p_email: email, p_source: 'rodape' })
@@ -251,7 +252,7 @@ function Spotlight() {
         <Link to={`/produto/${product.slug}`} className={`spotlight-body from-${dir}`} key={product.id}
           style={{ transform: offset ? `translateX(${offset}px)` : undefined, opacity: offset ? 1 - Math.abs(offset) / 220 : undefined }}
           onClick={event => { if (dragged.current) event.preventDefault() }} draggable={false}>
-          <img src={product.thumbs[0]} alt="" draggable={false} />
+          <img src={thumb320(product.thumbs[0])} alt="" draggable={false} />
           <div>
             <span className="spotlight-eyebrow">Destaque da Maré</span>
             <strong>{product.name}</strong>

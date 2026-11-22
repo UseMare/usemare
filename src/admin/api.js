@@ -94,7 +94,9 @@ export async function removeUnusedFiles(urls) {
     rows.forEach(r => stillUsed.add(r[column]))
   }
   const byBucket = {}
-  unique.filter(u => !stillUsed.has(u)).map(storageRef).filter(Boolean).forEach(({ bucket, path }) => {
+  unique.filter(u => !stillUsed.has(u))
+    .flatMap(u => /-480\.webp$/.test(u) ? [u, u.replace(/-480\.webp$/, '-320.webp')] : [u]) // miniatura de 480 leva junto a de 320
+    .map(storageRef).filter(Boolean).forEach(({ bucket, path }) => {
     (byBucket[bucket] ||= []).push(path)
   })
   const results = await Promise.all(Object.entries(byBucket).map(([bucket, paths]) => supabase.storage.from(bucket).remove(paths)))

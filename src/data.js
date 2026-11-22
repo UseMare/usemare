@@ -1,4 +1,4 @@
-import { supabase } from './supabase.js'
+import { hasSupabase, loadSupabase } from './supabaseLazy.js'
 import { setCategories, setProducts } from './products.js'
 import { store } from './store.js'
 import { setContent } from './content.js'
@@ -78,6 +78,8 @@ try {
 } catch { /* sem cache: segue com o catálogo local */ }
 
 export async function refreshCatalog() {
+  if (!hasSupabase) return false
+  const supabase = await loadSupabase()
   if (!supabase) return false
   const [productsRes, categoriesRes, settingsRes, contentRes] = await Promise.all([
     supabase.from('products').select(PRODUCT_FIELDS).eq('active', true).order('sort_order').order('name'),

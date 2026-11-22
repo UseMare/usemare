@@ -5,6 +5,7 @@ import { Instagram, WhatsApp } from '../ui.jsx'
 import { helloMessage, store, whatsappLink } from '../store.js'
 import { pageContent } from '../content.js'
 import { legalPages } from '../legalPages.js'
+import './legal.css'
 
 // Páginas institucionais (links só no rodapé): Política de Privacidade, Trocas e Devoluções e
 // Termos de Uso. Os textos abaixo são o padrão; a loja edita tudo em

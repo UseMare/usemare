@@ -10,8 +10,7 @@ import Home from './pages/Home.jsx'
 import { legalPages } from './legalPages.js'
 
 // Desempenho: só o Início vem no pacote principal. As outras páginas são baixadas quando
-// abertas (o Suspense fica no Layout) e, assim que o Início termina de carregar, o navegador já
-// busca em segundo plano o catálogo e a página de produto, para a navegação seguir instantânea.
+// abertas (o Suspense fica no Layout).
 const loadCatalog = () => import('./pages/Catalog.jsx')
 const loadProduct = () => import('./pages/Product.jsx')
 const Catalog = lazy(loadCatalog)
@@ -23,10 +22,15 @@ const NotFound = lazy(() => import('./pages/NotFound.jsx'))
 const Login = lazy(() => import('./pages/Login.jsx'))
 const LegalPage = lazy(() => import('./pages/Legal.jsx'))
 
-window.addEventListener('load', () => {
-  const later = window.requestIdleCallback || (fn => setTimeout(fn, 1500))
+// Pré-carga do catálogo e da página de produto na primeira interação (toque, rolagem, mouse,
+// tecla): não disputa banda com a primeira tela e já está pronta quando a pessoa clicar.
+const prefetchEvents = ['pointerdown', 'pointermove', 'scroll', 'keydown', 'touchstart']
+const prefetch = () => {
+  prefetchEvents.forEach(e => window.removeEventListener(e, prefetch))
+  const later = window.requestIdleCallback || (fn => setTimeout(fn, 200))
   later(() => { loadCatalog(); loadProduct() })
-}, { once: true })
+}
+prefetchEvents.forEach(e => window.addEventListener(e, prefetch, { once: true, passive: true }))
 
 // Painel da loja: só é baixado quando alguém abre /painel-loja.
 const AdminApp = lazy(() => import('./admin/AdminApp.jsx'))

@@ -1,7 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { products } from './products.js'
 import { refreshCatalog } from './data.js'
-import { supabase } from './supabase.js'
+import { hasSupabase, loadSupabase } from './supabaseLazy.js'
 
 // Estado compartilhado da loja: catálogo, conta, sacola, favoritos e avisos ("foi para a sacola").
 // Sacola e favoritos ficam salvos no aparelho da cliente (localStorage).
@@ -26,7 +26,7 @@ export function ShopProvider({ children }) {
   const [bagOpen, setBagOpen] = useState(false)
   const [toast, setToast] = useState(null)
   const [session, setSession] = useState(null)
-  const [authReady, setAuthReady] = useState(!supabase)
+  const [authReady, setAuthReady] = useState(!hasSupabase)
   const [profile, setProfile] = useState(null)
   const [recovering, setRecovering] = useState(false)
   const likedRef = useRef(liked)
@@ -58,14 +58,19 @@ export function ShopProvider({ children }) {
 
   // Sessão de login.
   useEffect(() => {
-    if (!supabase) return
-    supabase.auth.getSession().then(({ data }) => { setSession(data.session); setAuthReady(true) })
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, next) => {
-      setSession(next)
-      setAuthReady(true)
-      if (event === 'PASSWORD_RECOVERY') setRecovering(true)
+    if (!hasSupabase) return
+    let alive = true
+    let subscription
+    loadSupabase().then(supabase => {
+      if (!alive || !supabase) return
+      supabase.auth.getSession().then(({ data }) => { if (alive) { setSession(data.session); setAuthReady(true) } })
+      ;({ data: { subscription } } = supabase.auth.onAuthStateChange((event, next) => {
+        setSession(next)
+        setAuthReady(true)
+        if (event === 'PASSWORD_RECOVERY') setRecovering(true)
+      }))
     })
-    return () => subscription.unsubscribe()
+    return () => { alive = false; subscription?.unsubscribe() }
   }, [])
 
   // Perfil + favoritos da conta (junta os favoritos do aparelho com os da conta).
@@ -73,6 +78,7 @@ export function ShopProvider({ children }) {
     if (!user) { setProfile(null); return }
     let alive = true
     ;(async () => {
+      const supabase = await loadSupabase()
       const [{ data: prof }, { data: favs }] = await Promise.all([
         supabase.from('profiles').select('full_name, phone, role, avatar_url, created_at').eq('id', user.id).maybeSingle(),
         supabase.from('favorites').select('product_id'),
@@ -100,14 +106,14 @@ export function ShopProvider({ children }) {
     setLiked(list => isLiked ? list.filter(item => item !== id) : [...list, id])
     const product_id = uuidOf(id)
     if (!user || !product_id) return
-    const request = isLiked
+    loadSupabase().then(supabase => isLiked
       ? supabase.from('favorites').delete().eq('product_id', product_id)
       : supabase.from('favorites').upsert({ product_id }, { ignoreDuplicates: true })
-    request.then(({ error }) => { if (error) console.warn('Favorito não sincronizado.', error) })
+    ).then(({ error }) => { if (error) console.warn('Favorito não sincronizado.', error) })
   }, [user])
 
   const signOut = useCallback(async () => {
-    await supabase?.auth.signOut()
+    if (hasSupabase) await (await loadSupabase())?.auth.signOut()
     setRecovering(false)
   }, [])
 

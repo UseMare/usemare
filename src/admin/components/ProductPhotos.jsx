@@ -13,7 +13,7 @@ import ImageCropper from './ImageCropper.jsx'
 //   já salva:  { id, path, thumb_path }
 //   nova:      { key, preview, blobs: [grande, miniatura] }
 
-export const PRODUCT_PHOTO = { aspect: 3 / 4, outputs: [{ width: 900, height: 1200, quality: 0.86 }, { width: 480, height: 640, quality: 0.8 }] }
+export const PRODUCT_PHOTO = { aspect: 3 / 4, outputs: [{ width: 900, height: 1200, quality: 0.86 }, { width: 480, height: 640, quality: 0.8 }, { width: 320, height: 427, quality: 0.78 }] }
 const MAX_PHOTOS = 10
 const MAX_FILE_MB = 25
 
@@ -130,7 +130,7 @@ export async function syncPhotos({ productId, code, name, photos, previous }) {
   const finalList = []
   for (const photo of photos) {
     if (photo.blobs) {
-      const [path, thumb_path] = await uploadVariants('produtos', code, photo.blobs, ['', '480'])
+      const [path, thumb_path] = await uploadVariants('produtos', code, photo.blobs, ['', '480', '320'])
       finalList.push({ path, thumb_path })
     } else {
       finalList.push({ path: photo.path, thumb_path: photo.thumb_path })

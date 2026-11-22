@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react'
 import { ImagePlus, RefreshCw, Trash2 } from 'lucide-react'
 import { storageRef } from '../api.js'
 import { supabase } from '../../supabase.js'
-import { uploadImage, uploadVariants } from '../storage.js'
+import { uploadImage, uploadShrunk, uploadVariants } from '../storage.js'
 import ImageCropper from './ImageCropper.jsx'
 
 // Campo de imagem com prévia, usado em categorias, hero, banners e logo.
@@ -71,6 +71,7 @@ export async function resolveImage(value, folder, suffixes = ['']) {
   if (!value) return null
   if (typeof value === 'string') return value
   if (value.blobs) return (await uploadVariants('site', folder, value.blobs, suffixes))[0]
+  if (value.file && folder === 'logo') return uploadShrunk('site', folder, value.file) // logo leve, com o tamanho no nome
   if (value.file) {
     const ext = (value.file.name.split('.').pop() || 'png').toLowerCase().replace(/[^a-z0-9]/g, '') || 'png'
     return uploadImage('site', `${folder}/${Date.now().toString(36)}.${ext}`, value.file)
