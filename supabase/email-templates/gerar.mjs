@@ -27,19 +27,8 @@ const button = (url, label) => `
         </tr>
       </table>
     </td>
-  </tr>
-
-  <!-- Link alternativo (fallback em texto puro) -->
-  <tr>
-    <td class="stack-padding" style="padding:0 40px 32px 40px; font-family:${SANS};">
-      <p style="margin:0 0 8px 0; font-size:13px; line-height:1.6; color:${C.soft};">
-        Se o botão acima não funcionar, copie e cole o link a seguir no seu navegador:
-      </p>
-      <p style="margin:0; font-size:13px; line-height:1.6; word-break:break-all;">
-        <a href="${url}" target="_blank" style="color:${C.link}; text-decoration:underline;">${url}</a>
-      </p>
-    </td>
   </tr>`
+// Sem link em texto embaixo do botão (pedido da loja): os e-mails mostram só botões.
 
 const code = token => `
   <!-- Código -->
@@ -133,7 +122,7 @@ ${extra}
   <tr>
     <td align="center" style="padding:24px 40px 32px 40px; font-family:${SANS}; background-color:${C.card};">
       <p style="margin:0 0 6px 0; font-size:12px; line-height:1.6; color:${C.text};">
-        Maré — Moda feminina e fitness · <a href="${SITE}" target="_blank" style="color:${C.link}; text-decoration:none;">usemare.com.br</a>
+        Maré — Moda feminina e fitness · usemare.com.br
       </p>
       <p style="margin:0; font-size:12px; line-height:1.6; color:#b3a39c;">
         E-mail automático, não responda.
@@ -151,7 +140,9 @@ ${extra}
 
 const p = html => `<p style="margin:0 0 16px 0; font-size:15px; line-height:1.7; color:${C.text};">${html}</p>`
 const NAO_FOI_VOCE = 'Se não foi você, pode ignorar este e-mail com tranquilidade: nada muda na sua conta.'
-const ALERTA = `Se não foi você, <strong>redefina sua senha agora</strong> em <a href="${SITE}/entrar" target="_blank" style="color:${C.link};">usemare.com.br/entrar</a> (opção "Esqueci minha senha").`
+const ALERTA = 'Se não foi você, <strong>redefina sua senha agora</strong> pelo botão abaixo (opção "Esqueci minha senha").'
+// WhatsApp da loja (o mesmo de Configurações no painel). Se o número mudar, gere e aplique os modelos de novo.
+const WHATSAPP = 'https://api.whatsapp.com/send?phone=5585999519515'
 
 // chave = nome do modelo no Supabase (mailer_templates_<chave>_content)
 const templates = {
@@ -214,7 +205,7 @@ const templates = {
     heading: 'Sua senha foi alterada.',
     body: p('Este é um aviso de segurança: a senha da conta <strong>{{ .Email }}</strong> na Maré acabou de ser alterada.') +
       p('Se foi você, está tudo certo e não precisa fazer nada.'),
-    extra: note(ALERTA),
+    extra: note(ALERTA) + button(`${SITE}/entrar`, 'Proteger minha conta'),
     footnote: 'Avisamos sempre que algo importante muda na sua conta.',
   }),
   email_changed_notification: layout({
@@ -223,7 +214,7 @@ const templates = {
     heading: 'O e-mail da sua conta mudou.',
     body: p('Este é um aviso de segurança: o e-mail da sua conta na Maré foi alterado de <strong>{{ .OldEmail }}</strong> para <strong>{{ .Email }}</strong>.') +
       p('Se foi você, está tudo certo e não precisa fazer nada.'),
-    extra: note('Se não foi você, responda pelo nosso WhatsApp no site <a href="' + SITE + '" target="_blank" style="color:' + C.link + ';">usemare.com.br</a> para recuperarmos sua conta.'),
+    extra: note('Se não foi você, fale com a gente pelo WhatsApp para recuperarmos sua conta.') + button(WHATSAPP, 'Falar com a Maré'),
     footnote: 'Avisamos sempre que algo importante muda na sua conta.',
   }),
 }

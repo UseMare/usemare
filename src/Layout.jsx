@@ -153,7 +153,7 @@ function Announcement() {
   return (
     <div className="announcement" aria-label="Vantagens da loja">
       <ul className="sr-only">{items.map((item, i) => <li key={i}>{item.link ? <SmartLink to={item.link}>{item.text}</SmartLink> : item.text}</li>)}</ul>
-      <div className="marquee" aria-hidden="true" style={{ '--marquee-time': `${Math.max(24, run.length * 5)}s` }}>
+      <div className="marquee" aria-hidden="true" style={{ '--marquee-time': `${Math.round(Math.max(24, run.length * 5) / 0.65)}s` }} /* velocidade: 65% da original (pedido: 35% mais devagar) */>
         <div className="marquee-track">
           {[0, 1].map(half => <div className="marquee-group" key={half}>{run.map((item, i) => piece(item, i, true))}</div>)}
         </div>
