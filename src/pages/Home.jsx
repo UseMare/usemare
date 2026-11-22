@@ -11,9 +11,15 @@ import { SiteIcon } from '../icons.jsx'
 // Recortes do banner feitos para o celular (quadrados, em alta), por foto do computador.
 // Várias larguras: o celular baixa só o tamanho que a tela precisa (600, 800 ou 1200px).
 // O index.html pede esta mesma foto logo no início (preload) — se trocar aqui, troque lá também.
-const MOBILE_HERO = {
-  '/img/banners/hero.webp': '/img/banners/hero-mobile-600.webp 600w, /img/banners/hero-mobile-800.webp 800w, /img/banners/hero-mobile.webp 1200w',
-}
+// O recorte do celular é escolhido no painel (Página inicial → Recorte para celular) e salvo em
+// 1200 / 800 / 600 px com o mesmo nome-base (foto.webp, foto-800.webp, foto-600.webp).
+const mobileSrcSet = image => /\.webp$/.test(image)
+  ? `${image.replace(/\.webp$/, '-600.webp')} 600w, ${image.replace(/\.webp$/, '-800.webp')} 800w, ${image} 1200w`
+  : image
+const DEFAULT_HERO = '/img/banners/hero.webp'
+const DEFAULT_HERO_MOBILE = '/img/banners/hero-mobile.webp'
+// Foto que o celular mostra: o recorte salvo; foto padrão sem recorte salvo = recorte padrão; senão a própria foto.
+export const heroMobileOf = slide => slide.mobile || (slide.mobile === undefined && slide.image === DEFAULT_HERO ? DEFAULT_HERO_MOBILE : null)
 
 // Cards de categoria: as fotos padrão têm também uma versão de 560px (no celular o card tem ~170px).
 const CATEGORY_560 = new Set(['conjuntos-fitness', 'moda-feminina', 'blusas', 'saias-calcas'].map(n => `/img/banners/${n}.webp`))
@@ -26,7 +32,7 @@ const categorySrcSet = image => CATEGORY_560.has(image)
 // Nos textos, Enter (\n) vira quebra de linha. No texto de apoio do hero a quebra só vale no computador.
 export const homeDefaults = {
   heroSlides: [
-    { image: '/img/banners/hero.webp', alt: 'Duas amigas sorrindo com os conjuntos Maré Move lilás e amarelo' },
+    { image: '/img/banners/hero.webp', mobile: '/img/banners/hero-mobile.webp', alt: 'Duas amigas sorrindo com os conjuntos Maré Move lilás e amarelo' },
   ],
   heroEyebrow: 'Moda feminina • Fitness',
   heroTitle: 'Vista sua\nmelhor versão.',
@@ -113,10 +119,10 @@ function Hero({ content }) {
   return (
     <section className="hero" id="inicio">
       {slides.map((slide, index) => (
-        // No celular a foto aparece quase quadrada e cortada: usa um recorte próprio em alta (MOBILE_HERO)
-        // ou, se não houver, a versão grande da foto, para não ficar esticada e borrada.
+        // No celular a foto aparece quase quadrada: usa o recorte do painel ou, se não houver, a
+        // versão grande da foto, para não ficar esticada e borrada.
         <picture key={slide.image}>
-          <source media="(max-width: 600px)" srcSet={MOBILE_HERO[slide.image] || slide.image} sizes="100vw" />
+          <source media="(max-width: 600px)" srcSet={heroMobileOf(slide) ? mobileSrcSet(heroMobileOf(slide)) : slide.image} sizes="100vw" />
           <img className={`hero-photo ${index === current ? 'active' : ''}`} src={slide.image} srcSet={responsive(slide.image, 1200)} sizes="100vw" alt={index === current ? (slide.alt || '') : ''} fetchPriority={index === 0 ? 'high' : 'auto'} />
         </picture>
       ))}

@@ -7,7 +7,7 @@ import { CardHead, InfoTip, Loading, errorText, useConfirm, useToast, useUnsaved
 import ImageField, { removeSiteImage, resolveImage } from '../components/ImageField.jsx'
 import LinkField from '../components/LinkField.jsx'
 import IconPicker from '../components/IconPicker.jsx'
-import { homeDefaults, mergeHome } from '../../pages/Home.jsx'
+import { heroMobileOf, homeDefaults, mergeHome } from '../../pages/Home.jsx'
 
 // Página inicial do site: banner principal (hero), benefícios, vitrine, banners do meio e quadro de serviços.
 // Tudo fica em site_content, chave 'home'. O que estiver vazio volta ao texto padrão (campos obrigatórios)
@@ -18,6 +18,9 @@ const MAX_BENEFITS = 3
 // Hero: mesma proporção da foto atual (2245 × 650) + versão leve de 1200 px.
 const HERO_IMAGE = { aspect: 2245 / 650, outputs: [{ width: 2245, height: 650, quality: 0.84 }, { width: 1200, height: 347, quality: 0.8 }] }
 const HERO_SUFFIXES = ['', '1200']
+// Recorte do celular: quadrado, em 1200 / 800 / 600 px (o celular baixa só o tamanho da tela).
+const HERO_MOBILE_IMAGE = { aspect: 1, outputs: [{ width: 1200, height: 1200, quality: 0.82 }, { width: 800, height: 800, quality: 0.8 }, { width: 600, height: 600, quality: 0.78 }] }
+const HERO_MOBILE_SUFFIXES = ['', '800', '600']
 // Banners do meio: 1525 × 561 + versão de 800 px.
 const PROMO_IMAGE = { aspect: 1525 / 561, outputs: [{ width: 1525, height: 561, quality: 0.84 }, { width: 800, height: 294, quality: 0.8 }] }
 const PROMO_SUFFIXES = ['', '800']
@@ -26,6 +29,7 @@ const copy = value => JSON.parse(JSON.stringify(value, (k, v) => (v instanceof B
 const clean = text => String(text ?? '').replace(/\r/g, '').split('\n').map(l => l.trimEnd()).join('\n').trim()
 const storageImages = content => [
   ...(content.heroSlides || []).map(s => ({ url: s.image, suffixes: HERO_SUFFIXES })),
+  ...(content.heroSlides || []).map(s => ({ url: s.mobile, suffixes: HERO_MOBILE_SUFFIXES })),
   ...(content.promos || []).map(p => ({ url: p.image, suffixes: PROMO_SUFFIXES })),
 ].filter(i => typeof i.url === 'string')
 
@@ -54,6 +58,8 @@ export default function HomePage() {
   const load = async () => {
     try {
       const merged = mergeHome(await getSiteContent('home'))
+      // Mostra no formulário o mesmo recorte de celular que o site usa (inclusive o padrão).
+      merged.heroSlides = merged.heroSlides.map(s => ({ ...s, mobile: heroMobileOf(s) }))
       setSaved(merged); setForm(copy(merged)); setLoadError(null)
     } catch (e) { setLoadError(errorText(e)) }
   }
@@ -96,7 +102,11 @@ export default function HomePage() {
     setSaving(true)
     try {
       const heroSlides = []
-      for (const slide of form.heroSlides) heroSlides.push({ image: await resolveImage(slide.image, 'home', HERO_SUFFIXES), alt: clean(slide.alt) })
+      for (const slide of form.heroSlides) heroSlides.push({
+        image: await resolveImage(slide.image, 'home', HERO_SUFFIXES),
+        mobile: (await resolveImage(slide.mobile, 'home', HERO_MOBILE_SUFFIXES)) || null,
+        alt: clean(slide.alt),
+      })
       const promos = []
       for (const p of form.promos) promos.push({ image: await resolveImage(p.image, 'home', PROMO_SUFFIXES), title: clean(p.title), text: clean(p.text), button: clean(p.button), link: p.button ? p.link : '' })
       const value = {
@@ -141,10 +151,16 @@ Deixe o lado esquerdo da foto mais liso e claro: é onde ficam os textos. No cel
         <ul className="adm-slides">
           {form.heroSlides.map((slide, i) => (
             <li key={i}>
-              <ImageField label={`Foto ${i + 1}`} value={slide.image} onChange={v => setItem('heroSlides', i, 'image', v)} {...HERO_IMAGE} previewRatio={2245 / 650} />
+              <ImageField label={`Foto ${i + 1} · computador`} value={slide.image} {...HERO_IMAGE} previewRatio={2245 / 650}
+                onChange={v => setForm(f => ({ ...f, heroSlides: f.heroSlides.map((s, k) => k === i ? { ...s, image: v, mobile: v && typeof v === 'object' ? null : s.mobile } : s) }))} />
               <Field label="Descrição da foto" hint="Para quem usa leitor de tela. Ex.: Duas amigas com conjuntos Maré Move.">
                 <input value={slide.alt || ''} onChange={e => setItem('heroSlides', i, 'alt', e.target.value)} maxLength={140} />
               </Field>
+              <div className="adm-slide-mobile">
+                <ImageField label="Recorte para celular" value={slide.mobile} onChange={v => setItem('heroSlides', i, 'mobile', v)} {...HERO_MOBILE_IMAGE} previewRatio={1} allowRemove
+                  hint={'No celular a foto aparece quadrada, abaixo dos textos. Escolha aqui o enquadramento.\n\nSem recorte, o celular usa a foto do computador cortada no centro. Ao trocar a foto do computador, o recorte antigo sai sozinho.'} />
+                {!slide.mobile && <p className="adm-hint">Sem recorte: usa a foto acima.</p>}
+              </div>
               <span className="adm-slide-actions">
                 <button type="button" className="adm-icon-btn" onClick={() => moveItem('heroSlides', i, -1)} disabled={i === 0} aria-label={`Mover foto ${i + 1} para antes`}><ArrowUp /></button>
                 <button type="button" className="adm-icon-btn" onClick={() => moveItem('heroSlides', i, 1)} disabled={i === form.heroSlides.length - 1} aria-label={`Mover foto ${i + 1} para depois`}><ArrowDown /></button>
@@ -154,7 +170,7 @@ Deixe o lado esquerdo da foto mais liso e claro: é onde ficam os textos. No cel
           ))}
         </ul>
         {form.heroSlides.length < MAX_SLIDES && (
-          <button type="button" className="adm-btn outline small" onClick={() => set('heroSlides', [...form.heroSlides, { image: null, alt: '' }])}><Plus /> Adicionar foto</button>
+          <button type="button" className="adm-btn outline small" onClick={() => set('heroSlides', [...form.heroSlides, { image: null, mobile: null, alt: '' }])}><Plus /> Adicionar foto</button>
         )}
 
         <h3 className="adm-subtitle">Textos do banner</h3>

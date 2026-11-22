@@ -759,3 +759,7 @@ a.adm-stat:hover { border-color: var(--adm-wine); }
   .adm-btn { gap: 6px; padding-inline: 13px; font-size: 13.5px; }
   .adm-btn.small { padding-inline: 10px; font-size: 12.5px; }
 }
+
+/* Banner principal: recorte quadrado do celular, menor, ao lado da descrição */
+.adm-slide-mobile .adm-imagefield-preview { width: 140px !important; max-width: 100%; }
+.adm-slide-mobile .adm-hint { margin: 4px 0 10px; }

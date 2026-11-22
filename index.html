@@ -9,7 +9,7 @@
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <!-- Foto principal da página inicial: cada aparelho já pede só a versão que vai usar (igual ao Home.jsx). -->
+    <!-- Foto principal padrão da página inicial (e o recorte padrão do celular): cada aparelho já pede só a versão que vai usar. Se a foto for trocada no painel, o site usa a nova normalmente. -->
     <link rel="preload" as="image" media="(max-width: 600px)" imagesrcset="/img/banners/hero-mobile-600.webp 600w, /img/banners/hero-mobile-800.webp 800w, /img/banners/hero-mobile.webp 1200w" imagesizes="100vw" fetchpriority="high" />
     <link rel="preload" as="image" media="(min-width: 601px)" imagesrcset="/img/banners/hero-1200.webp 1200w, /img/banners/hero.webp 2245w" imagesizes="100vw" fetchpriority="high" />
     <!-- Logo do topo (versão leve de 240px; igual ao Brand em ui.jsx). -->
