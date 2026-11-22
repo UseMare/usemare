@@ -29,6 +29,7 @@
 /* entrada suave de cada página ao navegar */
 /* backwards: ao terminar não deixa transform no main (senão ele prende os painéis "fixed", como o filtro do celular) */
 main#conteudo { animation: page-in .9s var(--ease-out) backwards; }
+main#conteudo.first-entry { animation: none; } /* primeira abertura: já aparece pronta (ver Layout.jsx) */
 @keyframes page-in { from { opacity: 0; transform: translateY(14px); } }
 
 /* ---------- WhatsApp flutuante: ícone maior ---------- */

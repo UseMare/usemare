@@ -273,6 +273,9 @@ function Spotlight() {
 
 export default function Layout() {
   const location = useLocation()
+  // A página entra com um efeito de surgir só ao navegar. Na primeira abertura do site ela já
+  // aparece pronta: o efeito começava transparente e atrasava a foto principal (nota do PageSpeed).
+  const firstEntry = useRef(location.key)
   const [params] = useSearchParams()
   const [menuOpen, setMenuOpen] = useState(false)
   const { bagCount, openBag, toast, dismissToast, user, profile } = useShop()
@@ -339,7 +342,7 @@ export default function Layout() {
       </div>
       {menuOpen && <button className="backdrop" onClick={() => setMenuOpen(false)} aria-label="Fechar menu" />}
 
-      <main id="conteudo" key={location.pathname}>
+      <main id="conteudo" key={location.pathname} className={location.key === firstEntry.current ? 'first-entry' : undefined}>
         {/* As páginas (menos o Início) baixam só quando abertas; enquanto chegam, fica um espaço reservado. */}
         <React.Suspense fallback={<div className="page-loading" aria-busy="true" />}><Outlet /></React.Suspense>
       </main>
