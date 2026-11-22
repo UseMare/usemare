@@ -45,7 +45,7 @@ export default function Dashboard() {
     !data.settings?.whatsapp && { text: 'Cadastre o WhatsApp da loja: sem ele, as clientes precisam escolher o contato na hora de comprar.', to: `${BASE}/configuracoes`, action: 'Configurar' },
     data.pending > 0 && { text: `${data.pending} avaliação(ões) esperando aprovação.`, to: `${BASE}/avaliacoes`, action: 'Ver avaliações' },
     visible.filter(x => !x.product_images.length).length > 0 && { text: `${visible.filter(x => !x.product_images.length).length} produto(s) no site sem foto.`, to: `${BASE}/produtos`, action: 'Ver produtos' },
-    data.settings?.spotlight_enabled && !(data.settings?.spotlight_ids || []).some(id => visible.find(x => x.id === id && x.available)) && { text: 'O card de destaques está ligado, mas nenhum destaque está disponível — ele não aparece no site.', to: `${BASE}/destaques`, action: 'Escolher destaques' },
+    data.settings?.spotlight_enabled && !(data.settings?.spotlight_ids || []).some(id => visible.find(x => x.id === id && x.available)) && { text: 'O card flutuante está ligado, mas nenhuma peça dele está disponível — ele não aparece no site.', to: `${BASE}/flutuantes`, action: 'Escolher flutuantes' },
   ].filter(Boolean) : []
 
   const shortcuts = [...navGroups.flatMap(g => g.items), 'configuracoes'].filter(key => key !== 'inicio')

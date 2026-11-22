@@ -7,7 +7,7 @@ export const sections = {
   inicio:        { label: 'Início',          icon: LayoutDashboard, path: BASE,                          stage: 12, description: 'Resumo da loja e atalhos.' },
   produtos:      { label: 'Produtos',        icon: Package,         path: `${BASE}/produtos`,            stage: 4,  description: 'Cadastrar, editar e organizar as peças.' },
   categorias:    { label: 'Categorias',      icon: Tags,            path: `${BASE}/categorias`,          stage: 7,  description: 'Coleções, tipos de peça e cards.' },
-  destaques:     { label: 'Destaques',       icon: Sparkles,        path: `${BASE}/destaques`,           stage: 8,  description: 'Produtos do card flutuante.' },
+  destaques:     { label: 'Flutuantes',      icon: Sparkles,        path: `${BASE}/flutuantes`,          stage: 8,  description: 'Produtos do card flutuante.' },
   paginaInicial: { label: 'Página inicial',  icon: House,           path: `${BASE}/pagina-inicial`,      stage: 9,  description: 'Banner, vitrine e textos do Início.' },
   colecao:       { label: 'Coleção',         icon: Gift,            path: `${BASE}/colecao`,             stage: 11, description: 'Nome, textos e peças da coleção.' },
   menuSite:      { label: 'Menu do site',    icon: Menu,            path: `${BASE}/menu-do-site`,        stage: 11, description: 'Nomes das páginas no menu.' },

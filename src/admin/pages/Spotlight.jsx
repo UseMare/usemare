@@ -20,9 +20,9 @@ function Thumb({ product }) {
 
 // Prévia do card como a cliente vê (primeiro destaque que aparece).
 function Preview({ product, count }) {
-  if (!product) return <p className="adm-muted">Nenhum destaque aparece no momento.</p>
+  if (!product) return <p className="adm-muted">Nenhuma peça flutuante aparece no momento.</p>
   return (
-    <div className="adm-spot-preview" aria-label="Prévia do card de destaques">
+    <div className="adm-spot-preview" aria-label="Prévia do card flutuante">
       <span className="adm-spot-preview-img">{product.product_images[0] ? <img src={product.product_images[0].thumb_path} alt="" /> : <ImageOff />}</span>
       <span className="adm-spot-preview-text">
         <small>Destaque da Maré</small>
@@ -59,7 +59,7 @@ export default function Spotlight() {
   useEffect(() => { load() }, [])
 
   const dirty = Boolean(saved) && (enabled !== saved.enabled || ids.join() !== saved.ids.join())
-  useUnsavedGuard(dirty && !saving, 'Você mudou os destaques e ainda não salvou. Se sair agora, as mudanças serão perdidas.')
+  useUnsavedGuard(dirty && !saving, 'Você mudou os flutuantes e ainda não salvou. Se sair agora, as mudanças serão perdidas.')
 
   const byId = useMemo(() => Object.fromEntries((products || []).map(p => [p.id, p])), [products])
   const chosen = ids.map(id => byId[id]).filter(Boolean)
@@ -86,11 +86,11 @@ export default function Spotlight() {
     setSaving(false)
     if (error) return toast(errorText(error), 'error')
     setSaved({ enabled, ids })
-    toast(enabled ? 'Destaques salvos. O site já mostra o card novo.' : 'Destaques salvos. O card está desligado no site.')
+    toast(enabled ? 'Flutuantes salvos. O site já mostra o card novo.' : 'Flutuantes salvos. O card está desligado no site.')
   }
 
   if (loadError) return <div className="adm-card"><p className="adm-notice is-error">{loadError}</p><button className="adm-btn outline" onClick={load}>Tentar de novo</button></div>
-  if (!products) return <Loading text="Carregando destaques…" />
+  if (!products) return <Loading text="Carregando flutuantes…" />
 
   return (
     <>
@@ -99,12 +99,12 @@ export default function Spotlight() {
       <div className="adm-spot-grid">
         <section className="adm-card">
           <div className="adm-card-head">
-            <div><h2>Destaques escolhidos ({ids.length}/{MAX})</h2></div>
+            <div><h2>Flutuantes escolhidos ({ids.length}/{MAX})</h2></div>
             <Switch checked={enabled} onChange={setEnabled} label={enabled ? 'Card ligado' : 'Card desligado'} />
           </div>
-          {!enabled && <p className="adm-notice is-warn">O card está desligado: nenhum destaque aparece no site até você ligar de novo.</p>}
+          {!enabled && <p className="adm-notice is-warn">O card está desligado: nenhuma peça aparece no site até você ligar de novo.</p>}
           {chosen.length === 0 ? (
-            <div className="adm-empty"><Sparkles /><b>Nenhum destaque escolhido</b>Adicione produtos na lista ao lado.</div>
+            <div className="adm-empty"><Sparkles /><b>Nenhuma peça escolhida</b>Adicione produtos na lista ao lado.</div>
           ) : (
             <ol className="adm-spot-list">
               {chosen.map((p, i) => (
@@ -120,7 +120,7 @@ export default function Spotlight() {
                     <button className="adm-icon-btn" onClick={() => move(i, -1)} disabled={i === 0} aria-label={`Subir ${p.name}`}><ArrowUp /></button>
                     <button className="adm-icon-btn" onClick={() => move(i, 1)} disabled={i === chosen.length - 1} aria-label={`Descer ${p.name}`}><ArrowDown /></button>
                   </span>
-                  <button className="adm-icon-btn danger" onClick={() => remove(p.id)} aria-label={`Tirar ${p.name} dos destaques`} title="Tirar dos destaques"><X /></button>
+                  <button className="adm-icon-btn danger" onClick={() => remove(p.id)} aria-label={`Tirar ${p.name} dos flutuantes`} title="Tirar dos flutuantes"><X /></button>
                 </li>
               ))}
             </ol>
@@ -155,7 +155,7 @@ export default function Spotlight() {
       <div className="adm-savebar">
         <span className="adm-savebar-msg">{dirty ? 'Você tem alterações não salvas.' : 'Tudo salvo.'}</span>
         <button className="adm-btn outline" onClick={() => { setEnabled(saved.enabled); setIds(saved.ids) }} disabled={!dirty || saving}>Desfazer</button>
-        <button className="adm-btn primary" onClick={save} disabled={!dirty || saving}>{saving ? 'Salvando…' : 'Salvar destaques'}</button>
+        <button className="adm-btn primary" onClick={save} disabled={!dirty || saving}>{saving ? 'Salvando…' : 'Salvar flutuantes'}</button>
       </div>
     </>
   )

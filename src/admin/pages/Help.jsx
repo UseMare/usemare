@@ -65,10 +65,10 @@ const topics = [
     </>,
   },
   {
-    title: 'Destaques (card que aparece no canto)',
+    title: 'Flutuantes (card que aparece no canto)',
     body: <>
       <p>Escolha até <b>5 produtos</b> e a ordem. O card aparece no canto do site alguns segundos depois que a cliente entra e troca de peça a cada 5 segundos. Peças escondidas ou esgotadas saem do card sozinhas e voltam quando ficarem disponíveis.</p>
-      {go('/destaques', 'Ir para Destaques')}
+      {go('/flutuantes', 'Ir para Flutuantes')}
     </>,
   },
   {

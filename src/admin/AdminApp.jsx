@@ -198,6 +198,7 @@ function Shell({ session, profile }) {
               const rel = section.path.slice(BASE.length + 1)
               return <Route key={key} {...(rel ? { path: rel } : { index: true })} element={<Page section={section} />} />
             })}
+            <Route path="destaques" element={<Navigate to={`${BASE}/flutuantes`} replace />} />
             <Route path="produtos/novo" element={<ProductEditor />} />
             <Route path="produtos/:id" element={<ProductEditor />} />
             <Route path="*" element={<Navigate to={BASE} replace />} />
