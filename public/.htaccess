@@ -9,6 +9,16 @@
   RewriteRule . /index.html [L]
 </IfModule>
 
+# Segurança: o navegador não deixa outros sites embutirem a loja, não "adivinha" tipos de arquivo,
+# usa sempre HTTPS e não repassa o endereço completo da página para outros sites.
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+  Header always set Strict-Transport-Security "max-age=31536000"
+</IfModule>
+
 # Cache longo para imagens e arquivos com hash (carregamento mais rápido em visitas seguintes)
 <IfModule mod_expires.c>
   ExpiresActive On
