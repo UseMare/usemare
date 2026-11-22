@@ -19,7 +19,7 @@
   Header always set Strict-Transport-Security "max-age=31536000"
   # CSP: de onde o site pode carregar código, estilos, fontes, imagens e conexões. Barra script
   # injetado. Scripts só do próprio site; dados só do Supabase da Maré; imagens de qualquer https.
-  Header always set Content-Security-Policy-Report-Only "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' blob: https://tnhckvugdavdjfhlvtmq.supabase.co; connect-src 'self' https://tnhckvugdavdjfhlvtmq.supabase.co wss://tnhckvugdavdjfhlvtmq.supabase.co; frame-src 'none'; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests"
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' blob: https://tnhckvugdavdjfhlvtmq.supabase.co; connect-src 'self' https://tnhckvugdavdjfhlvtmq.supabase.co wss://tnhckvugdavdjfhlvtmq.supabase.co; frame-src 'none'; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests"
 </IfModule>
 
 # Cache longo para imagens e arquivos com hash (carregamento mais rápido em visitas seguintes)
