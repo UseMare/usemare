@@ -902,3 +902,6 @@ a.adm-stat:hover { border-color: var(--adm-wine); }
   .adm-chart { height: 100px; }
 }
 .adm-feature .adm-chart { margin-top: 24px; }
+/* Gráfico de acessos 45%% mais baixo */
+.adm-feature .adm-chart { height: 72px; }
+@media (max-width: 600px) { .adm-feature .adm-chart { height: 55px; } }
