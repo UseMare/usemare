@@ -1,0 +1,49 @@
+# Publicação automática do site da Maré.
+# A cada push no main, o GitHub gera o site (npm run build) e coloca o resultado (pasta dist,
+# com o .htaccess) no ramo "site-publicado". A Hostinger está ligada a esse ramo e publica
+# sozinha em usemare.com.br sempre que ele muda. Não edite o ramo site-publicado à mão.
+name: Publicar site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # permite rodar de novo pela aba Actions
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publicar-site
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Gerar o site
+        run: npm run build
+
+      - name: Conferir o resultado
+        run: test -f dist/index.html && test -f dist/.htaccess
+
+      - name: Enviar para o ramo site-publicado
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: site-publicado
+          publish_dir: ./dist
+          force_orphan: true
+          enable_jekyll: true # não cria o arquivo .nojekyll (inútil na Hostinger)
+          user_name: github-actions[bot]
+          user_email: github-actions[bot]@users.noreply.github.com
+          commit_message: "Site gerado a partir de"

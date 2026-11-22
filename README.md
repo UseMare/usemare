@@ -22,6 +22,11 @@ npm run build
 
 Publique o conteúdo de `dist/`. O `.htaccess` em `public/` já faz as rotas (/produtos, /produto/...) funcionarem.
 
+**Publicação automática:** a cada push no `main`, o GitHub Actions (`.github/workflows/publicar-site.yml`)
+gera o site e coloca a pasta `dist` no ramo `site-publicado`. A Hostinger (usemare.com.br) é ligada
+a esse ramo e publica sozinha. Ou seja: deu push no `main`, em 1–2 minutos está no ar. Não edite o
+ramo `site-publicado` à mão.
+
 ## Supabase
 
 Todo o banco está versionado em `supabase/migrations/`.
