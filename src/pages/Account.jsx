@@ -309,7 +309,7 @@ export default function Account() {
   const since = memberSince(profile?.created_at || user.created_at)
 
   const quick = [
-    isAdmin && { key: 'painel', to: '/painel-loja', Icon: LayoutGrid, title: 'Painel da loja', text: 'Produtos, textos e avaliações', accent: true },
+    isAdmin && { key: 'painel', to: '/painel-loja', Icon: LayoutGrid, title: 'Painel da loja', text: 'Produtos, textos e acessos', accent: true },
     { key: 'favoritos', onClick: () => goTo('favoritos'), Icon: Heart, title: 'Meus favoritos', text: liked.length ? `${liked.length} ${liked.length === 1 ? 'peça guardada' : 'peças guardadas'}` : 'Nenhuma peça ainda' },
     { key: 'acesso', onClick: () => goTo('acesso'), Icon: LockKeyhole, title: 'E-mail e senha', text: 'Altere seus dados de acesso' },
     { key: 'whats', href: whatsappLink(helloMessage), Icon: WhatsApp, title: 'Fale com a Maré', text: 'Tire dúvidas pelo WhatsApp' },

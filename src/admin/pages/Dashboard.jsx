@@ -10,7 +10,6 @@ import { CardHead, InfoTip, errorText } from '../ui.jsx'
 
 const PERIODS = [{ days: 1, label: 'Hoje' }, { days: 7, label: '7 dias' }, { days: 30, label: '30 dias' }]
 const num = n => Number(n || 0).toLocaleString('pt-BR')
-const count = async query => { const { count: n, error } = await query; if (error) throw error; return n || 0 }
 
 function Change({ now, before }) {
   if (!before) return null
@@ -76,13 +75,12 @@ export default function Dashboard({ session, profile }) {
     let alive = true
     ;(async () => {
       try {
-        const [products, pending, settings] = await Promise.all([
+        const [products, settings] = await Promise.all([
           listProducts(),
-          count(supabase.from('reviews').select('id', { count: 'exact', head: true }).eq('status', 'pendente')),
           supabase.from('store_settings').select('whatsapp, spotlight_enabled, spotlight_ids').eq('id', 1).maybeSingle().then(r => { if (r.error) throw r.error; return r.data }),
         ])
-        if (alive) setStore({ products, pending, settings })
-      } catch { if (alive) setStore({ products: [], pending: 0, settings: null }) }
+        if (alive) setStore({ products, settings })
+      } catch { if (alive) setStore({ products: [], settings: null }) }
     })()
     return () => { alive = false }
   }, [])
@@ -91,7 +89,6 @@ export default function Dashboard({ session, profile }) {
   const visible = (store?.products || []).filter(x => x.active)
   const todo = store ? [
     !store.settings?.whatsapp && { text: 'Cadastre o WhatsApp da loja.', to: `${BASE}/configuracoes`, action: 'Configurar' },
-    store.pending > 0 && { text: `${store.pending} avaliação(ões) esperando aprovação.`, to: `${BASE}/avaliacoes`, action: 'Ver avaliações' },
     visible.filter(x => !x.product_images.length).length > 0 && { text: `${visible.filter(x => !x.product_images.length).length} produto(s) no site sem foto.`, to: `${BASE}/produtos`, action: 'Ver produtos' },
     store.settings?.spotlight_enabled && !(store.settings?.spotlight_ids || []).some(id => visible.find(x => x.id === id && x.available)) && { text: 'Card flutuante ligado, mas sem peça disponível.', to: `${BASE}/flutuantes`, action: 'Escolher flutuantes' },
   ].filter(Boolean) : []

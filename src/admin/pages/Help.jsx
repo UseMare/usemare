@@ -93,13 +93,12 @@ const topics = [
     </>,
   },
   {
-    title: 'Avaliações e newsletter',
+    title: 'Newsletter',
     body: <>
       <ul>
-        <li>As clientes avaliam pela página da peça. Nada aparece no site antes de você <b>Aprovar</b>. O número ao lado de <b>Avaliações</b> no menu mostra quantas estão esperando. <b>Recusar</b> esconde; <b>Excluir</b> apaga de vez.</li>
         <li><b>Newsletter:</b> e-mails cadastrados no rodapé. <b>Baixar planilha</b> abre no Excel ou Google Planilhas; <b>Copiar e-mails</b> é para colar no seu e-mail (use o campo <b>Cco</b> para as clientes não verem os e-mails umas das outras).</li>
       </ul>
-      {go('/avaliacoes', 'Ir para Avaliações')}
+      {go('/newsletter', 'Ir para Newsletter')}
     </>,
   },
   {

@@ -25,5 +25,5 @@ export const navGroups = [
   { label: null,       items: ['inicio'] },
   { label: 'Loja',     items: ['produtos', 'categorias', 'destaques'] },
   { label: 'Site',     items: ['paginaInicial', 'colecao', 'menuSite', 'paginas', 'aparencia'] },
-  { label: 'Clientes', items: ['clientes', 'avaliacoes', 'newsletter'] },
+  { label: 'Clientes', items: ['clientes', 'newsletter'] }, // Avaliações saiu do site em 22/11 (área guardada para o futuro)
 ]
