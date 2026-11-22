@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Check, ExternalLink, ImageOff, MessageSquareText, Star, Trash2, X } from 'lucide-react'
 import { supabase } from '../../supabase.js'
-import { Loading, errorText, useConfirm, useToast } from '../ui.jsx'
+import { InfoTip, Loading, errorText, useConfirm, useToast } from '../ui.jsx'
 
 // Avaliações enviadas pelas clientes na página do produto. Chegam como "pendente"
 // (o banco garante isso) e só aparecem no site depois de aprovadas aqui.
@@ -70,7 +70,7 @@ export default function Reviews() {
 
   return (
     <>
-      <p className="adm-muted adm-intro">As clientes avaliam pela página do produto (precisam estar logadas). Nada aparece no site antes de você aprovar.</p>
+      <p className="adm-muted adm-intro adm-title-info">Só aparecem no site depois de aprovadas.<InfoTip>As clientes avaliam pela página do produto (precisam estar logadas). Nada aparece no site antes de você aprovar.</InfoTip></p>
       <nav className="adm-tabs" aria-label="Filtrar avaliações">
         {FILTERS.map(f => {
           const n = f.key === 'todas' ? reviews.length : counts[f.key] || 0

@@ -5,6 +5,7 @@ import { Loading, errorText, useConfirm, useToast, useUnsavedGuard } from '../ui
 import ImageField, { removeSiteImage, resolveImage } from './ImageField.jsx'
 import LinkField from './LinkField.jsx'
 import IconPicker from './IconPicker.jsx'
+import { InfoTip } from '../ui.jsx'
 
 // Editor genérico de textos/imagens do site, guiado por um esquema de campos.
 // Grava em site_content[contentKey]. O site lê com pageContent(key, defaults):
@@ -77,18 +78,16 @@ function Input({ field, value, onChange }) {
   if (type === 'image') return <ImageField label={title} value={value} onChange={onChange} hint={hint} {...field.image} />
   if (type === 'select') return (
     <label className="adm-field">
-      <span>{title}</span>
+      <span>{title}{hint && <InfoTip>{hint}</InfoTip>}</span>
       <select value={value ?? ''} onChange={e => onChange(e.target.value)}>{field.options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}</select>
-      {hint && <small>{hint}</small>}
     </label>
   )
   return (
     <label className="adm-field">
-      <span>{title}</span>
+      <span>{title}{hint && <InfoTip>{hint}</InfoTip>}</span>
       {type === 'textarea'
         ? <textarea rows={rows || 3} value={value ?? ''} onChange={e => onChange(e.target.value)} maxLength={max} placeholder={placeholder} />
         : <input value={value ?? ''} onChange={e => onChange(e.target.value)} maxLength={max} placeholder={placeholder} />}
-      {hint && <small>{hint}</small>}
     </label>
   )
 }
@@ -96,7 +95,7 @@ function Input({ field, value, onChange }) {
 export function Fields({ schema, value, onChange }) {
   const set = (key, v) => onChange({ ...value, [key]: v })
   return schema.map((f, idx) => {
-    if (f.type === 'heading') return <div key={`h${idx}`} className="adm-content-heading"><h3 className="adm-subtitle">{f.label}</h3>{f.text && <p className="adm-hint">{f.text}</p>}</div>
+    if (f.type === 'heading') return <div key={`h${idx}`} className="adm-content-heading"><h3 className="adm-subtitle adm-title-info">{f.label}{f.text && <InfoTip>{f.text}</InfoTip>}</h3></div>
     if (f.type !== 'list') return <Input key={f.key} field={f} value={value?.[f.key]} onChange={v => set(f.key, v)} />
     const list = value?.[f.key] || []
     const setList = next => set(f.key, next)
@@ -104,8 +103,7 @@ export function Fields({ schema, value, onChange }) {
     const fixed = f.min && f.max && f.min === f.max
     return (
       <div key={f.key} className="adm-field adm-content-list">
-        <span>{f.label}</span>
-        {f.hint && <small className="adm-hint">{f.hint}</small>}
+        <span>{f.label}{f.hint && <InfoTip>{f.hint}</InfoTip>}</span>
         <ul className={`adm-repeat-list cols-${f.columns || 1}`}>
           {list.map((item, i) => (
             <li key={i}>
@@ -133,7 +131,7 @@ export function Fields({ schema, value, onChange }) {
   })
 }
 
-export default function ContentEditor({ contentKey, defaults, schema, intro, previewUrl, folder = 'paginas', saveLabel = 'Salvar', onDirtyChange }) {
+export default function ContentEditor({ contentKey, defaults, schema, intro, info, previewUrl, folder = 'paginas', saveLabel = 'Salvar', onDirtyChange }) {
   const toast = useToast()
   const confirm = useConfirm()
   const [saved, setSaved] = useState(null)
@@ -183,7 +181,7 @@ export default function ContentEditor({ contentKey, defaults, schema, intro, pre
   return (
     <div className="adm-editor">
       <div className="adm-page-head">
-        <p className="adm-muted">{intro} Campos com * não podem ficar vazios; os outros, se apagados, somem do site.</p>
+        <p className="adm-muted adm-title-info">{intro}<InfoTip>{`${info ? `${info}\n\n` : ''}Campos com * não podem ficar vazios. Os outros, se apagados, somem do site.`}</InfoTip></p>
         <span className="adm-head-actions">
           <button className="adm-btn ghost small" onClick={restore} disabled={saving}>Voltar ao padrão</button>
           {previewUrl && <a className="adm-btn outline small" href={previewUrl} target="_blank" rel="noreferrer"><ExternalLink /> Ver no site</a>}

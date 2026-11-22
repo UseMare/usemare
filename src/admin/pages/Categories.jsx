@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { ArrowDown, ArrowUp, House, Pencil, Plus, Tags, Trash2 } from 'lucide-react'
 import { supabase } from '../../supabase.js'
 import { listCategories, slugify, uniqueSlug } from '../api.js'
-import { Loading, Modal, Switch, errorText, useConfirm, useToast } from '../ui.jsx'
+import { CardHead, InfoTip, Loading, Modal, Switch, errorText, useConfirm, useToast } from '../ui.jsx'
 import ImageField, { removeSiteImage, resolveImage } from '../components/ImageField.jsx'
 
 // Imagem do card da página inicial: mesma proporção dos banners atuais (1525 × 1005),
@@ -64,26 +64,23 @@ function CategoryModal({ category, onClose, onSaved }) {
         <label className="adm-field"><span>Nome *</span>
           <input value={form.name} onChange={e => { set('name', e.target.value); if (!slugTouched) set('slug', slugify(e.target.value)) }} placeholder="Ex.: Macaquinhos" maxLength={60} />
         </label>
-        <label className="adm-field"><span>Endereço</span>
+        <label className="adm-field"><span>Endereço<InfoTip>{`Página: /produtos?categoria=${form.slug || '…'}`}{!isNew && '\n\nMudar o endereço quebra links antigos já compartilhados.'}</InfoTip></span>
           <input value={form.slug} onChange={e => { setSlugTouched(true); set('slug', slugify(e.target.value)) }} />
-          <small>/produtos?categoria={form.slug || '…'}{!isNew && ' — mudar quebra links antigos já compartilhados.'}</small>
         </label>
       </div>
       <div className="adm-field">
-        <span>Tipo</span>
+        <span>Tipo<InfoTip>Coleção aparece no selo e no caminho da página do produto. Tipo de peça aparece no filtro do catálogo.</InfoTip></span>
         <div className="adm-segmented">
           <button type="button" className={form.kind === 'colecao' ? 'active' : ''} onClick={() => set('kind', 'colecao')}>Coleção (ex.: Maré Move)</button>
           <button type="button" className={form.kind === 'tipo' ? 'active' : ''} onClick={() => set('kind', 'tipo')}>Tipo de peça (ex.: Vestidos)</button>
         </div>
-        <small>Coleção aparece no selo e no caminho da página do produto. Tipo de peça aparece no filtro do catálogo.</small>
       </div>
       <Switch checked={form.active} onChange={v => set('active', v)} label={form.active ? 'Ativa (aparece no site)' : 'Oculta (não aparece no site)'} />
 
-      <h3 className="adm-subtitle">Banner da página da categoria</h3>
-      <p className="adm-hint">Textos do topo de /produtos?categoria={form.slug || '…'}. Vazio = usa o texto geral do catálogo.</p>
+      <h3 className="adm-subtitle adm-title-info">Banner da página da categoria<InfoTip>{`Textos do topo de /produtos?categoria=${form.slug || '…'}. Vazio = usa o texto geral do catálogo.`}</InfoTip></h3>
       <div className="adm-grid-2">
         <label className="adm-field"><span>Texto pequeno (acima do título)</span><input value={form.banner_eyebrow} onChange={e => set('banner_eyebrow', e.target.value)} placeholder={form.name || 'Maré Move'} /></label>
-        <label className="adm-field"><span>Título</span><textarea rows={2} value={form.banner_title} onChange={e => set('banner_title', e.target.value)} placeholder={'Seu movimento,\nsua melhor versão.'} /><small>Enter = quebra de linha.</small></label>
+        <label className="adm-field"><span>Título<InfoTip>Enter = quebra de linha.</InfoTip></span><textarea rows={2} value={form.banner_title} onChange={e => set('banner_title', e.target.value)} placeholder={'Seu movimento,\nsua melhor versão.'} /></label>
       </div>
       <label className="adm-field"><span>Texto</span><textarea rows={2} value={form.banner_text} onChange={e => set('banner_text', e.target.value)} /></label>
 
@@ -93,7 +90,7 @@ function CategoryModal({ category, onClose, onSaved }) {
         <div className="adm-home-card-fields">
           <ImageField label="Imagem do card" value={form.home_image} onChange={v => set('home_image', v)} {...CARD_IMAGE} hint="Formato paisagem. Deixe o lado esquerdo mais livre: é onde fica o texto." />
           <div className="adm-grid-2">
-            <label className="adm-field"><span>Texto do card</span><textarea rows={2} value={form.home_title} onChange={e => set('home_title', e.target.value)} placeholder={form.name} /><small>Enter = quebra de linha (ex.: "Conjuntos" / "Fitness").</small></label>
+            <label className="adm-field"><span>Texto do card<InfoTip>Enter = quebra de linha (ex.: "Conjuntos" / "Fitness").</InfoTip></span><textarea rows={2} value={form.home_title} onChange={e => set('home_title', e.target.value)} placeholder={form.name} /></label>
             <div className="adm-field"><span>Cor do texto</span>
               <div className="adm-segmented">
                 <button type="button" className={form.home_tone === 'light' ? 'active' : ''} onClick={() => set('home_tone', 'light')}>Branco (foto escura)</button>
@@ -163,8 +160,8 @@ export default function Categories() {
 
   const bySort = (a, b) => a.sort_order - b.sort_order
   const groups = [
-    { kind: 'colecao', title: 'Coleções', text: 'Linhas da loja: aparecem no selo e no caminho da página do produto.' },
-    { kind: 'tipo', title: 'Tipos de peça', text: 'Aparecem no filtro "Tipo de peça" do catálogo.' },
+    { kind: 'colecao', title: 'Coleções', text: 'Linhas da loja.', info: 'Aparecem no selo e no caminho da página do produto.' },
+    { kind: 'tipo', title: 'Tipos de peça', text: 'Filtro do catálogo.', info: 'Aparecem no filtro "Tipo de peça" do catálogo.' },
   ]
   const homeCards = categories.filter(c => c.home_card).sort((a, b) => a.home_card_order - b.home_card_order)
 
@@ -182,7 +179,7 @@ export default function Categories() {
         const list = categories.filter(c => c.kind === group.kind).sort(bySort)
         return (
           <section key={group.kind} className="adm-card">
-            <div className="adm-card-head"><div><h2>{group.title}</h2><p>{group.text}</p></div></div>
+            <CardHead title={group.title} text={group.text} info={group.info} />
             {list.length === 0 ? <p className="adm-muted">Nenhuma ainda.</p> : (
               <ul className="adm-catlist">
                 {list.map((c, i) => (
@@ -210,7 +207,7 @@ export default function Categories() {
       })}
 
       <section className="adm-card">
-        <div className="adm-card-head"><div><h2>Cards da página inicial</h2><p>Categorias com "Card na página inicial" ligado, nesta ordem. Para incluir outra, edite a categoria.</p></div></div>
+        <CardHead title="Cards da página inicial" text="Na ordem em que aparecem no site." info={'Aparecem as categorias com "Card na página inicial" ligado, nesta ordem.\n\nPara incluir outra, edite a categoria e ligue essa opção.'} />
         {homeCards.length === 0 ? <p className="adm-muted"><Tags /> Nenhum card ligado.</p> : (
           <ul className="adm-homecards">
             {homeCards.map((c, i) => (

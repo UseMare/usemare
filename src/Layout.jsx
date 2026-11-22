@@ -118,7 +118,7 @@ function BagDrawer() {
             <div className="bag-foot">
               <p><span>Total estimado</span><strong>R$ {total.toFixed(2).replace('.', ',')}</strong></p>
               <CheckoutButton items={bagItems} onLeave={closeBag}><WhatsApp /> Finalizar pedido</CheckoutButton>
-              <small>Para finalizar, entre na sua conta (ou crie uma em segundos). Seu pedido vai pronto para o WhatsApp da Maré e lá a gente combina tamanhos, pagamento e entrega.</small>
+              <small>Seu pedido vai pronto para o WhatsApp da Maré.</small>
             </div>
           </>
         )}

@@ -4,7 +4,7 @@ import { menuDefaults } from '../../Layout.jsx'
 
 // Menu do site: nomes dos itens do menu do topo (os endereços não mudam). Salvo em site_content 'menu'.
 const schema = [
-  { type: 'heading', label: 'Itens do menu do topo', text: 'Mude só o nome que aparece no menu (no computador e no celular).' },
+  { type: 'heading', label: 'Itens do menu do topo', text: 'Muda só o nome que aparece no menu (no computador e no celular).' },
   { key: 'inicio', label: 'Início (página inicial)', type: 'text', required: true, max: 24 },
   { key: 'produtos', label: 'Produtos (catálogo completo)', type: 'text', required: true, max: 24 },
   { key: 'colecao', label: 'Coleção (página da coleção do mês)', type: 'text', required: true, max: 24,

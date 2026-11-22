@@ -1,7 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
-import { AlertTriangle, CheckCircle2, X, XCircle } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, Info, X, XCircle } from 'lucide-react'
 
 // Componentes compartilhados do painel: avisos rápidos (toast), confirmação e janela (modal).
 
@@ -143,4 +143,64 @@ export const errorText = error => {
   if (/old_price/i.test(msg)) return 'O preço antigo (promoção) precisa ser maior que o preço atual.'
   if (/price/i.test(msg) && /check/i.test(msg)) return 'O preço precisa ser maior que zero.'
   return `Não foi possível salvar: ${msg}`
+}
+
+// ---------- Ícone de info ----------
+// As explicações ficam escondidas num ⓘ: clicou, abre um balão com o texto completo; clicar
+// fora, rolar a tela ou Esc fecha. O balão é posicionado na tela (nunca sai pela lateral).
+export function InfoTip({ children, label = 'Mais informações' }) {
+  const [pos, setPos] = useState(null)
+  const button = useRef(null)
+  const bubble = useRef(null)
+
+  const toggle = event => {
+    event.preventDefault() // dentro de <label>, não foca o campo
+    event.stopPropagation()
+    if (pos) return setPos(null)
+    const r = button.current.getBoundingClientRect()
+    const width = Math.min(300, window.innerWidth - 24)
+    const left = Math.max(12, Math.min(r.left + r.width / 2 - width / 2, window.innerWidth - width - 12))
+    const below = window.innerHeight - r.bottom > 160
+    setPos({ left, width, top: below ? r.bottom + 8 : undefined, bottom: below ? undefined : window.innerHeight - r.top + 8 })
+  }
+
+  useEffect(() => {
+    if (!pos) return
+    const close = event => { if (!bubble.current?.contains(event.target) && !button.current?.contains(event.target)) setPos(null) }
+    const closeNow = () => setPos(null)
+    const onKey = event => { if (event.key === 'Escape') setPos(null) }
+    document.addEventListener('pointerdown', close)
+    document.addEventListener('keydown', onKey)
+    window.addEventListener('scroll', closeNow, true)
+    window.addEventListener('resize', closeNow)
+    return () => {
+      document.removeEventListener('pointerdown', close)
+      document.removeEventListener('keydown', onKey)
+      window.removeEventListener('scroll', closeNow, true)
+      window.removeEventListener('resize', closeNow)
+    }
+  }, [pos])
+
+  return (
+    <>
+      <button type="button" ref={button} className={`adm-info-btn ${pos ? 'is-open' : ''}`} aria-label={label} aria-expanded={Boolean(pos)} onClick={toggle}><Info /></button>
+      {pos && createPortal(
+        <div ref={bubble} className="adm-info-bubble" role="tooltip" style={{ left: pos.left, width: pos.width, top: pos.top, bottom: pos.bottom }}>{children}</div>,
+        document.body,
+      )}
+    </>
+  )
+}
+
+// Cabeçalho de quadro: título, frase curta opcional e ⓘ com a explicação completa.
+export function CardHead({ title, text, info, aside, as: Tag = 'h2' }) {
+  return (
+    <div className="adm-card-head">
+      <div>
+        <Tag className="adm-title-info">{title}{info && <InfoTip label={`Sobre: ${typeof title === 'string' ? title : 'este quadro'}`}>{info}</InfoTip>}</Tag>
+        {text && <p>{text}</p>}
+      </div>
+      {aside}
+    </div>
+  )
 }

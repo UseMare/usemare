@@ -18,7 +18,7 @@ const LANDSCAPE = { aspect: 1525 / 1005, outputs: [{ width: 1525, height: 1005, 
 const tabs = [
   {
     key: 'sobre', label: 'Sobre nós', contentKey: 'about', defaults: aboutDefaults, previewUrl: '/sobre',
-    intro: 'Página "Sobre nós" (/sobre). O quadro "Como comprar" fica na aba ao lado.',
+    intro: 'Página "Sobre nós" (/sobre).', info: 'O quadro "Como comprar" fica na aba ao lado.',
     schema: [
       { type: 'heading', label: 'Topo da página' },
       { key: 'heroEyebrow', label: 'Texto pequeno (acima do título)', type: 'text', max: 60 },
@@ -69,7 +69,7 @@ const tabs = [
   },
   {
     key: 'como-comprar', label: 'Como comprar', contentKey: 'howto', defaults: howtoDefaults, previewUrl: '/sobre#como-comprar',
-    intro: 'Quadro "Como comprar na Maré" (na página Sobre; o link "Como comprar" do rodapé leva até ele).',
+    intro: 'Quadro "Como comprar na Maré".', info: 'Fica na página Sobre. O link "Como comprar" do rodapé leva até ele.',
     schema: [
       { key: 'eyebrow', label: 'Texto pequeno', type: 'text', max: 60 },
       { key: 'title', label: 'Título', type: 'text', required: true, max: 60 },
@@ -82,7 +82,7 @@ const tabs = [
   },
   {
     key: 'catalogo', label: 'Catálogo', contentKey: 'catalog', defaults: catalogDefaults, previewUrl: '/produtos',
-    intro: 'Topo da página de produtos em "Todos". Cada categoria pode ter o próprio texto (Categorias → editar → Banner).',
+    intro: 'Topo do catálogo de produtos.', info: 'Vale para "Todos". Cada categoria pode ter o próprio texto (Categorias → editar → Banner).',
     schema: [
       { key: 'eyebrow', label: 'Texto pequeno', type: 'text', max: 60 },
       { key: 'title', label: 'Título', type: 'textarea', rows: 2, required: true, max: 80, hint: TITLE_HINT },
@@ -94,7 +94,7 @@ const tabs = [
   },
   {
     key: 'promocoes', label: 'Promoções', contentKey: 'promotions', defaults: promotionsDefaults, previewUrl: '/promocoes',
-    intro: 'Página de promoções. As peças aparecem sozinhas quando têm "preço antigo" no cadastro.',
+    intro: 'Página de promoções.', info: 'As peças aparecem sozinhas quando têm "preço antigo" no cadastro.',
     schema: [
       { key: 'eyebrow', label: 'Texto pequeno', type: 'text', max: 60 },
       { key: 'title', label: 'Título', type: 'textarea', rows: 2, required: true, max: 80, hint: TITLE_HINT },
@@ -110,7 +110,7 @@ const tabs = [
   },
   {
     key: 'faixa', label: 'Faixa do topo', contentKey: 'announcement', defaults: announcementDefaults, previewUrl: '/',
-    intro: 'Faixa fina acima do menu, em todas as páginas. No celular só o primeiro aviso aparece.',
+    intro: 'Faixa de avisos acima do menu.', info: 'Aparece em todas as páginas. No celular só o primeiro aviso aparece.',
     schema: [
       { key: 'items', label: 'Avisos', type: 'list', min: 1, max: 4, itemLabel: 'Aviso', addLabel: 'Adicionar aviso', columns: 3,
         hint: 'Use {parcelas} para o número de parcelas das Configurações (ex.: "Parcele em até {parcelas}x sem juros").', item: [
@@ -128,7 +128,7 @@ const tabs = [
     const page = legalPages.find(p => p.contentKey === t.contentKey)
     return {
       ...t, label: page.label, previewUrl: page.path,
-      intro: `Página "${page.label}" (${page.path}). O link fica só no rodapé, na linha de baixo. Ao mudar regras, atualize também a data.`,
+      intro: `Página "${page.label}" (${page.path}).`, info: 'O link fica só no rodapé, na linha de baixo. Ao mudar regras, atualize também a data.',
       schema: [
         { key: 'title', label: 'Título', type: 'text', required: true, max: 60 },
         { key: 'updated', label: 'Atualizada em', type: 'text', max: 40, hint: 'Ex.: 22 de novembro de 2026.' },
@@ -164,7 +164,7 @@ export default function PageTexts() {
         ))}
       </nav>
       <ContentEditor key={current.key} contentKey={current.contentKey} defaults={current.defaults} schema={current.schema}
-        intro={current.intro} previewUrl={current.previewUrl} saveLabel="Salvar textos" onDirtyChange={setDirty} />
+        intro={current.intro} info={current.info} previewUrl={current.previewUrl} saveLabel="Salvar textos" onDirtyChange={setDirty} />
     </>
   )
 }

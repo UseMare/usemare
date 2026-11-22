@@ -4,6 +4,7 @@ import { storageRef } from '../api.js'
 import { supabase } from '../../supabase.js'
 import { uploadImage, uploadShrunk, uploadVariants } from '../storage.js'
 import ImageCropper from './ImageCropper.jsx'
+import { InfoTip } from '../ui.jsx'
 
 // Campo de imagem com prévia, usado em categorias, hero, banners e logo.
 // value: URL salva | { preview, blobs } (recortada, ainda não enviada) | { preview, file } (sem recorte) | null
@@ -32,12 +33,13 @@ export default function ImageField({ label, hint, value, onChange, aspect, outpu
 
   return (
     <div className="adm-field adm-imagefield">
-      {label && <span>{label}</span>}
+      {label && <span>{label}{hint && <InfoTip>{hint}</InfoTip>}</span>}
       <div className="adm-imagefield-box">
         <div className="adm-imagefield-preview" style={{ aspectRatio: previewRatio || aspect || 'auto' }}>
           {preview ? <img src={preview} alt="" /> : <ImagePlus />}
         </div>
         <div className="adm-imagefield-actions">
+          {!label && hint && <InfoTip>{hint}</InfoTip>}
           <button type="button" className="adm-btn outline small" onClick={() => input.current.click()}>
             {preview ? <><RefreshCw /> Trocar imagem</> : <><ImagePlus /> Escolher imagem</>}
           </button>
@@ -45,7 +47,6 @@ export default function ImageField({ label, hint, value, onChange, aspect, outpu
             <button type="button" className="adm-btn ghost small" onClick={() => setCropSrc(value)}>Ajustar recorte</button>
           )}
           {preview && allowRemove && <button type="button" className="adm-btn danger-text small" onClick={() => onChange(null)}><Trash2 /> Remover</button>}
-          {hint && <small className="adm-hint">{hint}</small>}
           {error && <small className="adm-field-error">{error}</small>}
         </div>
       </div>

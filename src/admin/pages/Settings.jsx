@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { ExternalLink, MessageCircle } from 'lucide-react'
 import { supabase } from '../../supabase.js'
-import { Loading, errorText, useToast, useUnsavedGuard } from '../ui.jsx'
+import { CardHead, InfoTip, Loading, errorText, useToast, useUnsavedGuard } from '../ui.jsx'
 import { Instagram } from '../../ui.jsx'
 
 // Configurações da loja (store_settings): WhatsApp, Instagram e parcelamento.
@@ -83,34 +83,32 @@ export default function Settings() {
       {error && <p className="adm-notice is-error" role="alert">{error}</p>}
 
       <section className="adm-card">
-        <div className="adm-card-head"><div><h2>WhatsApp da loja</h2><p>As clientes fecham as compras por aqui. Vale para todos os botões de WhatsApp do site.</p></div></div>
+        <CardHead title="WhatsApp da loja" text="Onde as clientes fecham as compras." info="Vale para todos os botões de WhatsApp do site (peça, sacola, rodapé)." />
         <div className="adm-grid-2">
           <label className="adm-field">
-            <span>Número com DDD</span>
+            <span>Número com DDD<InfoTip>Número do Brasil. As mensagens das clientes chegam neste WhatsApp.</InfoTip></span>
             <div className="adm-phone">
               <b>+55</b>
               <input value={form.phone} onChange={e => set('phone', formatPhone(e.target.value))} inputMode="tel" placeholder="(11) 99999-8888" aria-invalid={!phoneOk} />
             </div>
             {!phoneOk ? <small className="adm-field-error">Faltam dígitos: DDD + número (10 ou 11 dígitos).</small>
-              : !phoneDigits ? <small className="adm-field-error">Sem número, o WhatsApp abre pedindo para a cliente escolher o contato. Preencha para as mensagens chegarem direto na loja.</small>
-              : <small>Número do Brasil. As mensagens chegam neste WhatsApp.</small>}
+              : !phoneDigits ? <small className="adm-field-error">Preencha para as mensagens chegarem na loja.</small>
+              : null}
           </label>
           <div className="adm-field">
-            <span>Testar</span>
+            <span>Testar<InfoTip>Abre o WhatsApp com uma mensagem de teste para este número (não envia nada sozinho).</InfoTip></span>
             <a className={`adm-btn outline ${phoneOk ? '' : 'is-disabled'}`} href={phoneOk ? testLink : undefined} target="_blank" rel="noreferrer" aria-disabled={!phoneOk}><MessageCircle /> Abrir conversa de teste</a>
-            <small>Abre o WhatsApp com uma mensagem de teste para este número (não envia nada sozinho).</small>
           </div>
         </div>
       </section>
 
       <section className="adm-card">
-        <div className="adm-card-head"><div><h2>Instagram</h2><p>Aparece no rodapé, na faixa do topo, na página Sobre e nos botões "Seguir".</p></div></div>
+        <CardHead title="Instagram" info={'Aparece no rodapé, na faixa do topo, na página Sobre e nos botões "Seguir".'} />
         <div className="adm-grid-2">
           <label className="adm-field">
-            <span>@ ou link do perfil</span>
+            <span>@ ou link do perfil<InfoTip>Pode colar o link inteiro do perfil: o painel entende sozinho.</InfoTip></span>
             <input value={form.instagram} onChange={e => set('instagram', e.target.value)} placeholder="@uusemaree.br" />
-            {form.instagram.trim() && !igUser ? <small className="adm-field-error">Escreva o @ do perfil ou cole o link dele.</small>
-              : <small>Pode colar o link inteiro do perfil: o painel entende sozinho.</small>}
+            {form.instagram.trim() && !igUser && <small className="adm-field-error">Escreva o @ do perfil ou cole o link dele.</small>}
           </label>
           {igUser && (
             <div className="adm-field">
@@ -122,7 +120,7 @@ export default function Settings() {
       </section>
 
       <section className="adm-card">
-        <div className="adm-card-head"><div><h2>Parcelamento</h2><p>Aparece nos preços ("ou 6x de R$ …") e onde houver {'{parcelas}'}.</p></div></div>
+        <CardHead title="Parcelamento" info={'Aparece nos preços ("ou 6x de R$ …") e nos textos onde houver {parcelas}.'} />
         <label className="adm-field adm-field-narrow">
           <span>Parcelas sem juros</span>
           <select value={form.installments} onChange={e => set('installments', e.target.value)}>

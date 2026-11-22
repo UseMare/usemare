@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Copy, Download, Mail, Search, Trash2 } from 'lucide-react'
 import { supabase } from '../../supabase.js'
-import { Loading, errorText, useConfirm, useToast } from '../ui.jsx'
+import { InfoTip, Loading, errorText, useConfirm, useToast } from '../ui.jsx'
 
 // E-mails cadastrados no campo "Receba novidades" do rodapé.
 
@@ -63,7 +63,7 @@ export default function Newsletter() {
 
       <section className="adm-card">
         <div className="adm-card-head">
-          <div><h2>E-mails cadastrados</h2><p>Para mandar novidades, baixe a planilha ou copie os e-mails para o seu e-mail ou ferramenta de envio.</p></div>
+          <div><h2 className="adm-title-info">E-mails cadastrados<InfoTip>Para mandar novidades, baixe a planilha ou copie os e-mails para o seu e-mail ou ferramenta de envio.</InfoTip></h2><p>Inscritos pelo rodapé do site.</p></div>
           <span className="adm-head-actions">
             <button className="adm-btn outline small" onClick={copyAll} disabled={!visible.length}><Copy /> Copiar e-mails</button>
             <button className="adm-btn primary small" onClick={() => downloadCsv(visible)} disabled={!visible.length}><Download /> Baixar planilha</button>

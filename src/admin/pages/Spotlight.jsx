@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { ArrowDown, ArrowUp, ArrowUpRight, ImageOff, Plus, Search, Sparkles, X } from 'lucide-react'
 import { supabase } from '../../supabase.js'
 import { listProducts } from '../api.js'
-import { Loading, Switch, errorText, formatBRL, useToast, useUnsavedGuard } from '../ui.jsx'
+import { InfoTip, Loading, Switch, errorText, formatBRL, useToast, useUnsavedGuard } from '../ui.jsx'
 
 // Destaques: card flutuante que aparece no canto do site e alterna entre até 5 produtos.
 // Grava store_settings.spotlight_enabled e spotlight_ids (na ordem escolhida).
@@ -94,12 +94,12 @@ export default function Spotlight() {
 
   return (
     <>
-      <p className="adm-muted adm-intro">Até {MAX} produtos que aparecem em um card no canto do site, trocando a cada 5 segundos.</p>
+      <p className="adm-muted adm-intro adm-title-info">Card flutuante no canto do site.<InfoTip>{`Até ${MAX} produtos aparecem em um card no canto do site, trocando a cada 5 segundos. O primeiro da lista aparece primeiro.\n\nProdutos ocultos ou esgotados ficam fora do card sozinhos e voltam quando estiverem disponíveis.`}</InfoTip></p>
 
       <div className="adm-spot-grid">
         <section className="adm-card">
           <div className="adm-card-head">
-            <div><h2>Destaques escolhidos ({ids.length}/{MAX})</h2><p>O primeiro da lista aparece primeiro.</p></div>
+            <div><h2>Destaques escolhidos ({ids.length}/{MAX})</h2></div>
             <Switch checked={enabled} onChange={setEnabled} label={enabled ? 'Card ligado' : 'Card desligado'} />
           </div>
           {!enabled && <p className="adm-notice is-warn">O card está desligado: nenhum destaque aparece no site até você ligar de novo.</p>}
@@ -129,13 +129,13 @@ export default function Spotlight() {
             <>
               <h3 className="adm-subtitle">Prévia</h3>
               <Preview product={showing[0]} count={showing.length} />
-              {showing.length < chosen.length && <p className="adm-hint">Produtos ocultos ou esgotados ficam fora do card automaticamente e voltam sozinhos quando estiverem disponíveis.</p>}
+              {showing.length < chosen.length && <p className="adm-hint">Ocultos ou esgotados ficam fora do card.</p>}
             </>
           )}
         </section>
 
         <section className="adm-card">
-          <div className="adm-card-head"><div><h2>Adicionar produto</h2><p>{ids.length >= MAX ? `Já tem ${MAX} destaques. Tire um para adicionar outro.` : 'Clique em um produto para colocar nos destaques.'}</p></div></div>
+          <div className="adm-card-head"><div><h2>Adicionar produto</h2>{ids.length >= MAX && <p>{`Limite de ${MAX}. Tire um para adicionar.`}</p>}</div></div>
           <label className="adm-search"><Search /><input className="adm-input" value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar por nome ou código" aria-label="Buscar produto" /></label>
           <ul className="adm-spot-options">
             {options.length === 0 && <li className="adm-muted">Nenhum produto encontrado.</li>}

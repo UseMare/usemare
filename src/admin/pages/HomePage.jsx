@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { ArrowDown, ArrowRight, ArrowUp, ExternalLink, Plus, Trash2 } from 'lucide-react'
 import { getSiteContent, saveSiteContent } from '../api.js'
 import { BASE } from '../sections.js'
-import { Loading, errorText, useConfirm, useToast, useUnsavedGuard } from '../ui.jsx'
+import { CardHead, InfoTip, Loading, errorText, useConfirm, useToast, useUnsavedGuard } from '../ui.jsx'
 import ImageField, { removeSiteImage, resolveImage } from '../components/ImageField.jsx'
 import LinkField from '../components/LinkField.jsx'
 import IconPicker from '../components/IconPicker.jsx'
@@ -30,13 +30,13 @@ const storageImages = content => [
 ].filter(i => typeof i.url === 'string')
 
 function Field({ label, hint, children }) {
-  return <label className="adm-field"><span>{label}</span>{children}{hint && <small>{hint}</small>}</label>
+  return <label className="adm-field"><span>{label}{hint && <InfoTip>{hint}</InfoTip>}</span>{children}</label>
 }
 
-function Section({ title, text, children, aside }) {
+function Section({ title, text, info, children, aside }) {
   return (
     <section className="adm-card">
-      <div className="adm-card-head"><div><h2>{title}</h2>{text && <p>{text}</p>}</div>{aside}</div>
+      <CardHead title={title} text={text} info={info} aside={aside} />
       {children}
     </section>
   )
@@ -134,8 +134,10 @@ export default function HomePage() {
       </div>
       {error && <p className="adm-notice is-error" role="alert">{error}</p>}
 
-      <Section title="Banner principal" text={`Fotos do topo da página. Com mais de uma, elas trocam sozinhas a cada 7 segundos (até ${MAX_SLIDES}).`}>
-        <p className="adm-hint">Deixe o lado esquerdo da foto mais liso e claro: é onde ficam os textos. No celular a foto aparece abaixo dos textos.</p>
+      <Section title="Banner principal" text="Fotos e textos do topo do site."
+        info={`Com mais de uma foto, elas trocam sozinhas a cada 7 segundos (até ${MAX_SLIDES}).
+
+Deixe o lado esquerdo da foto mais liso e claro: é onde ficam os textos. No celular a foto aparece abaixo dos textos.`}>
         <ul className="adm-slides">
           {form.heroSlides.map((slide, i) => (
             <li key={i}>
@@ -171,8 +173,7 @@ export default function HomePage() {
           {form.heroButton.trim() ? <LinkField value={form.heroLink} onChange={v => set('heroLink', v)} /> : <span />}
         </div>
 
-        <h3 className="adm-subtitle">Benefícios (abaixo do botão)</h3>
-        <p className="adm-hint">Até {MAX_BENEFITS}, com ícone. Enter = quebra de linha.</p>
+        <h3 className="adm-subtitle adm-title-info">Benefícios (abaixo do botão)<InfoTip>Até {MAX_BENEFITS}, cada um com ícone. Enter = quebra de linha.</InfoTip></h3>
         <ul className="adm-repeat adm-benefits">
           {form.heroBenefits.map((b, i) => (
             <li key={i}>
@@ -187,10 +188,10 @@ export default function HomePage() {
         )}
       </Section>
 
-      <Section title="Cards de categoria" text="Os cards logo abaixo do banner (imagem, texto e ordem) são editados em Categorias."
+      <Section title="Cards de categoria" text="Editados em Categorias." info="Os cards logo abaixo do banner (imagem, texto e ordem) são editados em Categorias."
         aside={<Link className="adm-btn outline small" to={`${BASE}/categorias`}>Abrir Categorias <ArrowRight /></Link>} />
 
-      <Section title="Vitrine de produtos" text="Mostra as 4 primeiras peças da lista de Produtos (as indisponíveis aparecem com o selo).">
+      <Section title="Vitrine de produtos" text="As 4 primeiras peças de Produtos." info="Mostra as 4 primeiras peças da lista de Produtos (a ordem é a da lista). As indisponíveis aparecem com o selo.">
         <Field label="Título da vitrine *"><input value={form.highlightsTitle} onChange={e => set('highlightsTitle', e.target.value)} maxLength={50} /></Field>
       </Section>
 
@@ -210,8 +211,8 @@ export default function HomePage() {
         </div>
       </Section>
 
-      <Section title="Quadro de serviços" text="Os 4 itens entre os banners do meio.">
-        <p className="adm-hint">Use {'{parcelas}'} para mostrar o número de parcelas das Configurações (ex.: "{'{parcelas}'}x sem juros" vira "6x sem juros").</p>
+      <Section title="Quadro de serviços" text="Os 4 itens entre os banners do meio."
+        info={'Use {parcelas} para mostrar o número de parcelas das Configurações (ex.: "{parcelas}x sem juros" vira "6x sem juros").'}>
         <ul className="adm-repeat adm-services">
           {form.services.map((s, i) => (
             <li key={i}>

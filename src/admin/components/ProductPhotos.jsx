@@ -95,7 +95,7 @@ export default function ProductPhotos({ photos, onChange }) {
         )}
       </div>
       <input ref={input} type="file" accept="image/*" multiple hidden onChange={pick} />
-      {!photos.length && <p className="adm-hint">Sem fotos, o produto aparece no site com uma imagem genérica.</p>}
+      {!photos.length && <p className="adm-hint">Sem fotos, aparece uma imagem genérica.</p>}
 
       {current && (
         <ImageCropper

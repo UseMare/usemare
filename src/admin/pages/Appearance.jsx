@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { ExternalLink } from 'lucide-react'
 import { supabase } from '../../supabase.js'
 import { getSiteContent, saveSiteContent } from '../api.js'
-import { Loading, errorText, useConfirm, useToast, useUnsavedGuard } from '../ui.jsx'
+import { CardHead, InfoTip, Loading, errorText, useConfirm, useToast, useUnsavedGuard } from '../ui.jsx'
 import ImageField, { removeSiteImage, resolveImage } from '../components/ImageField.jsx'
 import { Fields, clean, finalize, mergePage, plain, validate } from '../components/ContentEditor.jsx'
 import { footerDefaults } from '../../Layout.jsx'
@@ -123,7 +123,7 @@ export default function Appearance() {
       {error && <p className="adm-notice is-error" role="alert">{error}</p>}
 
       <section className="adm-card">
-        <div className="adm-card-head"><div><h2>Logotipo</h2><p>PNG, WebP ou SVG com fundo transparente ficam melhores. O arquivo vai como está, sem recorte.</p></div></div>
+        <CardHead title="Logotipo" info="PNG, WebP ou SVG com fundo transparente ficam melhores. O logo vai sem recorte e é reduzido sozinho para carregar rápido." />
         <div className="adm-logos">
           <div className="adm-logo-box">
             <ImageField label="Logo do topo *" value={form.logo} onChange={v => set('logo', v)} previewRatio="16 / 9" hint="Aparece no cabeçalho e no menu do celular." />
@@ -138,15 +138,14 @@ export default function Appearance() {
       <section className="adm-card">
         <div className="adm-card-head"><div><h2>Texto e redes do rodapé</h2></div></div>
         <label className="adm-field">
-          <span>Texto abaixo do logo</span>
+          <span>Texto abaixo do logo<InfoTip>Enter = quebra de linha. Vazio = não mostra.</InfoTip></span>
           <textarea rows={2} value={form.footerText} onChange={e => set('footerText', e.target.value)} maxLength={160} />
-          <small>Enter = quebra de linha. Vazio = não mostra.</small>
         </label>
         <Fields schema={socialSchema} value={form} onChange={setForm} />
       </section>
 
       <section className="adm-card adm-content-card">
-        <div className="adm-card-head"><div><h2>Colunas do rodapé</h2><p>"WhatsApp da loja" abre a conversa com o número das Configurações.</p></div></div>
+        <CardHead title="Colunas do rodapé" info={'"WhatsApp da loja" abre a conversa com o número das Configurações.'} />
         <Fields schema={footerSchema} value={form} onChange={setForm} />
       </section>
 

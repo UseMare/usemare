@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Download, Heart, Search, Users } from 'lucide-react'
 import { supabase } from '../../supabase.js'
-import { Loading, errorText } from '../ui.jsx'
+import { InfoTip, Loading, errorText } from '../ui.jsx'
 import { WhatsApp } from '../../ui.jsx'
 import { formatPhone } from '../../pages/authShared.jsx'
 
@@ -65,7 +65,7 @@ export default function Customers() {
 
       <section className="adm-card">
         <div className="adm-card-head">
-          <div><h2>Clientes cadastradas</h2><p>Todas as contas criadas no site. Clique no WhatsApp para abrir a conversa com a cliente.</p></div>
+          <div><h2 className="adm-title-info">Clientes cadastradas<InfoTip>Todas as contas criadas no site. Clique no WhatsApp para abrir a conversa com a cliente.</InfoTip></h2><p>Contas criadas no site.</p></div>
           <span className="adm-head-actions">
             <button className="adm-btn primary small" onClick={() => downloadCsv(visible)} disabled={!visible.length}><Download /> Baixar planilha</button>
           </span>

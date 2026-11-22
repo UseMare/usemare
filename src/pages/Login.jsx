@@ -93,7 +93,7 @@ function AuthForm({ checkout }) {
       )}
 
       <h2>{isForgot ? 'Recuperar senha' : isSignup ? 'Criar sua conta' : 'Entrar na sua conta'}</h2>
-      <p className="login-sub">{isForgot ? 'Digite seu e-mail e enviaremos um link para criar uma nova senha.' : isSignup ? 'Leva menos de um minuto. 💕' : 'Use seu e-mail e senha para acessar.'}</p>
+      <p className="login-sub">{isForgot ? 'Enviaremos um link para criar uma nova senha.' : isSignup ? 'Leva menos de um minuto. 💕' : 'Use seu e-mail e senha para acessar.'}</p>
 
       <form onSubmit={submit} noValidate key={mode}>
         {isSignup && (

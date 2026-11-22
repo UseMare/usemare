@@ -4,7 +4,7 @@ import { ArrowLeft, ExternalLink, Plus, Trash2, X } from 'lucide-react'
 import { supabase } from '../../supabase.js'
 import { deleteProduct, getProduct, listCategories, nextProductCode, uniqueSlug, slugify } from '../api.js'
 import { BASE } from '../sections.js'
-import { Loading, Switch, errorText, useConfirm, useToast, useUnsavedGuard } from '../ui.jsx'
+import { CardHead, InfoTip, Loading, Switch, errorText, useConfirm, useToast, useUnsavedGuard } from '../ui.jsx'
 import ProductPhotos, { syncPhotos } from '../components/ProductPhotos.jsx'
 
 const COMMON_SIZES = ['PP', 'P', 'M', 'G', 'GG', 'XG', 'Único', '36', '38', '40', '42', '44']
@@ -77,9 +77,9 @@ const validate = (form, categories) => {
 function Field({ label, hint, error, children }) {
   return (
     <label className={`adm-field ${error ? 'has-error' : ''}`}>
-      <span>{label}</span>
+      <span>{label}{hint && <InfoTip>{hint}</InfoTip>}</span>
       {children}
-      {error ? <small className="adm-field-error">{error}</small> : hint && <small>{hint}</small>}
+      {error && <small className="adm-field-error">{error}</small>}
     </label>
   )
 }
@@ -248,9 +248,8 @@ export default function ProductEditor() {
               <input value={form.name} onChange={e => setName(e.target.value)} placeholder="Ex.: Conjunto Maré Move Lilás" maxLength={120} />
             </Field>
             <p className="adm-hint adm-slug-info">
-              Endereço da página: <b>usemare.com.br/produto/{slugPreview(form.name, row)}</b>
-              {' — acompanha o nome sozinho.'}
-              {!isNew && slugPreview(form.name, row) !== row.slug && ' Links antigos continuam funcionando e levam para o novo endereço.'}
+              <b>usemare.com.br/produto/{slugPreview(form.name, row)}</b>
+              <InfoTip>{'O endereço da página acompanha o nome do produto sozinho.\n\nAo renomear, os links antigos continuam funcionando e levam para o novo endereço.'}</InfoTip>
             </p>
             <div className="adm-field">
               <span>Tipo de ficha</span>
@@ -259,13 +258,13 @@ export default function ProductEditor() {
                 <button type="button" role="radio" aria-checked={form.kind === 'suplemento'} className={form.kind === 'suplemento' ? 'active' : ''} onClick={() => setKind('suplemento')} title="Suplemento (sabores e embalagem)">Suplemento (sabores e embalagem)</button>
               </div>
             </div>
-            <Field label="Descrição" hint="A primeira frase (até a primeira linha em branco) aparece em destaque. Deixe uma linha em branco entre os parágrafos.">
+            <Field label="Descrição" hint={'A primeira frase (até a primeira linha em branco) aparece em destaque.\n\nDeixe uma linha em branco entre os parágrafos.'}>
               <textarea rows={9} value={form.description} onChange={e => set('description', e.target.value)} placeholder={'Treino com elegância? A gente ama! ✨\n\nBlusa de manga curta com modelagem ajustadinha…\n\nMARÉ MOVE — seu movimento, sua melhor versão.'} />
             </Field>
           </section>
 
           <section className="adm-card adm-ed-photos">
-            <div className="adm-card-head"><div><h2>Fotos</h2><p>Proporção do site: 3 × 4 (retrato). A primeira foto é a capa.</p></div></div>
+            <CardHead title="Fotos" text="A primeira foto é a capa." info="Proporção do site: 3 × 4 (retrato). A primeira foto é a capa do produto nos cards e na página." />
             <ProductPhotos photos={form.photos} onChange={photos => set('photos', photos)} />
           </section>
 
@@ -287,14 +286,13 @@ export default function ProductEditor() {
                 {errors.colors && <small className="adm-field-error">{errors.colors}</small>}
               </div>
               <div className="adm-field">
-                <span>Tamanhos disponíveis</span>
+                <span>Tamanhos disponíveis<InfoTip>Toque para marcar ou desmarcar. Precisa de outro? Digite abaixo e aperte Enter.</InfoTip></span>
                 <div className="adm-chips">
                   {sortSizes([...new Set([...COMMON_SIZES, ...form.sizes])]).map(s => (
                     <button type="button" key={s} className={form.sizes.includes(s) ? 'active' : ''} aria-pressed={form.sizes.includes(s)}
                       onClick={() => set('sizes', form.sizes.includes(s) ? form.sizes.filter(x => x !== s) : sortSizes([...form.sizes, s]))}>{s}</button>
                   ))}
                 </div>
-                <small>Toque para marcar ou desmarcar. Precisa de outro? Digite abaixo e aperte Enter.</small>
                 <TagInput values={[]} onChange={([s]) => s && !form.sizes.includes(s) && set('sizes', [...form.sizes, s])} placeholder="Novo tamanho (ex.: 46, Plus)" />
               </div>
             </section>
@@ -312,7 +310,7 @@ export default function ProductEditor() {
           )}
 
           <section className="adm-card adm-ed-details">
-            <div className="adm-card-head"><div><h2>Detalhes extras</h2><p>Linhas a mais na aba "Sobre a peça" (ex.: Tecido → Suplex; Forro → Sim).</p></div></div>
+            <CardHead title="Detalhes extras" text={'Aba "Sobre a peça".'} info={'Linhas a mais na aba "Sobre a peça" da página do produto (ex.: Tecido → Suplex; Forro → Sim).'} />
             <div className={`adm-details ${errors.details ? 'has-error' : ''}`}>
               {form.details.map((d, i) => (
                 <div key={i} className="adm-detail-row">
@@ -342,16 +340,15 @@ export default function ProductEditor() {
               <Field label="Preço *" error={errors.price}>
                 <div className="adm-money"><span>R$</span><input inputMode="decimal" value={form.price} onChange={e => set('price', e.target.value.replace(/[^0-9,.]/g, ''))} placeholder="89,90" /></div>
               </Field>
-              <Field label="Preço antigo" error={errors.old_price}>
+              <Field label="Preço antigo" error={errors.old_price} hint="Opcional. Preencha com um valor MAIOR que o preço para colocar em promoção: ele aparece riscado e o produto entra em Promoções.">
                 <div className="adm-money"><span>R$</span><input inputMode="decimal" value={form.old_price} onChange={e => set('old_price', e.target.value.replace(/[^0-9,.]/g, ''))} placeholder="119,90" /></div>
               </Field>
             </div>
-            <p className={`adm-hint adm-price-hint ${promo ? 'is-promo' : ''}`}>{promo ? 'Em promoção: aparece riscado e o produto entra em Promoções.' : 'Preço antigo é opcional. Preencha com um valor MAIOR para colocar em promoção.'}</p>
+            {promo && <p className="adm-hint adm-price-hint is-promo">Em promoção.</p>}
           </section>
 
           <section className={`adm-card adm-ed-cats ${errors.categories ? 'has-error-card' : ''}`}>
-            <h2>Categorias</h2>
-            <p className="adm-hint">Coleção = selo e caminho da página. Tipo = filtro "Tipo de peça".</p>
+            <h2 className="adm-title-info">Categorias<InfoTip>{'Coleção = selo e caminho da página do produto.\nTipo de peça = filtro "Tipo de peça" do catálogo.'}</InfoTip></h2>
             <p className="adm-group-label">Coleção</p>
             <div className="adm-check-grid">{colecoes.map(c => <label key={c.id} className="adm-check" title={c.name}><input type="checkbox" checked={form.categoryIds.includes(c.id)} onChange={() => toggleCategory(c.id)} /> <span>{c.name}{!c.active && <em> (oculta)</em>}</span></label>)}</div>
             <p className="adm-group-label">Tipo de peça</p>
@@ -362,8 +359,8 @@ export default function ProductEditor() {
 
           {!isNew && (
             <section className="adm-card adm-ed-delete">
-              <p className="adm-hint">Para tirar do site só por um tempo, prefira desligar "Aparece no site".</p>
               <button className="adm-btn danger-text" onClick={remove} disabled={saving}><Trash2 /> Excluir produto</button>
+              <InfoTip>{'Para tirar do site só por um tempo, prefira desligar "Aparece no site".'}</InfoTip>
             </section>
           )}
         </aside>

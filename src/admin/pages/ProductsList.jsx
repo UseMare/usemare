@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { ArrowDown, ArrowUp, Check, ChevronDown, Copy, ExternalLink, GripVertical, ImageOff, Package, Pencil, Plus, Search, Trash2, X } from 'lucide-react'
 import { deleteProduct, duplicateProduct, listCategories, listProducts, reorderProducts, updateProduct } from '../api.js'
 import { BASE } from '../sections.js'
-import { Loading, Switch, errorText, formatBRL, useConfirm, useToast } from '../ui.jsx'
+import { InfoTip, Loading, Switch, errorText, formatBRL, useConfirm, useToast } from '../ui.jsx'
 
 const STATUS = [
   { key: 'todos', label: 'Todos os status', test: () => true },
@@ -205,7 +205,7 @@ export default function ProductsList() {
           </span>
         </div>
       )}
-      {!filtering && !order && products.length > 1 && <p className="adm-hint adm-order-hint"><GripVertical /> Arraste pelos pontinhos (ou use as setas) para mudar a ordem em que os produtos aparecem no site.</p>}
+      {!filtering && !order && products.length > 1 && <p className="adm-hint adm-order-hint"><GripVertical /> Arraste para mudar a ordem no site.<InfoTip>Arraste pelos pontinhos (ou use as setas) para mudar a ordem em que os produtos aparecem no site.</InfoTip></p>}
 
       {visible.length === 0 ? (
         <div className="adm-card adm-empty">
