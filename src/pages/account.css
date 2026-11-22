@@ -111,7 +111,7 @@
   .acc-hero-text h1 { font-size: 28px; }
   .acc-hero-text p { font-size: 14.5px; }
   .acc-hero-buttons { width: 100%; }
-  .acc-hero-buttons .button { flex: 1; justify-content: center; }
+  .acc-hero-buttons .button { flex: 1; justify-content: center; padding-inline: 12px; gap: 7px; } /* lado a lado, cada um numa linha só */
   .acc-tabs button { padding: 12px 12px 14px; font-size: 14px; }
   .acc-content { padding-top: 22px; }
   .acc-card > header { padding: 18px 20px; }

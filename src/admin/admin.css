@@ -749,3 +749,13 @@ a.adm-stat:hover { border-color: var(--adm-wine); }
 @keyframes adm-info-in { from { opacity: 0; transform: translateY(-3px); } }
 .adm-title-info { display: flex; align-items: center; }
 .adm-field > span:has(.adm-info-btn) { display: inline-flex; align-items: center; }
+
+/* ---------- Botões compactos ----------
+   Altura mínima em vez de fixa (texto que quebra não vaza do botão) e linhas bem juntas. */
+.adm-btn { height: auto; min-height: 38px; padding-block: 6px; line-height: 1.15; text-align: center; }
+.adm-btn.small { height: auto; min-height: 32px; padding-block: 5px; }
+.adm-btn svg { flex: none; }
+@media (max-width: 600px) {
+  .adm-btn { gap: 6px; padding-inline: 13px; font-size: 13.5px; }
+  .adm-btn.small { padding-inline: 10px; font-size: 12.5px; }
+}
