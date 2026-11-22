@@ -46,9 +46,19 @@ export function HandHeart({ className = 'hand-heart' }) {
   )
 }
 
+// Logos padrão têm uma versão de 240px (o logo aparece com no máx. 150px): telas comuns baixam a
+// leve, telas de alta densidade a de 480px. Logo enviado pelo painel usa o arquivo como veio.
+const LOGO_SMALL = { '/img/logo/mare.webp': '/img/logo/mare-240.webp', '/img/logo/mare-rodape.webp': '/img/logo/mare-rodape-240.webp' }
+
 export function Brand({ onClick, footer = false }) {
   const src = (footer && store.logoFooter) || store.logo || logo
-  return <Link to="/" className="brand" aria-label="Maré, página inicial" onClick={onClick}><img src={src} alt="Maré — Moda feminina e fitness" /></Link>
+  const small = LOGO_SMALL[src]
+  return (
+    <Link to="/" className="brand" aria-label="Maré, página inicial" onClick={onClick}>
+      <img src={small || src} srcSet={small ? `${small} 240w, ${src} 480w` : undefined} sizes={small ? '(max-width: 900px) 108px, 150px' : undefined}
+        width={small ? 480 : undefined} height={small ? 289 : undefined} alt="Maré — Moda feminina e fitness" />
+    </Link>
+  )
 }
 
 export function Price({ product, className = '' }) {

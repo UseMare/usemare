@@ -4,6 +4,7 @@ import { usePageTitle } from '../shop.jsx'
 import { Instagram, WhatsApp } from '../ui.jsx'
 import { helloMessage, store, whatsappLink } from '../store.js'
 import { pageContent } from '../content.js'
+import { legalPages } from '../legalPages.js'
 
 // Páginas institucionais (links só no rodapé): Política de Privacidade, Trocas e Devoluções e
 // Termos de Uso. Os textos abaixo são o padrão; a loja edita tudo em
@@ -11,11 +12,7 @@ import { pageContent } from '../content.js'
 //
 // Formatação dos textos: linha em branco separa parágrafos; linhas começando com "- " viram lista.
 
-export const legalPages = [
-  { path: '/politica-de-privacidade', label: 'Política de Privacidade', contentKey: 'legal_privacidade' },
-  { path: '/trocas-e-devolucoes', label: 'Trocas e Devoluções', contentKey: 'legal_trocas' },
-  { path: '/termos-de-uso', label: 'Termos de Uso', contentKey: 'legal_termos' },
-]
+export { legalPages } from '../legalPages.js'
 
 export const privacyDefaults = {
   title: 'Política de Privacidade',

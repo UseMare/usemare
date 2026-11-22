@@ -5,7 +5,7 @@ import { useRevealObserver, useShop } from './shop.jsx'
 import { Brand, Instagram, SmartLink, WhatsApp } from './ui.jsx'
 import { helloMessage, store, whatsappLink } from './store.js'
 import { CheckoutButton } from './checkout.jsx'
-import { legalPages } from './pages/Legal.jsx'
+import { legalPages } from './legalPages.js'
 import { spotlightProducts } from './products.js'
 import { supabase } from './supabase.js'
 import AlphaCredit from './alpha-credit/AlphaCredit.jsx'
@@ -340,7 +340,8 @@ export default function Layout() {
       {menuOpen && <button className="backdrop" onClick={() => setMenuOpen(false)} aria-label="Fechar menu" />}
 
       <main id="conteudo" key={location.pathname}>
-        <Outlet />
+        {/* As páginas (menos o Início) baixam só quando abertas; enquanto chegam, fica um espaço reservado. */}
+        <React.Suspense fallback={<div className="page-loading" aria-busy="true" />}><Outlet /></React.Suspense>
       </main>
 
       <footer>

@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /painel-loja
+Disallow: /entrar
+
+Sitemap: https://usemare.com.br/sitemap.xml

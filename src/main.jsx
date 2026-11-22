@@ -1,18 +1,31 @@
 import React, { Suspense, lazy } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import './fonts.css'
 import './styles.css'
 import './pages.css'
 import { ShopProvider } from './shop.jsx'
 import Layout from './Layout.jsx'
 import Home from './pages/Home.jsx'
-import Catalog from './pages/Catalog.jsx'
-import Product from './pages/Product.jsx'
-import About from './pages/About.jsx'
-import Promotions from './pages/Promotions.jsx'
-import NotFound from './pages/NotFound.jsx'
-import Login from './pages/Login.jsx'
-import LegalPage, { legalPages } from './pages/Legal.jsx'
+import { legalPages } from './legalPages.js'
+
+// Desempenho: só o Início vem no pacote principal. As outras páginas são baixadas quando
+// abertas (o Suspense fica no Layout) e, assim que o Início termina de carregar, o navegador já
+// busca em segundo plano o catálogo e a página de produto, para a navegação seguir instantânea.
+const loadCatalog = () => import('./pages/Catalog.jsx')
+const loadProduct = () => import('./pages/Product.jsx')
+const Catalog = lazy(loadCatalog)
+const Product = lazy(loadProduct)
+const About = lazy(() => import('./pages/About.jsx'))
+const Promotions = lazy(() => import('./pages/Promotions.jsx'))
+const NotFound = lazy(() => import('./pages/NotFound.jsx'))
+const Login = lazy(() => import('./pages/Login.jsx'))
+const LegalPage = lazy(() => import('./pages/Legal.jsx'))
+
+window.addEventListener('load', () => {
+  const later = window.requestIdleCallback || (fn => setTimeout(fn, 1500))
+  later(() => { loadCatalog(); loadProduct() })
+}, { once: true })
 
 // Painel da loja: só é baixado quando alguém abre /painel-loja.
 const AdminApp = lazy(() => import('./admin/AdminApp.jsx'))

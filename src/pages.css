@@ -1481,3 +1481,12 @@ html, body { max-width: 100%; overflow-x: clip; }
   .announcement .marquee-track { animation-duration: calc(var(--marquee-time, 40s) * 1.35); } /* celular: mais devagar para dar tempo de ler */
   .announcement .marquee-item { padding: 0 20px; font-size: 11.5px; letter-spacing: .14em; }
 }
+
+/* Espaço reservado enquanto uma página chega (evita o rodapé subir e descer) */
+.page-loading { min-height: 70vh; }
+
+/* Bolinhas do card de destaque: área de toque de 25px (borda invisível em volta de cada uma).
+   A bolinha continua com o mesmo tamanho e na mesma altura (translate + margem negativa compensam). */
+.spotlight-dots { gap: 0; transform: translateY(-9px); margin-bottom: -18px; }
+.spotlight-dots button { box-sizing: content-box; border: 9px solid transparent; background-clip: padding-box; cursor: pointer; }
+.spotlight-dots button.active { background-clip: padding-box; } /* o fundo da ativa também só na bolinha */

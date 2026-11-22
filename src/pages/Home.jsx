@@ -9,7 +9,17 @@ import { savedContent } from '../content.js'
 import { SiteIcon } from '../icons.jsx'
 
 // Recortes do banner feitos para o celular (quadrados, em alta), por foto do computador.
-const MOBILE_HERO = { '/img/banners/hero.webp': '/img/banners/hero-mobile.webp' }
+// Várias larguras: o celular baixa só o tamanho que a tela precisa (600, 800 ou 1200px).
+// O index.html pede esta mesma foto logo no início (preload) — se trocar aqui, troque lá também.
+const MOBILE_HERO = {
+  '/img/banners/hero.webp': '/img/banners/hero-mobile-600.webp 600w, /img/banners/hero-mobile-800.webp 800w, /img/banners/hero-mobile.webp 1200w',
+}
+
+// Cards de categoria: as fotos padrão têm também uma versão de 560px (no celular o card tem ~170px).
+const CATEGORY_560 = new Set(['conjuntos-fitness', 'moda-feminina', 'blusas', 'saias-calcas'].map(n => `/img/banners/${n}.webp`))
+const categorySrcSet = image => CATEGORY_560.has(image)
+  ? `${image.replace(/\.webp$/, '-560.webp')} 560w, ${responsive(image, 800)}`
+  : responsive(image, 800)
 
 // Textos e imagens da página inicial. Este é o padrão; o painel (Página inicial) substitui
 // campo a campo pelo que a dona salvar (tabela site_content, chave 'home').
@@ -106,7 +116,7 @@ function Hero({ content }) {
         // No celular a foto aparece quase quadrada e cortada: usa um recorte próprio em alta (MOBILE_HERO)
         // ou, se não houver, a versão grande da foto, para não ficar esticada e borrada.
         <picture key={slide.image}>
-          <source media="(max-width: 600px)" srcSet={MOBILE_HERO[slide.image] || slide.image} />
+          <source media="(max-width: 600px)" srcSet={MOBILE_HERO[slide.image] || slide.image} sizes="100vw" />
           <img className={`hero-photo ${index === current ? 'active' : ''}`} src={slide.image} srcSet={responsive(slide.image, 1200)} sizes="100vw" alt={index === current ? (slide.alt || '') : ''} fetchPriority={index === 0 ? 'high' : 'auto'} />
         </picture>
       ))}
@@ -167,7 +177,7 @@ export default function Home() {
       <section className="categories" aria-label="Categorias">
         {homeCategories().map((category, index) => (
           <Link to={category.to} className={`category ${category.tone}`} key={category.to} data-reveal="zoom" style={{ '--i': index }}>
-            <img src={category.image} srcSet={responsive(category.image, 800)} sizes="(max-width: 1100px) 50vw, 25vw" alt="" loading="lazy" />
+            <img src={category.image} srcSet={categorySrcSet(category.image)} sizes="(max-width: 600px) 46vw, (max-width: 1100px) 50vw, 25vw" alt="" loading="lazy" />
             <div>
               <h3>{category.name.map((line, i) => <React.Fragment key={i}>{i > 0 && <br />}{line}</React.Fragment>)}</h3>
               <span className="pill">Ver produtos <ArrowRight /></span>
