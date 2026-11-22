@@ -693,3 +693,26 @@ a.adm-stat:hover { border-color: var(--adm-wine); }
   .adm-home .adm-services > li { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 10px; }
   .adm-home .adm-services .adm-iconpicker, .adm-home .adm-services .adm-iconpicker-current { min-width: 0; width: 100%; }
 }
+
+/* ---------- Clientes ---------- */
+.adm-customer { display: inline-flex; align-items: center; gap: 10px; }
+.adm-customer img, .adm-customer i { flex: none; width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
+.adm-customer i { display: grid; place-items: center; background: var(--adm-soft); color: var(--adm-wine); font-size: 13px; font-style: normal; font-weight: 700; }
+.adm-customer b { font-weight: 600; color: var(--adm-text); }
+.adm-whats-link { display: inline-flex; align-items: center; gap: 7px; padding: 5px 11px; border-radius: 999px; background: var(--adm-ok-soft); color: var(--adm-ok); font-weight: 600; white-space: nowrap; text-decoration: none; }
+.adm-whats-link:hover { background: #d4ecde; }
+.adm-whats-link svg { width: 15px; height: 15px; }
+.adm-th-icon { width: 15px; height: 15px; vertical-align: -2px; color: var(--adm-accent); }
+.adm-customers td { white-space: nowrap; }
+@media (max-width: 700px) {
+  /* Celular: cada cliente vira um cartão (nome, e-mail, WhatsApp em destaque e datas embaixo). */
+  .adm-table-wrap:has(.adm-customers) { overflow: visible; border: 0; }
+  .adm-customers, .adm-customers tbody { display: block; }
+  .adm-customers thead { display: none; }
+  .adm-customers tr { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin-bottom: 10px; padding: 14px; border: 1px solid var(--adm-line); border-radius: var(--adm-radius); background: var(--adm-surface); }
+  .adm-customers td { display: block; padding: 0; border: 0; white-space: normal; }
+  .adm-customers td:first-child { flex: 1 1 100%; }
+  .adm-customers .adm-c-email { flex: 1 1 100%; word-break: break-all; }
+  .adm-customers .adm-c-date, .adm-customers .adm-c-fav { font-size: 12.5px; color: var(--adm-muted); }
+  .adm-customers .adm-c-date::before, .adm-customers .adm-c-fav::before { content: attr(data-label) ': '; }
+}

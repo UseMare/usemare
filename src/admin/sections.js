@@ -1,4 +1,4 @@
-import { CircleHelp, FileText, House, LayoutDashboard, Mail, Package, PanelsTopLeft, Settings, Sparkles, Star, Tags } from 'lucide-react'
+import { CircleHelp, FileText, House, LayoutDashboard, Mail, Package, PanelsTopLeft, Settings, Sparkles, Star, Tags, Users } from 'lucide-react'
 
 export const BASE = '/painel-loja'
 
@@ -10,6 +10,7 @@ export const sections = {
   destaques:     { label: 'Destaques',       icon: Sparkles,        path: `${BASE}/destaques`,           stage: 8,  description: 'Escolher até 5 produtos para o card flutuante de destaques e a ordem deles.' },
   paginaInicial: { label: 'Página inicial',  icon: House,           path: `${BASE}/pagina-inicial`,      stage: 9,  description: 'Hero (fotos e textos), cards de categorias, banners e quadro de serviços.' },
   paginas:       { label: 'Textos das páginas', icon: FileText,     path: `${BASE}/paginas`,             stage: 10, description: 'Sobre nós, Como comprar, topo do catálogo, promoções e faixa de avisos do topo.' },
+  clientes:      { label: 'Clientes',        icon: Users,           path: `${BASE}/clientes`,            stage: 12, description: 'Contas criadas no site: nome, e-mail e WhatsApp (clique para conversar), com busca e planilha.' },
   avaliacoes:    { label: 'Avaliações',      icon: Star,            path: `${BASE}/avaliacoes`,          stage: 12, description: 'Aprovar ou recusar as avaliações que as clientes enviam.' },
   newsletter:    { label: 'Newsletter',      icon: Mail,            path: `${BASE}/newsletter`,          stage: 12, description: 'E-mails cadastrados no rodapé, com exportação.' },
   aparencia:     { label: 'Logo e rodapé',   icon: PanelsTopLeft,   path: `${BASE}/logo-e-rodape`,       stage: 11, description: 'Logotipo, texto e colunas do rodapé, newsletter e outras redes sociais.' },
@@ -22,5 +23,5 @@ export const navGroups = [
   { label: null,       items: ['inicio'] },
   { label: 'Loja',     items: ['produtos', 'categorias', 'destaques'] },
   { label: 'Site',     items: ['paginaInicial', 'paginas', 'aparencia'] },
-  { label: 'Clientes', items: ['avaliacoes', 'newsletter'] },
+  { label: 'Clientes', items: ['clientes', 'avaliacoes', 'newsletter'] },
 ]

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { ArrowLeft, Eye, EyeOff, LockKeyhole, LogOut, MailCheck, ShieldAlert } from 'lucide-react'
 import { supabase } from '../supabase.js'
 import { logo } from '../ui.jsx'
@@ -83,7 +83,6 @@ export default function AdminLogin() {
 // "Aceitar convite". Valida o convite, a pessoa cria a senha e já entra no painel.
 // Quem vira admin é decidido no banco (só contas criadas por convite), não aqui.
 export function AcceptInvite() {
-  const navigate = useNavigate()
   const [step, setStep] = useState('checking') // checking | password | invalid
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -116,7 +115,7 @@ export function AcceptInvite() {
     const { error: e } = await supabase.auth.updateUser({ password })
     setBusy(false)
     if (e) return setError(/weak|characters/i.test(e.message) ? 'Senha fraca. Use pelo menos 8 caracteres, misturando letras e números.' : 'Não foi possível salvar a senha. Tente de novo.')
-    navigate('/painel-loja', { replace: true })
+    window.location.replace('/painel-loja') // recarrega já dentro do painel, com a sessão nova
   }
 
   if (step === 'checking') return <div className="adm-loading" role="status"><span className="adm-spinner" /> Validando convite…</div>
