@@ -6,6 +6,7 @@
 
 - [Início](https://usemare.com.br/): destaques, categorias e novidades
 - [Todos os produtos](https://usemare.com.br/produtos): catálogo completo com filtros e busca
+- [Coleção Dezembro](https://usemare.com.br/colecao-dezembro): peças para as festas de fim de ano
 - [Moda feminina](https://usemare.com.br/produtos?categoria=moda-feminina)
 - [Promoções](https://usemare.com.br/promocoes)
 - [Sobre a Maré](https://usemare.com.br/sobre): história da marca e como comprar

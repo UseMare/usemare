@@ -111,10 +111,12 @@ export function SectionHeading({ title, to, linkLabel = 'Ver todos', id }) {
 // Cabeçalho editorial das páginas internas (sem banner): texto à esquerda e, se houver `images`,
 // um mosaico de fotos flutuando à direita (mesmo estilo do topo do "Sobre nós").
 // variant: 'stack' (fotos sobrepostas) · 'fan' (leque de cartas) · 'polaroid' (fotos tortas + selo girando)
-export function PageIntro({ crumbs = [], eyebrow, title, text, aside, images = [], script = 'maré', variant = 'stack' }) {
+// seal: texto que gira em volta do selo e o símbolo do meio (só no 'polaroid'); className: tema da página.
+const PROMO_SEAL = { text: 'ofertas • maré • com carinho •', mark: '%' }
+export function PageIntro({ crumbs = [], eyebrow, title, text, aside, images = [], script = 'maré', variant = 'stack', seal = PROMO_SEAL, className = '' }) {
   const lines = String(title).split(/\n/)
   return (
-    <section className={`page-intro ${images.length ? 'with-images' : ''}`}>
+    <section className={`page-intro ${images.length ? 'with-images' : ''} ${className}`}>
       <div className="shell page-intro-inner">
         <div className="page-intro-copy">
           <nav className="breadcrumb" aria-label="Você está em">
@@ -138,9 +140,9 @@ export function PageIntro({ crumbs = [], eyebrow, title, text, aside, images = [
               <div className="promo-seal">
                 <svg viewBox="0 0 120 120">
                   <defs><path id="seal-path" d="M60,60 m-46,0 a46,46 0 1,1 92,0 a46,46 0 1,1 -92,0" /></defs>
-                  <text><textPath href="#seal-path" textLength="286" lengthAdjust="spacing">ofertas • maré • com carinho •</textPath></text>
+                  <text><textPath href="#seal-path" textLength="286" lengthAdjust="spacing">{seal.text}</textPath></text>
                 </svg>
-                <span>%</span>
+                <span>{seal.mark}</span>
               </div>
             )}
             {script && <p className="mosaic-script">{script}<HandHeart className="hand-heart small" /></p>}

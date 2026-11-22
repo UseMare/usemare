@@ -11,6 +11,7 @@ const pages = [
   { path: '/', priority: '1.0', changefreq: 'weekly' },
   { path: '/produtos', priority: '0.9', changefreq: 'daily' },
   { path: '/promocoes', priority: '0.7', changefreq: 'weekly' },
+  { path: '/colecao-dezembro', priority: '0.9', changefreq: 'weekly' },
   { path: '/sobre', priority: '0.6', changefreq: 'monthly' },
   { path: '/trocas-e-devolucoes', priority: '0.3', changefreq: 'yearly' },
   { path: '/politica-de-privacidade', priority: '0.3', changefreq: 'yearly' },

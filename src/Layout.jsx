@@ -40,7 +40,7 @@ export const announcementDefaults = {
 export const navItems = [
   { label: 'Início', to: '/' },
   { label: 'Produtos', to: '/produtos' },
-  { label: 'Moda feminina', to: '/produtos?categoria=moda-feminina' },
+  { label: 'Coleção Dezembro', to: '/colecao-dezembro' },
   { label: 'Promoções', to: '/promocoes' },
   { label: 'Sobre nós', to: '/sobre' },
 ]
@@ -51,7 +51,7 @@ function isActive(item, location, params) {
   if (path !== location.pathname) return false
   const categoria = params.get('categoria')
   if (query) return query === `categoria=${categoria}`
-  return path !== '/produtos' || !categoria || !['moda-feminina'].includes(categoria)
+  return path !== '/produtos' || !categoria
 }
 
 function SearchBox({ onDone }) {

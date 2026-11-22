@@ -1487,3 +1487,39 @@ html, body { max-width: 100%; overflow-x: clip; }
 .spotlight-dots { gap: 0; transform: translateY(-9px); margin-bottom: -18px; }
 .spotlight-dots button { box-sizing: content-box; border: 9px solid transparent; background-clip: padding-box; cursor: pointer; }
 .spotlight-dots button.active { background-clip: padding-box; } /* o fundo da ativa também só na bolinha */
+
+/* ---------- Coleção Dezembro: detalhes de Natal bem discretos ---------- */
+.is-xmas { --gold: #b8924a; position: relative; overflow: hidden; }
+/* estrelinhas douradas piscando devagar no fundo do topo */
+.is-xmas::before, .is-xmas::after { content: '✦'; position: absolute; z-index: 0; color: var(--gold); pointer-events: none; animation: twinkle 4.5s ease-in-out infinite; }
+.is-xmas::before { top: 18%; left: 46%; font-size: 13px; }
+.is-xmas::after { top: 70%; left: 4%; font-size: 9px; animation-delay: 1.6s; }
+.is-xmas .page-intro-copy::after { content: '✦'; position: absolute; margin: -6px 0 0 10px; color: var(--gold); font-size: 10px; animation: twinkle 4.5s ease-in-out 2.8s infinite; }
+.is-xmas .page-intro-copy { position: relative; }
+.is-xmas .eyebrow { color: var(--gold); }
+.is-xmas .eyebrow::before { content: '✦ '; }
+.is-xmas .promo-seal { background: linear-gradient(145deg, #4a1f19, var(--wine)); box-shadow: 0 12px 30px rgba(67, 32, 26, .3), inset 0 0 0 2px rgba(184, 146, 74, .55); }
+.is-xmas .promo-seal span { color: #e6c98d; }
+.is-xmas .mosaic-script { color: var(--gold); }
+@keyframes twinkle { 0%, 100% { opacity: .25; transform: scale(.85); } 50% { opacity: .9; transform: scale(1.1); } }
+
+.xmas-list { padding: clamp(28px, 4vw, 48px) 0 0; }
+.xmas-divider { display: flex; align-items: center; justify-content: center; gap: 14px; color: #b8924a; }
+.xmas-divider span { width: min(120px, 22vw); height: 1px; background: linear-gradient(90deg, transparent, #b8924a); }
+.xmas-divider span:last-child { transform: scaleX(-1); }
+.xmas-divider i { font-style: normal; font-size: 14px; }
+.xmas-heading { margin: 14px 0 clamp(22px, 3vw, 34px); font-family: var(--serif); font-size: clamp(24px, 3vw, 32px); font-weight: 500; color: var(--ink); text-align: center; }
+.xmas-empty { color: var(--muted); text-align: center; }
+.xmas-gift { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 20px; margin: clamp(40px, 6vw, 72px) 0 clamp(48px, 7vw, 88px); padding: 24px 28px; border: 1px solid rgba(184, 146, 74, .35); border-radius: 22px; background: linear-gradient(120deg, #fbf4ec, var(--sand-soft)); }
+.xmas-gift-icon { display: grid; place-items: center; width: 54px; height: 54px; border-radius: 50%; background: #fff; color: #b8924a; box-shadow: 0 6px 18px rgba(67, 32, 26, .08); }
+.xmas-gift-icon svg { width: 24px; height: 24px; }
+.xmas-gift h2 { margin: 0 0 4px; font-family: var(--serif); font-size: 22px; font-weight: 500; color: var(--ink); }
+.xmas-gift p { margin: 0; color: var(--muted); }
+.xmas-gift-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+@media (max-width: 800px) {
+  .xmas-gift { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+  .xmas-gift-actions { justify-content: center; }
+  .xmas-gift-actions .button { flex: 1 1 auto; justify-content: center; }
+}
+@media (prefers-reduced-motion: reduce) { .is-xmas::before, .is-xmas::after, .is-xmas .page-intro-copy::after { animation: none; opacity: .6; } }
+@media (min-width: 1000px) { .xmas-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } } /* as 4 peças lado a lado */
