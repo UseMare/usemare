@@ -128,6 +128,40 @@ function BagDrawer() {
   )
 }
 
+// Faixa do topo: os avisos deslizam em esteira infinita (caixa alta, separados por ✦).
+// Duas metades idênticas andam de 0 a -50% e recomeçam sem emenda; cada metade repete os avisos
+// para cobrir telas largas. Para leitores de tela vai uma lista simples (a esteira é decorativa).
+// Pausa com o mouse em cima; parada para quem pede menos movimento no aparelho.
+function Announcement() {
+  const items = pageContent('announcement', announcementDefaults).items
+    .filter(item => item?.text && !(store.installments <= 1 && item.text.includes('{parcelas}')))
+    .map(item => ({ ...item, text: item.text.replace(/\{parcelas\}/g, store.installments) }))
+  if (!items.length) return null
+  const reps = items.length >= 4 ? 3 : items.length >= 2 ? 5 : 10 // cada metade passa de ~3.000px (cobre monitores largos)
+  const run = Array.from({ length: reps }, () => items).flat()
+  const piece = (item, key, hidden) => {
+    const content = <><SiteIcon name={item.icon} /> {item.text}</>
+    return (
+      <React.Fragment key={key}>
+        {item.link
+          ? <SmartLink to={item.link} className="marquee-item" tabIndex={hidden ? -1 : undefined}>{content}</SmartLink>
+          : <span className="marquee-item">{content}</span>}
+        <span className="marquee-sep" aria-hidden="true">✦</span>
+      </React.Fragment>
+    )
+  }
+  return (
+    <div className="announcement" aria-label="Vantagens da loja">
+      <ul className="sr-only">{items.map((item, i) => <li key={i}>{item.link ? <SmartLink to={item.link}>{item.text}</SmartLink> : item.text}</li>)}</ul>
+      <div className="marquee" aria-hidden="true" style={{ '--marquee-time': `${Math.max(24, run.length * 5)}s` }}>
+        <div className="marquee-track">
+          {[0, 1].map(half => <div className="marquee-group" key={half}>{run.map((item, i) => piece(item, i, true))}</div>)}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // "Receba novidades" do rodapé: grava o e-mail no Supabase (função subscribe_newsletter).
 function Newsletter() {
   const [email, setEmail] = useState('')
@@ -271,15 +305,7 @@ export default function Layout() {
   return (
     <>
       <a className="skip-link" href="#conteudo">Pular para o conteúdo</a>
-      <div className="announcement" aria-label="Vantagens da loja">
-        <div className="shell announcement-inner">
-          {pageContent('announcement', announcementDefaults).items.filter(item => item?.text && !(store.installments <= 1 && item.text.includes('{parcelas}'))).map((item, i) => {
-            const text = item.text.replace(/\{parcelas\}/g, store.installments)
-            if (!item.link) return <span key={i}><SiteIcon name={item.icon} /> {text}</span>
-            return <SmartLink key={i} to={item.link}><SiteIcon name={item.icon} /> {text}</SmartLink>
-          })}
-        </div>
-      </div>
+      <Announcement />
 
       <header className="header">
         <div className="shell header-inner">
