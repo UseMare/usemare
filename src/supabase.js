@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { announceSupabase } from './supabaseLazy.js'
 
 // Conexão com o Supabase (banco, login e fotos). Valores em /.env
 const url = import.meta.env.VITE_SUPABASE_URL
@@ -9,3 +10,6 @@ export const supabase = url && key
   : null
 
 if (!supabase) console.warn('Supabase não configurado: o site usa o catálogo local (src/products.js).')
+
+// Avisa a loja (sacola/conta) que o login está disponível, venha de onde vier o carregamento.
+announceSupabase(supabase)

@@ -1,4 +1,4 @@
-import { hasSupabase, loadSupabase } from './supabaseLazy.js'
+import { hasSupabase, restRpc } from './supabaseLazy.js'
 
 // Contador de acessos próprio (aparece no Início do painel). Anônimo: só um código aleatório
 // deste navegador, sem cookie, sem nome/e-mail e sem ligar a ninguém. Robôs e testes não contam.
@@ -33,6 +33,7 @@ let last = ''
 export function trackPage(path) {
   if (!hasSupabase || path === last || path.startsWith('/painel-loja')) return
   if (navigator.webdriver || BOT.test(navigator.userAgent)) return
+  if (read(localStorage, 'mare-nao-contar')) return // aparelho de quem administra a loja
   last = path
   const entry = !read(sessionStorage, 'mare-visita')
   if (entry) write(sessionStorage, 'mare-visita', '1')
@@ -44,7 +45,7 @@ export function trackPage(path) {
     p_device: matchMedia('(max-width: 768px)').matches ? 'celular' : 'computador',
   }
   // Depois que a página já apareceu, para não pesar no carregamento.
-  const send = () => loadSupabase().then(sb => sb.rpc('track_event', params)).catch(() => {})
+  const send = () => restRpc('track_event', params, { keepalive: true })
   if ('requestIdleCallback' in window) requestIdleCallback(send, { timeout: 4000 })
   else setTimeout(send, 1500)
 }

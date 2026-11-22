@@ -19,6 +19,7 @@ export function useAdminAuth() {
       }
       const { data } = await supabase.from('profiles').select('full_name, role, avatar_url').eq('id', session.user.id).maybeSingle()
       if (!active) return
+      if (data?.role === 'admin') try { localStorage.setItem('mare-nao-contar', '1') } catch { /* modo privado */ }
       setState({ status: data?.role === 'admin' ? 'admin' : 'denied', session, profile: data })
     }
 

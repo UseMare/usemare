@@ -1,4 +1,4 @@
-import { hasSupabase, loadSupabase } from './supabaseLazy.js'
+import { hasSupabase, restGet } from './supabaseLazy.js'
 import { setCategories, setProducts } from './products.js'
 import { store } from './store.js'
 import { setContent } from './content.js'
@@ -79,23 +79,26 @@ try {
 
 export async function refreshCatalog() {
   if (!hasSupabase) return false
-  const supabase = await loadSupabase()
-  if (!supabase) return false
-  const [productsRes, categoriesRes, settingsRes, contentRes] = await Promise.all([
-    supabase.from('products').select(PRODUCT_FIELDS).eq('active', true).order('sort_order').order('name'),
-    supabase.from('categories').select(CATEGORY_FIELDS).eq('active', true).order('sort_order'),
-    supabase.from('store_settings').select(SETTINGS_FIELDS).maybeSingle(),
-    supabase.from('site_content').select('key, value'),
-  ])
-  if (productsRes.error || !productsRes.data?.length) {
-    console.warn('Não foi possível carregar o catálogo do Supabase.', productsRes.error)
+  // Chamadas simples à API do banco (sem baixar o supabase-js na primeira tela).
+  const q = fields => encodeURIComponent(fields.replace(/\s+/g, ''))
+  let rows, categories, settings, content
+  try {
+    ;[rows, categories, settings, content] = await Promise.all([
+      restGet(`products?select=${q(PRODUCT_FIELDS)}&active=eq.true&order=sort_order,name`),
+      restGet(`categories?select=${q(CATEGORY_FIELDS)}&active=eq.true&order=sort_order`).catch(() => []),
+      restGet(`store_settings?select=${q(SETTINGS_FIELDS)}&limit=1`).then(r => r[0] || null).catch(() => null),
+      restGet('site_content?select=key,value').catch(() => []),
+    ])
+  } catch (error) {
+    console.warn('Não foi possível carregar o catálogo do Supabase.', error)
     return false
   }
+  if (!rows?.length) return false
   const payload = {
-    rows: productsRes.data,
-    categories: categoriesRes.data || [],
-    settings: settingsRes.data,
-    content: Object.fromEntries((contentRes.data || []).map(r => [r.key, r.value])),
+    rows,
+    categories: categories || [],
+    settings,
+    content: Object.fromEntries((content || []).map(r => [r.key, r.value])),
   }
   apply(payload)
   try { localStorage.setItem(CACHE_KEY, JSON.stringify(payload)) } catch { /* navegação privada */ }

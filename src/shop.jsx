@@ -1,7 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { products } from './products.js'
 import { refreshCatalog } from './data.js'
-import { hasSupabase, loadSupabase } from './supabaseLazy.js'
+import { hasSupabase, loadSupabase, needsAuthNow, onSupabase } from './supabaseLazy.js'
 
 // Estado compartilhado da loja: catálogo, conta, sacola, favoritos e avisos ("foi para a sacola").
 // Sacola e favoritos ficam salvos no aparelho da cliente (localStorage).
@@ -61,15 +61,20 @@ export function ShopProvider({ children }) {
     if (!hasSupabase) return
     let alive = true
     let subscription
-    loadSupabase().then(supabase => {
-      if (!alive || !supabase) return
+    const attach = supabase => {
+      if (!alive || !supabase || subscription) return
       supabase.auth.getSession().then(({ data }) => { if (alive) { setSession(data.session); setAuthReady(true) } })
       ;({ data: { subscription } } = supabase.auth.onAuthStateChange((event, next) => {
         setSession(next)
         setAuthReady(true)
         if (event === 'PASSWORD_RECOVERY') setRecovering(true)
       }))
-    })
+    }
+    // Sem conta logada neste aparelho, o login (supabase-js) só baixa quando alguma página
+    // precisar dele (entrar, conta, produto); aí a sessão passa a ser acompanhada aqui.
+    onSupabase(attach)
+    if (needsAuthNow()) loadSupabase()
+    else setAuthReady(true)
     return () => { alive = false; subscription?.unsubscribe() }
   }, [])
 
@@ -85,6 +90,8 @@ export function ShopProvider({ children }) {
       ])
       if (!alive) return
       setProfile(prof)
+      // O contador de acessos não conta o aparelho de quem administra a loja.
+      try { prof?.role === 'admin' ? localStorage.setItem('mare-nao-contar', '1') : localStorage.removeItem('mare-nao-contar') } catch { /* modo privado */ }
       const remote = (favs || []).map(f => products.find(p => p.uuid === f.product_id)?.id).filter(Boolean)
       const missing = likedRef.current.filter(code => !remote.includes(code)).map(uuidOf).filter(Boolean)
       if (missing.length) await supabase.from('favorites').upsert(missing.map(product_id => ({ product_id })), { ignoreDuplicates: true })

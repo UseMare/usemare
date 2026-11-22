@@ -6,7 +6,7 @@ import { Brand, Instagram, SmartLink, WhatsApp, thumb320 } from './ui.jsx'
 import { helloMessage, store, whatsappLink } from './store.js'
 import { CheckoutButton } from './checkout.jsx'
 import { spotlightProducts } from './products.js'
-import { hasSupabase, loadSupabase } from './supabaseLazy.js'
+import { hasSupabase, restRpc } from './supabaseLazy.js'
 import { trackPage } from './track.js'
 import AlphaCredit from './alpha-credit/AlphaCredit.jsx'
 import { pageContent } from './content.js'
@@ -172,10 +172,9 @@ function Newsletter() {
   const [status, setStatus] = useState(null) // null | 'sending' | 'ok' | 'error'
   const submit = async event => {
     event.preventDefault()
-    const supabase = hasSupabase && await loadSupabase()
-    if (!supabase) { setStatus('error'); return }
+    if (!hasSupabase) { setStatus('error'); return }
     setStatus('sending')
-    const { error } = await supabase.rpc('subscribe_newsletter', { p_email: email, p_source: 'rodape' })
+    const { error } = await restRpc('subscribe_newsletter', { p_email: email, p_source: 'rodape' })
     setStatus(error ? 'error' : 'ok')
     if (!error) setEmail('')
   }
