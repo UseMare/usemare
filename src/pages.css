@@ -1457,3 +1457,23 @@ html, body { max-width: 100%; overflow-x: clip; }
   .legal-contact-actions .button { flex: 1; justify-content: center; }
   .copyright .legal-links { font-size: 12px; gap: 4px 14px; }
 }
+
+/* ---------- Ajuste da foto de perfil (Minha conta) ---------- */
+.avatar-crop-overlay { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; padding: 16px; background: rgba(43, 20, 16, .55); backdrop-filter: blur(3px); animation: fade-in .25s ease both; }
+.avatar-crop { width: min(100%, 380px); padding: 20px 22px 22px; border-radius: 22px; background: var(--cream, #fcf8f5); box-shadow: 0 30px 80px rgba(43, 20, 16, .35); text-align: center; animation: rise .35s var(--ease-out) both; }
+.avatar-crop header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px; }
+.avatar-crop h2 { margin: 0; font-family: var(--serif); font-size: 22px; font-weight: 500; color: var(--ink); }
+.avatar-crop-hint { margin: 0 0 16px; color: var(--muted); font-size: 13.5px; text-align: left; }
+.avatar-crop-frame { position: relative; margin: 0 auto; overflow: hidden; border-radius: 14px; background: var(--sand-soft); cursor: grab; touch-action: none; user-select: none; }
+.avatar-crop-frame:active { cursor: grabbing; }
+.avatar-crop-frame img { position: absolute; top: 0; left: 0; max-width: none; pointer-events: none; }
+.avatar-crop-mask { position: absolute; inset: 0; border-radius: 50%; box-shadow: 0 0 0 999px rgba(252, 248, 245, .72); outline: 2px solid rgba(255, 255, 255, .9); outline-offset: -2px; pointer-events: none; }
+.avatar-crop-zoom { display: flex; align-items: center; gap: 10px; margin: 16px 4px 4px; }
+.avatar-crop-zoom input { flex: 1; accent-color: var(--wine); }
+.avatar-crop-zoom button { display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid var(--line); border-radius: 50%; background: #fff; color: var(--wine); cursor: pointer; }
+.avatar-crop-zoom button:disabled { opacity: .4; cursor: default; }
+.avatar-crop-zoom svg { width: 16px; height: 16px; }
+.avatar-crop .login-notice { margin-top: 12px; }
+.avatar-crop-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
+.avatar-crop-actions .button { width: 100%; justify-content: center; padding-inline: 12px; }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }

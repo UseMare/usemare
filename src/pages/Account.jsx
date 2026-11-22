@@ -6,6 +6,7 @@ import { ProductCard, WhatsApp } from '../ui.jsx'
 import { helloMessage, whatsappLink } from '../store.js'
 import { products } from '../products.js'
 import { supabase } from '../supabase.js'
+import AvatarCropper from './AvatarCropper.jsx'
 import { backHere, emailOk, formatPhone, friendly, PasswordField, PHONE_ERROR, phoneDigits, phoneOk } from './authShared.jsx'
 
 // Minha conta (cliente logada): cabeçalho com foto, abas Perfil / Favoritos / E-mail e senha
@@ -18,18 +19,7 @@ const TABS = [
 ]
 
 const AVATAR_TYPES = ['image/jpeg', 'image/png', 'image/webp']
-const AVATAR_MAX = 5 * 1024 * 1024
-
-// Corta a foto em quadrado e reduz para 400×400 em WebP (fica leve e nítida no círculo).
-async function squareAvatar(file) {
-  const bitmap = await createImageBitmap(file)
-  const side = Math.min(bitmap.width, bitmap.height)
-  const canvas = document.createElement('canvas')
-  canvas.width = canvas.height = 400
-  canvas.getContext('2d').drawImage(bitmap, (bitmap.width - side) / 2, (bitmap.height - side) / 2, side, side, 0, 0, 400, 400)
-  bitmap.close?.()
-  return new Promise((resolve, reject) => canvas.toBlob(blob => (blob ? resolve(blob) : reject(new Error('webp'))), 'image/webp', 0.88))
-}
+const AVATAR_MAX = 15 * 1024 * 1024 // arquivo escolhido no aparelho; o enviado é um WebP de ~10–20 KB
 
 // Caminho do arquivo dentro do bucket, a partir do link público.
 const avatarPath = url => (url || '').split('/storage/v1/object/public/avatares/')[1]?.split('?')[0]
@@ -59,32 +49,41 @@ function useAvatarUpload() {
   const inputRef = useRef(null)
   const [busy, setBusy] = useState(false)
   const [notice, setNotice] = useState(null)
+  const [picked, setPicked] = useState(null) // foto escolhida, esperando o ajuste
 
+  // Cada cliente tem um único arquivo: avatares/<id>/avatar.webp (a nova substitui a antiga).
+  // O ?v= no link faz o navegador buscar a versão nova.
   const saveUrl = async avatar_url => {
     const { error } = await supabase.from('profiles').update({ avatar_url }).eq('id', user.id)
     if (error) throw error
     const old = avatarPath(profile?.avatar_url)
-    if (old) supabase.storage.from('avatares').remove([old]) // limpa a foto antiga (sem travar a tela)
+    const now = avatarPath(avatar_url)
+    if (old && old !== now) supabase.storage.from('avatares').remove([old]) // limpa a foto antiga (sem travar a tela)
     setProfile(p => ({ ...p, avatar_url }))
   }
 
-  const onFile = async event => {
+  const onFile = event => {
     const file = event.target.files?.[0]
     event.target.value = ''
     if (!file) return
     if (!AVATAR_TYPES.includes(file.type)) { setNotice({ type: 'error', text: 'Use uma foto JPG, PNG ou WEBP.' }); return }
-    if (file.size > AVATAR_MAX) { setNotice({ type: 'error', text: 'A foto pode ter no máximo 5 MB.' }); return }
-    setBusy(true)
+    if (file.size > AVATAR_MAX) { setNotice({ type: 'error', text: 'Essa foto é muito grande. Escolha uma de até 15 MB.' }); return }
     setNotice(null)
+    setPicked(file)
+  }
+
+  const upload = async blob => {
+    setBusy(true)
     try {
-      const blob = await squareAvatar(file)
-      const path = `${user.id}/${Date.now()}.webp`
-      const { error } = await supabase.storage.from('avatares').upload(path, blob, { contentType: 'image/webp', cacheControl: '31536000' })
+      const path = `${user.id}/avatar.webp`
+      const { error } = await supabase.storage.from('avatares').upload(path, blob, { contentType: 'image/webp', cacheControl: '3600', upsert: true })
       if (error) throw error
-      await saveUrl(supabase.storage.from('avatares').getPublicUrl(path).data.publicUrl)
+      await saveUrl(`${supabase.storage.from('avatares').getPublicUrl(path).data.publicUrl}?v=${Date.now()}`)
+      setPicked(null)
       setNotice({ type: 'ok', text: 'Foto atualizada! 📸' })
     } catch (error) {
       console.warn('Foto de perfil:', error)
+      setPicked(null)
       setNotice({ type: 'error', text: 'Não deu para enviar a foto agora. Tente de novo. 🤍' })
     } finally {
       setBusy(false)
@@ -104,7 +103,10 @@ function useAvatarUpload() {
     }
   }
 
-  const input = <input ref={inputRef} type="file" accept={AVATAR_TYPES.join(',')} hidden onChange={onFile} />
+  const input = <>
+    <input ref={inputRef} type="file" accept={AVATAR_TYPES.join(',')} hidden onChange={onFile} />
+    {picked && <AvatarCropper file={picked} onCancel={() => !busy && setPicked(null)} onConfirm={upload} />}
+  </>
   return { input, pick: () => inputRef.current?.click(), remove, busy, notice, has: !!profile?.avatar_url }
 }
 
