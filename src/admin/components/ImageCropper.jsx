@@ -13,6 +13,15 @@ import { Modal } from '../ui.jsx'
 const FRAME_MAX_W = 420
 const FRAME_MAX_H = 460
 
+// Logo usado como marca d'água (mesma origem do site: o canvas pode exportar normalmente).
+let logoPromise
+const loadLogo = () => (logoPromise ||= new Promise((resolve, reject) => {
+  const img = new Image()
+  img.onload = () => resolve(img)
+  img.onerror = () => { logoPromise = null; reject(new Error('Não foi possível carregar o logo da marca.')) }
+  img.src = '/img/logo/mare.webp'
+}))
+
 export default function ImageCropper({ src, aspect = 3 / 4, outputs, title = 'Ajustar foto', step, onCancel, onSkip, onConfirm, confirmLabel = 'Usar esta foto' }) {
   const [img, setImg] = useState(null)
   const [error, setError] = useState(null)
@@ -100,6 +109,15 @@ export default function ImageCropper({ src, aspect = 3 / 4, outputs, title = 'Aj
         const ctx = canvas.getContext('2d')
         ctx.imageSmoothingQuality = 'high'
         ctx.drawImage(img, sx, sy, sw, sh, 0, 0, out.width, out.height)
+        // Logo da Maré no canto superior direito (foto grande do produto). Mesmas medidas de scripts/marca-dagua.py.
+        if (out.watermark) {
+          const logo = await loadLogo()
+          const lw = Math.round(out.width * 0.15), lh = Math.round(logo.naturalHeight * lw / logo.naturalWidth)
+          const m = Math.round(out.width * 0.045)
+          ctx.globalAlpha = 0.75
+          ctx.drawImage(logo, out.width - lw - m, m, lw, lh)
+          ctx.globalAlpha = 1
+        }
         const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/webp', out.quality ?? 0.85))
         if (!blob) throw new Error('O navegador não conseguiu gerar a imagem.')
         blobs.push(blob)

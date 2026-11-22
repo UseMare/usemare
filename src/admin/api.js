@@ -95,7 +95,8 @@ export async function removeUnusedFiles(urls) {
   }
   const byBucket = {}
   unique.filter(u => !stillUsed.has(u))
-    .flatMap(u => /-480\.webp$/.test(u) ? [u, u.replace(/-480\.webp$/, '-320.webp')] : [u]) // miniatura de 480 leva junto a de 320
+    .flatMap(u => /-480\.webp$/.test(u) ? [u, u.replace(/-480\.webp$/, '-320.webp')] // miniatura de 480 leva junto a de 320
+      : /-\d+\.webp$/.test(u) ? [u] : [u, u.replace(/\.webp$/, '-orig.webp')]) // foto grande leva junto a versão sem logo
     .map(storageRef).filter(Boolean).forEach(({ bucket, path }) => {
     (byBucket[bucket] ||= []).push(path)
   })

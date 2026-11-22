@@ -13,7 +13,11 @@ import ImageCropper from './ImageCropper.jsx'
 //   já salva:  { id, path, thumb_path }
 //   nova:      { key, preview, blobs: [grande, miniatura] }
 
-export const PRODUCT_PHOTO = { aspect: 3 / 4, outputs: [{ width: 900, height: 1200, quality: 0.86 }, { width: 480, height: 640, quality: 0.8 }, { width: 320, height: 427, quality: 0.78 }] }
+export const PRODUCT_PHOTO = { aspect: 3 / 4, outputs: [{ width: 900, height: 1200, quality: 0.86, watermark: true }, { width: 480, height: 640, quality: 0.8 }, { width: 320, height: 427, quality: 0.78 }, { width: 900, height: 1200, quality: 0.86 }] }
+// A grande leva o logo da Maré; a última (-orig, sem logo) serve só para reajustar o recorte sem duplicar o logo.
+// Foto sem logo de uma foto salva: local NN-NN-m.webp -> NN-NN.webp; enviada pelo painel X.webp -> X-orig.webp.
+const originalOf = path => /\/img\/produtos\/.+-m\.webp$/.test(path) ? path.replace(/-m\.webp$/, '.webp')
+  : /^https?:/.test(path) ? path.replace(/\.webp$/, '-orig.webp') : path
 const MAX_PHOTOS = 10
 const MAX_FILE_MB = 25
 
@@ -49,8 +53,8 @@ export default function ProductPhotos({ photos, onChange }) {
 
   const openRecrop = index => {
     const photo = photos[index]
-    // foto nova: reajusta a partir da versão grande já recortada; foto salva: a partir do arquivo do site
-    setRecrop({ index, src: photo.blobs ? URL.createObjectURL(photo.blobs[0]) : photo.path, temp: Boolean(photo.blobs) })
+    // foto nova: reajusta a partir da versão grande sem logo; foto salva: a partir do arquivo sem logo
+    setRecrop({ index, src: photo.blobs ? URL.createObjectURL(photo.blobs[3] || photo.blobs[0]) : originalOf(photo.path), temp: Boolean(photo.blobs) })
   }
   const closeRecrop = () => { if (recrop?.temp) URL.revokeObjectURL(recrop.src); setRecrop(null) }
   const replaceCropped = blobs => {
@@ -130,7 +134,7 @@ export async function syncPhotos({ productId, code, name, photos, previous }) {
   const finalList = []
   for (const photo of photos) {
     if (photo.blobs) {
-      const [path, thumb_path] = await uploadVariants('produtos', code, photo.blobs, ['', '480', '320'])
+      const [path, thumb_path] = await uploadVariants('produtos', code, photo.blobs, ['', '480', '320', 'orig'])
       finalList.push({ path, thumb_path })
     } else {
       finalList.push({ path: photo.path, thumb_path: photo.thumb_path })
