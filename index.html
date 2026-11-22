@@ -12,6 +12,8 @@
     <!-- Foto principal da página inicial: cada aparelho já pede só a versão que vai usar (igual ao Home.jsx). -->
     <link rel="preload" as="image" media="(max-width: 600px)" imagesrcset="/img/banners/hero-mobile-600.webp 600w, /img/banners/hero-mobile-800.webp 800w, /img/banners/hero-mobile.webp 1200w" imagesizes="100vw" fetchpriority="high" />
     <link rel="preload" as="image" media="(min-width: 601px)" imagesrcset="/img/banners/hero-1200.webp 1200w, /img/banners/hero.webp 2245w" imagesizes="100vw" fetchpriority="high" />
+    <!-- Logo do topo (versão leve de 240px; igual ao Brand em ui.jsx). -->
+    <link rel="preload" as="image" imagesrcset="/img/logo/mare-240.webp 240w, /img/logo/mare.webp 480w" imagesizes="(max-width: 900px) 108px, 150px" />
     <!-- Banco de dados (produtos, textos): abre a conexão enquanto o código do site ainda está baixando. -->
     <link rel="preconnect" href="https://tnhckvugdavdjfhlvtmq.supabase.co" crossorigin />
   </head>
