@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { ArrowDown, ArrowUp, ArrowUpRight, ImageOff, Plus, Search, Sparkles, X } from 'lucide-react'
+import { ArrowDown, ArrowUp, ArrowUpRight, ImageOff, Plus, PictureInPicture2, Search, X } from 'lucide-react'
 import { supabase } from '../../supabase.js'
 import { listProducts } from '../api.js'
 import { InfoTip, Loading, Switch, errorText, formatBRL, useToast, useUnsavedGuard } from '../ui.jsx'
@@ -104,7 +104,7 @@ export default function Spotlight() {
           </div>
           {!enabled && <p className="adm-notice is-warn">O card está desligado: nenhuma peça aparece no site até você ligar de novo.</p>}
           {chosen.length === 0 ? (
-            <div className="adm-empty"><Sparkles /><b>Nenhuma peça escolhida</b>Adicione produtos na lista ao lado.</div>
+            <div className="adm-empty"><PictureInPicture2 /><b>Nenhuma peça escolhida</b>Adicione produtos na lista ao lado.</div>
           ) : (
             <ol className="adm-spot-list">
               {chosen.map((p, i) => (
