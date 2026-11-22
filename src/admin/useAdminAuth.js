@@ -17,7 +17,7 @@ export function useAdminAuth() {
         if (active) setState({ status: 'signed-out', session: null, profile: null })
         return
       }
-      const { data } = await supabase.from('profiles').select('full_name, role').eq('id', session.user.id).maybeSingle()
+      const { data } = await supabase.from('profiles').select('full_name, role, avatar_url').eq('id', session.user.id).maybeSingle()
       if (!active) return
       setState({ status: data?.role === 'admin' ? 'admin' : 'denied', session, profile: data })
     }

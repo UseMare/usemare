@@ -108,7 +108,7 @@ function Sidebar({ open, onClose, collapsed, onToggle }) {
 
 // Nome da pessoa no canto superior direito. Abre um menu no formato da Nuvemshop:
 // atalhos da loja, dados da conta (alterar senha) e sair.
-function UserMenu({ email, name }) {
+function UserMenu({ email, name, avatar }) {
   const [open, setOpen] = useState(false)
   const [passwordOpen, setPasswordOpen] = useState(false)
   const ref = useRef(null)
@@ -126,7 +126,7 @@ function UserMenu({ email, name }) {
   return (
     <div className={`adm-usermenu ${open ? 'open' : ''}`} ref={ref}>
       <button onClick={() => setOpen(o => !o)} aria-expanded={open} aria-haspopup="menu">
-        <span className="adm-avatar" aria-hidden="true">{display.trim().charAt(0).toUpperCase()}</span>
+        <span className="adm-avatar" aria-hidden="true">{avatar ? <img src={avatar} alt="" /> : display.trim().charAt(0).toUpperCase()}</span>
         <span className="adm-usermenu-name">{display}</span>
         <ChevronDown />
       </button>
@@ -188,15 +188,15 @@ function Shell({ session, profile }) {
           <span className="adm-topbar-title">{title}</span>
           <Link className="adm-icon-btn adm-help-btn" to={sections.ajuda.path} aria-label="Ajuda do painel" title="Ajuda do painel"><CircleHelp /></Link>
           <a className="adm-btn outline small" href="/" target="_blank" rel="noreferrer"><ExternalLink /> <span>Ver loja</span></a>
-          <UserMenu email={session.user.email} name={profile?.full_name} />
+          <UserMenu email={session.user.email} name={profile?.full_name} avatar={profile?.avatar_url} />
         </header>
         <main className="adm-content">
-          <h1 className="adm-page-title">{title}</h1>
+          {current !== sections.inicio && <h1 className="adm-page-title">{title}</h1>}
           <Routes>
             {Object.entries(sections).map(([key, section]) => {
               const Page = pages[key] || ComingSoon
               const rel = section.path.slice(BASE.length + 1)
-              return <Route key={key} {...(rel ? { path: rel } : { index: true })} element={<Page section={section} />} />
+              return <Route key={key} {...(rel ? { path: rel } : { index: true })} element={<Page section={section} session={session} profile={profile} />} />
             })}
             <Route path="destaques" element={<Navigate to={`${BASE}/flutuantes`} replace />} />
             <Route path="produtos/novo" element={<ProductEditor />} />

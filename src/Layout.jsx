@@ -7,6 +7,7 @@ import { helloMessage, store, whatsappLink } from './store.js'
 import { CheckoutButton } from './checkout.jsx'
 import { spotlightProducts } from './products.js'
 import { hasSupabase, loadSupabase } from './supabaseLazy.js'
+import { trackPage } from './track.js'
 import AlphaCredit from './alpha-credit/AlphaCredit.jsx'
 import { pageContent } from './content.js'
 import { SiteIcon, SocialIcon, socialHref, socialNetworks } from './icons.jsx'
@@ -303,6 +304,9 @@ export default function Layout() {
       window.scrollTo({ top: 0, behavior: 'instant' })
     }
   }, [location.pathname, location.search, location.hash])
+
+  // Contador de acessos do painel (anônimo).
+  useEffect(() => { trackPage(location.pathname) }, [location.pathname])
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : ''
