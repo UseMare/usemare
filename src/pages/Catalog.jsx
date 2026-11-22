@@ -50,6 +50,9 @@ const filterOptions = () => ({
 
 const normalize = text => text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
 const listParam = (params, key) => (params.get(key) || '').split(',').filter(Boolean)
+// Tipo de peça no endereço vai como código sem vírgula (ex.: "Saias, calças & shorts" → saias-calcas-shorts),
+// porque a vírgula separa os tipos marcados. Endereços antigos com o nome continuam valendo.
+const typeKey = name => name.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 
 function FilterGroup({ title, children, defaultOpen = true }) {
   const [open, setOpen] = useState(defaultOpen)
@@ -92,7 +95,7 @@ export default function Catalog() {
 
   const categoria = params.get('categoria') || 'todos'
   const busca = params.get('busca') || ''
-  const tipos = listParam(params, 'tipo')
+  const tipos = listParam(params, 'tipo').map(v => allTypes.find(name => typeKey(name) === v || name === v)).filter(Boolean)
   const maxPrice = Number(params.get('ate')) || priceCeil
   const onlyAvailable = params.get('disponiveis') === '1'
   const sort = params.get('ordem') || 'destaques'
@@ -195,7 +198,7 @@ export default function Catalog() {
             <FilterGroup title="Tipo de peça">
               {allTypes.map(type => (
                 <label key={type} className="check">
-                  <input type="checkbox" checked={tipos.includes(type)} onChange={() => toggleIn('tipo', tipos, type)} />
+                  <input type="checkbox" checked={tipos.includes(type)} onChange={() => update({ tipo: (tipos.includes(type) ? tipos.filter(t => t !== type) : [...tipos, type]).map(typeKey) })} />
                   <span className="box"><Check /></span>{type}
                   <small>{products.filter(p => productTypeName(p) === type && collection.test(p)).length}</small>
                 </label>
@@ -244,7 +247,7 @@ export default function Catalog() {
             {activeCount > 0 && (
               <div className="active-filters">
                 {busca && <button onClick={() => update({ busca: null })}>“{busca}” <X /></button>}
-                {tipos.map(t => <button key={t} onClick={() => toggleIn('tipo', tipos, t)}>{t} <X /></button>)}
+                {tipos.map(t => <button key={t} onClick={() => update({ tipo: tipos.filter(x => x !== t).map(typeKey) })}>{t} <X /></button>)}
                 {maxPrice < priceCeil && <button onClick={() => update({ ate: null })}>Até R$ {maxPrice} <X /></button>}
                 {onlyAvailable && <button onClick={() => update({ disponiveis: null })}>Disponíveis <X /></button>}
               </div>
