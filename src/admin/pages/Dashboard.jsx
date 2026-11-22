@@ -141,19 +141,19 @@ export default function Dashboard({ session, profile }) {
                 <b>{s ? num(s.visitors) : '–'}</b>
                 {s && <Change now={s.visitors} before={s.prevVisitors} />}
               </div>
-            </div>
-            {s ? <Chart series={s.series} hourly={days === 1} /> : <div className="adm-chart adm-chart-loading" />}
-          </section>
-
-          <div className="adm-kpis">
-            {kpis.map(k => (
-              <div key={k.label} className={`adm-kpi tone-${k.tone}`}>
-                <span className="adm-kpi-icon"><k.icon /></span>
-                <b>{s ? num(k.value) : '–'}</b>
-                <span className="adm-kpi-label">{k.label}</span>
+              <div className="adm-kpis">
+                {kpis.map(k => (
+                  <div key={k.label} className="adm-kpi">
+                    <span className="adm-kpi-icon"><k.icon /></span>
+                    <span><b>{s ? num(k.value) : '–'}</b><small className="adm-kpi-label">{k.label}</small></span>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </div>
+            {!s ? <div className="adm-chart adm-chart-loading" />
+              : s.pageviews === 0 ? <p className="adm-chart-empty">Ainda sem visitas neste período.</p>
+              : <Chart series={s.series} hourly={days === 1} />}
+          </section>
         </>
       )}
 
