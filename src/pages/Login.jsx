@@ -12,14 +12,6 @@ import Account from './Account.jsx'
 // Login / criar conta / recuperar senha — tudo pelo Supabase Auth. Logada, mostra Minha conta (Account.jsx).
 // O nome vai em options.data.full_name: o banco cria o perfil (public.profiles) sozinho.
 
-// A conta logada é da administração? (o banco decide; aqui só serve para escolher a tela de destino)
-const isAdmin = async () => {
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session) return false
-  const { data } = await supabase.from('profiles').select('role').eq('id', session.user.id).maybeSingle()
-  return data?.role === 'admin'
-}
-
 // ---------- Formulário de entrada / cadastro / esqueci a senha ----------
 function AuthForm({ checkout }) {
   const navigate = useNavigate()
@@ -72,8 +64,7 @@ function AuthForm({ checkout }) {
         const { error } = await supabase.auth.signInWithPassword({ email, password: form.senha })
         if (error) throw error
         if (checkout) return // a página (Login) finaliza o pedido ao ver a sessão
-        if (await isAdmin()) { navigate('/painel-loja', { replace: true }); return } // admin: vai direto para o painel
-        navigate('/', { replace: true }) // cliente: vai para o Início
+        navigate('/', { replace: true }) // entrou (cliente ou admin): sempre vai para o Início
       }
     } catch (error) {
       setNotice({ type: 'error', text: friendly(error) })
@@ -155,6 +146,7 @@ function AuthForm({ checkout }) {
 // ---------- Nova senha (chegou pelo link do e-mail) ----------
 function NewPassword() {
   const { endRecovery } = useShop()
+  const navigate = useNavigate()
   const [senha, setSenha] = useState('')
   const [error, setError] = useState(null)
   const [notice, setNotice] = useState(null)
@@ -169,9 +161,7 @@ function NewPassword() {
     setBusy(false)
     if (err) { setNotice({ type: 'error', text: friendly(err) }); return }
     setNotice({ type: 'ok', text: 'Senha atualizada! 🤎' })
-    // Admin que trocou a senha (ex.: "Esqueci minha senha" do painel) volta para o painel.
-    if (await isAdmin()) { setTimeout(() => window.location.replace('/painel-loja'), 1200); return }
-    setTimeout(endRecovery, 1500)
+    setTimeout(() => { endRecovery(); navigate('/', { replace: true }) }, 1500) // senha nova: vai para o Início
   }
 
   return (

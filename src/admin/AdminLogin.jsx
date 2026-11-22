@@ -38,7 +38,8 @@ export default function AdminLogin() {
     setNotice(null)
     const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password })
     setBusy(false)
-    if (error) setNotice({ type: 'error', text: friendlyError(error.message) })
+    if (error) return setNotice({ type: 'error', text: friendlyError(error.message) })
+    window.location.replace('/') // entrou: sempre vai para o Início do site (o painel fica no atalho de Minha conta)
   }
 
   const forgot = async () => {
@@ -115,7 +116,7 @@ export function AcceptInvite() {
     const { error: e } = await supabase.auth.updateUser({ password })
     setBusy(false)
     if (e) return setError(/weak|characters/i.test(e.message) ? 'Senha fraca. Use pelo menos 8 caracteres, misturando letras e números.' : 'Não foi possível salvar a senha. Tente de novo.')
-    window.location.replace('/painel-loja') // recarrega já dentro do painel, com a sessão nova
+    window.location.replace('/') // senha criada: vai para o Início do site, já logada
   }
 
   if (step === 'checking') return <div className="adm-loading" role="status"><span className="adm-spinner" /> Validando convite…</div>
