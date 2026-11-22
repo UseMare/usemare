@@ -5,7 +5,6 @@ import { useRevealObserver, useShop } from './shop.jsx'
 import { Brand, Instagram, SmartLink, WhatsApp } from './ui.jsx'
 import { helloMessage, store, whatsappLink } from './store.js'
 import { CheckoutButton } from './checkout.jsx'
-import { legalPages } from './legalPages.js'
 import { spotlightProducts } from './products.js'
 import { supabase } from './supabase.js'
 import AlphaCredit from './alpha-credit/AlphaCredit.jsx'
@@ -18,6 +17,7 @@ export const footerDefaults = {
   columns: [
     { title: 'Loja', links: [{ label: 'Todos os produtos', link: '/produtos' }, { label: 'Moda feminina', link: '/produtos?categoria=moda-feminina' }, { label: 'Promoções', link: '/promocoes' }] },
     { title: 'Atendimento', links: [{ label: 'Como comprar', link: '/sobre#como-comprar' }, { label: 'Fale no WhatsApp', link: '{whatsapp}' }, { label: 'Sobre a Maré', link: '/sobre' }] },
+    { title: 'Políticas', links: [{ label: 'Trocas e Devoluções', link: '/trocas-e-devolucoes' }, { label: 'Política de Privacidade', link: '/politica-de-privacidade' }, { label: 'Termos de Uso', link: '/termos-de-uso' }] },
   ],
   newsletterTitle: 'Receba novidades',
   newsletterText: 'Lançamentos e promoções em primeira mão.',
@@ -348,7 +348,7 @@ export default function Layout() {
       </main>
 
       <footer>
-        <div className="shell footer-inner">
+        <div className="shell footer-inner" style={{ '--footer-cols': footer.columns.length }}>
           <div className="footer-brand" data-reveal>
             <Brand footer />
             {store.footerText && <p className="footer-text">{store.footerText}</p>}
@@ -371,7 +371,6 @@ export default function Layout() {
         </div>
         <div className="copyright"><div className="shell">
           <p>{footer.copyright.replace(/\{ano\}/g, new Date().getFullYear())}</p>
-          <nav className="legal-links" aria-label="Políticas da loja">{legalPages.map(p => <Link key={p.path} to={p.path}>{p.label}</Link>)}</nav>
           <AlphaCredit />
         </div></div>
       </footer>

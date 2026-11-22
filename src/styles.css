@@ -178,7 +178,7 @@ ul { list-style: none; margin: 0; padding: 0; }
 
 /* ============ Rodapé ============ */
 footer { background: #f1e5dc; color: var(--ink); }
-.footer-inner { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1.4fr; gap: 40px; padding-block: 56px 48px; }
+.footer-inner { display: grid; grid-template-columns: minmax(260px, 1.4fr) repeat(var(--footer-cols, 2), minmax(max-content, 1fr)) minmax(240px, 1.3fr); gap: 40px; padding-block: 56px 48px; } /* marca + colunas de links (painel) + novidades */
 .footer-inner > div { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
 .footer-brand .brand img { width: 150px; margin: -10px 0 4px -8px; }
 footer h3 { margin: 0 0 10px; color: var(--wine); font-family: var(--serif); font-size: 19px; font-weight: 500; }

@@ -1449,14 +1449,10 @@ html, body { max-width: 100%; overflow-x: clip; }
 .legal-contact-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 .legal-others { margin: 26px 0 0; color: var(--muted); font-size: 14.5px; text-align: center; }
 .legal-others a { color: var(--wine); font-weight: 600; }
-.copyright .legal-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 18px; margin-top: 8px; font-size: 13px; }
-.copyright .legal-links a { color: inherit; opacity: .75; text-decoration: none; }
-.copyright .legal-links a:hover { opacity: 1; text-decoration: underline; text-underline-offset: 3px; }
 @media (max-width: 700px) {
   .legal-toc ol { columns: 1; }
   .legal-contact { flex-direction: column; align-items: stretch; text-align: center; }
   .legal-contact-actions .button { flex: 1; justify-content: center; }
-  .copyright .legal-links { font-size: 12px; gap: 4px 14px; }
 }
 
 /* ---------- Ajuste da foto de perfil (Minha conta) ---------- */
