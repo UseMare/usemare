@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { ChevronLeft, KeyRound, LogIn, Mail, UserPlus } from 'lucide-react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { ChevronLeft, KeyRound, LogIn, Mail, ShoppingBag, UserPlus } from 'lucide-react'
+import { orderLink, takePendingOrder } from '../checkout.jsx'
 import { usePageTitle, useShop } from '../shop.jsx'
 import { HandHeart, WhatsApp } from '../ui.jsx'
 import { helloMessage, whatsappLink } from '../store.js'
@@ -12,9 +13,9 @@ import Account from './Account.jsx'
 // O nome vai em options.data.full_name: o banco cria o perfil (public.profiles) sozinho.
 
 // ---------- Formulário de entrada / cadastro / esqueci a senha ----------
-function AuthForm() {
+function AuthForm({ checkout }) {
   const navigate = useNavigate()
-  const [mode, setMode] = useState('entrar') // entrar | criar | esqueci
+  const [mode, setMode] = useState(checkout ? 'criar' : 'entrar') // entrar | criar | esqueci
   const [form, setForm] = useState({ nome: '', email: '', senha: '' })
   const [errors, setErrors] = useState({})
   const [notice, setNotice] = useState(null)
@@ -51,11 +52,13 @@ function AuthForm() {
         })
         if (error) throw error
         if (data.user && !data.user.identities?.length) throw { code: 'user_already_exists' }
+        if (data.session && checkout) return // a página (Login) finaliza o pedido ao ver a sessão
         if (data.session) { navigate('/', { replace: true }); return }
         setNotice({ type: 'ok', text: 'Conta criada! Enviamos um link de confirmação para o seu e-mail. É só clicar nele para entrar. 🌊' })
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password: form.senha })
         if (error) throw error
+        if (checkout) return // a página (Login) finaliza o pedido ao ver a sessão
         navigate('/', { replace: true }) // entrou: vai para o Início
       }
     } catch (error) {
@@ -75,6 +78,13 @@ function AuthForm() {
           <button role="tab" aria-selected={isSignup} className={isSignup ? 'active' : ''} onClick={() => switchMode('criar')}>Criar conta</button>
           <span className="login-tabs-ink" style={{ transform: `translateX(${isSignup ? 100 : 0}%)` }} />
         </div>
+      )}
+
+      {checkout && !isForgot && (
+        <p className="login-checkout" role="status">
+          <ShoppingBag />
+          <span><b>Falta só isso para finalizar!</b> {isSignup ? 'Crie sua conta' : 'Entre na sua conta'} e seu pedido vai pronto para o WhatsApp da Maré.</span>
+        </p>
       )}
 
       <h2>{isForgot ? 'Recuperar senha' : isSignup ? 'Criar sua conta' : 'Entrar na sua conta'}</h2>
@@ -153,13 +163,62 @@ function NewPassword() {
   )
 }
 
+// ---------- Pedido pronto (depois de entrar pelo botão "Finalizar pedido") ----------
+function OrderReady({ link, opened }) {
+  usePageTitle('Pedido pronto')
+  return (
+    <section className="order-ready">
+      <div className="order-ready-card">
+        <span className="order-ready-icon"><WhatsApp /></span>
+        <p className="eyebrow">Conta pronta 🤍</p>
+        <h1>Seu pedido está pronto!</h1>
+        <p>{opened
+          ? 'Abrimos o WhatsApp da Maré com seu pedido completo. É só tocar em enviar por lá. Se a conversa não abriu, use o botão abaixo.'
+          : 'Toque no botão abaixo para enviar seu pedido completo para o WhatsApp da Maré.'}</p>
+        <a className="button whatsapp big" href={link} target="_blank" rel="noreferrer"><WhatsApp /> Enviar pedido no WhatsApp</a>
+        <Link className="button outline" to="/produtos">Continuar navegando</Link>
+      </div>
+    </section>
+  )
+}
+
 export default function Login() {
   const { user, authReady, recovering } = useShop()
+  const navigate = useNavigate()
+  const [params] = useSearchParams()
+  const checkout = params.get('finalizar') === '1'
+  const [order, setOrder] = useState(null) // { link, opened }
   const view = recovering ? 'nova-senha' : user ? 'conta' : 'entrar'
+
+  // Veio do "Finalizar pedido" e agora está logada (criou a conta ou entrou): monta o pedido
+  // guardado e abre o WhatsApp. O navegador costuma permitir abrir a aba logo após o clique em
+  // "Criar conta"/"Entrar"; se bloquear, a tela OrderReady mostra o botão.
+  const finishing = checkout && authReady && user && !order
+  const started = React.useRef(false)
+  React.useEffect(() => {
+    if (!finishing || started.current) return
+    started.current = true // o pedido guardado é usado uma vez só
+    ;(async () => {
+      const items = takePendingOrder()
+      if (!items.length) { navigate('/entrar', { replace: true }); return }
+      const { data: prof } = await supabase.from('profiles').select('full_name, phone').eq('id', user.id).maybeSingle()
+      const link = orderLink(items, {
+        name: prof?.full_name || user.user_metadata?.full_name || '',
+        email: user.email,
+        phone: prof?.phone || '',
+      })
+      const win = window.open(link, '_blank') // sem "noopener": com ele o navegador sempre devolve null
+      if (win) win.opener = null
+      setOrder({ link, opened: !!win })
+    })()
+  }, [finishing]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (order) return <OrderReady {...order} />
+  if (finishing) return <section className="login-page"><p className="login-sub" role="status">Preparando seu pedido…</p></section>
   if (authReady && view === 'conta') return <Account />
 
   return (
-    <section className="login-page">
+    <section className={`login-page ${checkout ? 'is-checkout' : ''}`}>
       <div className="login-brand">
         <span className="login-script" aria-hidden="true">maré</span>
         <div className="login-brand-inner">
@@ -175,7 +234,7 @@ export default function Login() {
       <div className="login-form-side">
         {!authReady ? <p className="login-sub">Carregando…</p>
           : view === 'nova-senha' ? <NewPassword />
-          : <AuthForm />}
+          : <AuthForm checkout={checkout} />}
       </div>
     </section>
   )

@@ -5,7 +5,8 @@ import { ArrowRight, ChevronLeft, ChevronRight, Heart, MessageCircleHeart, Ruler
 import { collectionLabel, collectionLink, findProduct, productCollection, productTypeName, products } from '../products.js'
 import { usePageTitle, useShop } from '../shop.jsx'
 import { Instagram, Price, ProductCard, SectionHeading, WhatsApp } from '../ui.jsx'
-import { productMessage, restockMessage, store, whatsappLink } from '../store.js'
+import { restockMessage, store, whatsappLink } from '../store.js'
+import { CheckoutButton } from '../checkout.jsx'
 import NotFound from './NotFound.jsx'
 import { supabase } from '../supabase.js'
 
@@ -312,7 +313,7 @@ export default function Product() {
             {product.available ? (
               <>
                 <div className="pdp-actions">
-                  <a className="button whatsapp big pulse-green" href={whatsappLink(productMessage(product))} target="_blank" rel="noreferrer"><WhatsApp /> Comprar pelo WhatsApp</a>
+                  <CheckoutButton items={[{ product, quantity: 1 }]} className="button whatsapp big pulse-green"><WhatsApp /> Comprar pelo WhatsApp</CheckoutButton>
                   <button className="button outline" onClick={() => addToBag(product)}><ShoppingBag /> Adicionar à sacola</button>
                   <button className={`like-big ${isLiked ? 'liked' : ''}`} onClick={() => toggleLike(product.id)} aria-label={isLiked ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}><Heart fill={isLiked ? 'currentColor' : 'none'} /></button>
                 </div>
@@ -355,7 +356,7 @@ export default function Product() {
       {product.available && createPortal(
         <div className="pdp-sticky">
           <div><b>{product.name}</b><span>{product.priceLabel}</span></div>
-          <a className="button whatsapp small" href={whatsappLink(productMessage(product))} target="_blank" rel="noreferrer"><WhatsApp /> Comprar</a>
+          <CheckoutButton items={[{ product, quantity: 1 }]} className="button whatsapp small"><WhatsApp /> Comprar</CheckoutButton>
         </div>,
         document.body
       )}

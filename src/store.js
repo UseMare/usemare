@@ -29,21 +29,57 @@ export const whatsappLink = text => {
 
 const formatPrice = value => `R$ ${value.toFixed(2).replace('.', ',')}`
 
-export const productMessage = product =>
-  `Oi, Maré! 🌊 Vi no site e me apaixonei ${product.flavors ? 'por este produto' : 'por esta peça'}:\n\n` +
-  `*${product.name}* — ${product.priceLabel}\n\n` +
-  (product.flavors
-    ? (product.flavors.length > 1 ? `Quais sabores estão disponíveis? 🤎` : `Pode me ajudar com a disponibilidade? 🤎`)
-    : `Pode me ajudar com tamanho e disponibilidade? 🤎`)
-
-// Mensagem de finalização da sacola (formato definido pela loja).
-export const bagMessage = items => {
-  const lines = items.map(({ product, quantity }) =>
-    `${quantity > 1 ? `${quantity}x ` : ''}*${product.name}* — ${formatPrice(product.price * quantity)}`)
+// Mensagem do pedido (sacola ou "Comprar" da página da peça), enviada depois que a cliente
+// entra na conta. items: [{ product, quantity }] · customer: { name, email, phone }
+// *negrito* e _itálico_ são a formatação do próprio WhatsApp.
+export const orderMessage = (items, customer = {}, productType = () => null) => {
+  const now = new Date()
+  const date = now.toLocaleDateString('pt-BR', { timeZone: 'America/Fortaleza' })
+  const time = now.toLocaleTimeString('pt-BR', { timeZone: 'America/Fortaleza', hour: '2-digit', minute: '2-digit' })
+  const pieces = items.reduce((sum, { quantity }) => sum + quantity, 0)
   const total = items.reduce((sum, { product, quantity }) => sum + product.price * quantity, 0)
-  return `Oi, Maré! ✨\nMontei minha sacola no site:\n\n` +
-    `--------\n${lines.join('\n')}\nTotal: *${formatPrice(total)}*\n\n` +
-    `😃 Pode me ajudar com os tamanhos e a finalização?`
+  const site = window.location.host || 'usemare.com.br'
+
+  const lines = items.map(({ product, quantity }, index) => {
+    const type = productType(product)
+    const price = product.oldPrice
+      ? `de ~${formatPrice(product.oldPrice)}~ por ${formatPrice(product.price)}`
+      : formatPrice(product.price)
+    return [
+      `*${index + 1}) ${product.name}*`,
+      type && `• Categoria: ${type}`,
+      `• Quantidade: ${quantity}`,
+      `• Valor: ${price}${quantity > 1 ? ' cada' : ''}`,
+      quantity > 1 && `• Subtotal: *${formatPrice(product.price * quantity)}*`,
+      `🔗 ${site}/produto/${product.slug}`,
+    ].filter(Boolean).join('\n')
+  })
+
+  const data = [
+    customer.name && `• Nome: ${customer.name}`,
+    customer.email && `• E-mail: ${customer.email}`,
+    customer.phone && `• WhatsApp: ${customer.phone}`,
+  ].filter(Boolean)
+
+  const rule = '━━━━━━━━━━━━━━'
+  return [
+    'Olá, Maré! 🌊 Acabei de montar meu pedido pelo site:',
+    '',
+    '🛍️ *MEU PEDIDO*',
+    `🗓️ ${date}, às ${time}`,
+    '',
+    lines.join('\n\n'),
+    '',
+    rule,
+    `💰 *TOTAL: ${formatPrice(total)}* (${pieces} ${pieces === 1 ? 'item' : 'itens'})`,
+    store.installments > 1 && `💳 Em até ${store.installments}x sem juros`,
+    rule,
+    data.length && '',
+    data.length && '👤 *MEUS DADOS*',
+    ...data,
+    '',
+    `Pode me ajudar com ${items.some(i => i.product.flavors) ? 'sabor/tamanho' : 'os tamanhos'}, o pagamento e a entrega? 🤎`,
+  ].filter(line => line !== false && line !== 0 && line !== null && line !== undefined).join('\n')
 }
 
 export const restockMessage = product =>

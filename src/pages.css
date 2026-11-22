@@ -1406,3 +1406,19 @@ html, body { max-width: 100%; overflow-x: clip; }
 
 /* troca de página do catálogo: os cards atuais somem juntos, de leve, antes dos novos entrarem */
 .catalog-grid.is-leaving > * { opacity: 0 !important; transform: translateY(-14px) !important; transition: opacity .4s ease, transform .4s ease !important; transition-delay: 0s !important; pointer-events: none; }
+
+/* ---------- Finalizar pedido: aviso na tela de conta e tela "Pedido pronto" ---------- */
+.login-checkout { display: flex; gap: 12px; align-items: flex-start; margin: 0 0 22px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--sand-soft); color: var(--wine); font-size: 14px; line-height: 1.5; animation: rise .45s var(--ease-out); }
+.login-checkout svg { flex: none; width: 20px; height: 20px; margin-top: 1px; color: var(--accent); }
+.login-checkout b { display: block; margin-bottom: 2px; font-size: 15px; }
+.order-ready { display: grid; place-items: center; min-height: calc(100vh - 136px); padding: 48px 16px; background: radial-gradient(90% 70% at 50% 0%, var(--hero-bg, #f7e7db) 0%, var(--paper, #faf5f0) 70%); }
+.order-ready-card { width: min(100%, 460px); padding: 40px 32px; border: 1px solid var(--line); border-radius: 24px; background: #fff; box-shadow: 0 24px 60px rgba(67, 32, 26, .10); text-align: center; animation: rise .8s var(--ease-out) both; }
+.order-ready-icon { display: inline-grid; place-items: center; width: 64px; height: 64px; margin-bottom: 16px; border-radius: 50%; background: var(--whats); color: #fff; }
+.order-ready-icon svg { width: 32px; height: 32px; }
+.order-ready-card h1 { margin: 8px 0 12px; font-family: var(--serif); font-size: clamp(28px, 5vw, 36px); font-weight: 500; line-height: 1.1; color: var(--ink); }
+.order-ready-card > p:not(.eyebrow) { margin: 0 0 26px; color: var(--muted); line-height: 1.65; }
+.order-ready-card .button { width: 100%; justify-content: center; }
+.order-ready-card .button + .button { margin-top: 12px; }
+@media (max-width: 900px) {
+  .login-page.is-checkout .login-brand { display: none; } /* no meio da compra, o formulário vem primeiro */
+}

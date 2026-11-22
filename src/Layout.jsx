@@ -3,7 +3,8 @@ import { Link, NavLink, Outlet, useLocation, useNavigate, useNavigationType, use
 import { ArrowRight, ArrowUpRight, CreditCard, LockKeyhole, Menu, Minus, Plus, Search, ShoppingBag, Trash2, Truck, UserRound, X } from 'lucide-react'
 import { useRevealObserver, useShop } from './shop.jsx'
 import { Brand, Instagram, SmartLink, WhatsApp } from './ui.jsx'
-import { bagMessage, helloMessage, store, whatsappLink } from './store.js'
+import { helloMessage, store, whatsappLink } from './store.js'
+import { CheckoutButton } from './checkout.jsx'
 import { spotlightProducts } from './products.js'
 import { supabase } from './supabase.js'
 import AlphaCredit from './alpha-credit/AlphaCredit.jsx'
@@ -115,8 +116,8 @@ function BagDrawer() {
             </ul>
             <div className="bag-foot">
               <p><span>Total estimado</span><strong>R$ {total.toFixed(2).replace('.', ',')}</strong></p>
-              <a className="button whatsapp" href={whatsappLink(bagMessage(bagItems))} target="_blank" rel="noreferrer"><WhatsApp /> Finalizar pelo WhatsApp</a>
-              <small>Você será levada para o WhatsApp da Maré com a lista pronta. Lá a gente combina tamanhos, pagamento e entrega.</small>
+              <CheckoutButton items={bagItems} onLeave={closeBag}><WhatsApp /> Finalizar pedido</CheckoutButton>
+              <small>Para finalizar, entre na sua conta (ou crie uma em segundos). Seu pedido vai pronto para o WhatsApp da Maré e lá a gente combina tamanhos, pagamento e entrega.</small>
             </div>
           </>
         )}
