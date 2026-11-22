@@ -717,3 +717,26 @@ a.adm-stat:hover { border-color: var(--adm-wine); }
   .adm-customers .adm-c-date::before, .adm-customers .adm-c-fav::before { content: attr(data-label) ': '; }
 }
 .adm-slug-info { margin: -4px 0 16px; overflow-wrap: anywhere; } /* endereço da página do produto (automático) */
+
+/* ---------- Produtos: preço editável direto na lista ---------- */
+.adm-prow { grid-template-columns: auto minmax(0, 1fr) minmax(110px, auto) auto auto; }
+.adm-quickprice { padding: 6px 10px; border: 1px dashed transparent; border-radius: 8px; background: none; font: inherit; color: inherit; text-align: right; cursor: pointer; transition: border-color .15s, background .15s; }
+.adm-quickprice:hover, .adm-quickprice:focus-visible { border-color: var(--adm-line-strong); background: var(--adm-soft); }
+.adm-quickprice b { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.adm-quickprice b svg { width: 13px; height: 13px; color: var(--adm-accent); }
+.adm-quickprice-edit { display: flex; align-items: center; gap: 4px; justify-items: initial; }
+.adm-quickprice-field { display: inline-flex; align-items: center; gap: 4px; padding: 0 8px; border: 1px solid var(--adm-wine); border-radius: 8px; background: #fff; box-shadow: 0 0 0 3px rgba(67, 32, 26, .08); }
+.adm-quickprice-field i { color: var(--adm-muted); font-size: 13px; font-style: normal; }
+.adm-quickprice-field input { width: 84px; padding: 7px 0; border: 0; outline: 0; background: none; font: inherit; font-weight: 700; font-size: 15px; color: var(--adm-text); }
+.adm-icon-btn.ok { color: #fff; background: var(--adm-ok); border-color: var(--adm-ok); }
+.adm-icon-btn.ok:hover { background: #17633d; }
+@media (max-width: 720px) {
+  /* celular: preço ao lado do nome; durante a edição ele ganha uma linha inteira */
+  .adm-prow { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: 'order main price' 'switches switches actions'; }
+  .adm-prow:not(:has(.adm-prow-order)) { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: 'main price' 'switches actions'; }
+  .adm-prow:has(.adm-quickprice-edit) { grid-template-areas: 'order main main' 'price price price' 'switches switches actions'; }
+  .adm-prow:not(:has(.adm-prow-order)):has(.adm-quickprice-edit) { grid-template-areas: 'main main' 'price price' 'switches actions'; }
+  .adm-prow-price { display: grid; grid-area: price; align-self: start; }
+  .adm-quickprice { padding: 4px 6px; }
+  .adm-quickprice-edit { display: flex; justify-self: end; }
+}

@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ArrowDown, ArrowUp, ChevronDown, Copy, ExternalLink, GripVertical, ImageOff, Package, Pencil, Plus, Search, Trash2 } from 'lucide-react'
+import { ArrowDown, ArrowUp, Check, ChevronDown, Copy, ExternalLink, GripVertical, ImageOff, Package, Pencil, Plus, Search, Trash2, X } from 'lucide-react'
 import { deleteProduct, duplicateProduct, listCategories, listProducts, reorderProducts, updateProduct } from '../api.js'
 import { BASE } from '../sections.js'
 import { Loading, Switch, errorText, formatBRL, useConfirm, useToast } from '../ui.jsx'
@@ -17,6 +17,52 @@ const STATUS = [
 const PAGE = 7
 
 const normalize = t => (t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+
+// "229,90", "229.90", "R$ 1.229,90", "229" → número (ou NaN)
+const parsePrice = text => {
+  let t = String(text).replace(/[^\d.,]/g, '')
+  if (t.includes(',')) t = t.replace(/\./g, '').replace(',', '.')
+  else if ((t.match(/\./g) || []).length > 1) t = t.replace(/\./g, '')
+  return Math.round(Number(t) * 100) / 100
+}
+
+// Preço editável direto na lista: toca no preço, digita, Enter (ou ✓) salva; Esc (ou ✕) cancela.
+function QuickPrice({ product, onSave }) {
+  const toast = useToast()
+  const [editing, setEditing] = useState(false)
+  const [value, setValue] = useState('')
+  const inputRef = useRef(null)
+  const promo = product.old_price > product.price
+
+  const open = () => { setValue(Number(product.price).toFixed(2).replace('.', ',')); setEditing(true) }
+  const refuse = text => { toast(text, 'error'); inputRef.current?.focus() }
+  const confirm = () => {
+    const price = parsePrice(value)
+    if (!(price > 0)) return refuse('Digite um preço válido. Ex.: 129,90')
+    if (product.old_price && price >= product.old_price) return refuse(`Este produto está em promoção (de ${formatBRL(product.old_price)}). O preço novo precisa ser menor que esse; para tirar a promoção, use o lápis.`)
+    setEditing(false)
+    if (price !== Number(product.price)) onSave(price)
+  }
+
+  if (!editing) return (
+    <button type="button" className="adm-prow-price adm-quickprice" onClick={open} title="Clique para mudar o preço" aria-label={`Mudar o preço de ${product.name} (${formatBRL(product.price)})`}>
+      {promo && <s>{formatBRL(product.old_price)}</s>}
+      <b>{formatBRL(product.price)} <Pencil aria-hidden="true" /></b>
+    </button>
+  )
+  return (
+    <span className="adm-prow-price adm-quickprice-edit" onKeyDown={e => { if (e.key === 'Escape') setEditing(false) }}>
+      <span className="adm-quickprice-field">
+        <i aria-hidden="true">R$</i>
+        <input ref={inputRef} autoFocus inputMode="decimal" value={value} aria-label={`Novo preço de ${product.name}`}
+          onChange={e => setValue(e.target.value.replace(/[^\d.,]/g, ''))} onFocus={e => e.target.select()}
+          onKeyDown={e => { if (e.key === 'Enter') confirm() }} />
+      </span>
+      <button type="button" className="adm-icon-btn ok" onClick={confirm} aria-label="Salvar preço" title="Salvar"><Check /></button>
+      <button type="button" className="adm-icon-btn" onClick={() => setEditing(false)} aria-label="Cancelar" title="Cancelar"><X /></button>
+    </span>
+  )
+}
 
 export default function ProductsList() {
   const toast = useToast()
@@ -194,7 +240,6 @@ export default function ProductsList() {
                   <span className="adm-prow-info">
                     <b title={p.name}>{p.name}</b>
                     <small title={`Cód. ${p.code}${cats.length ? ` · ${cats.join(', ')}` : ' · sem categoria'}`}>Cód. {p.code}{cats.length ? ` · ${cats.join(', ')}` : ' · sem categoria'}</small>
-                    <span className="adm-prow-price-inline">{promo && <s>{formatBRL(p.old_price)}</s>}<b>{formatBRL(p.price)}</b></span>
                     <span className="adm-prow-badges">
                       {!p.active && <span className="adm-badge">Oculto</span>}
                       {!p.available && <span className="adm-badge warn">Indisponível</span>}
@@ -203,10 +248,7 @@ export default function ProductsList() {
                     </span>
                   </span>
                 </Link>
-                <span className="adm-prow-price">
-                  {promo && <s>{formatBRL(p.old_price)}</s>}
-                  <b>{formatBRL(p.price)}</b>
-                </span>
+                <QuickPrice product={p} onSave={price => patch(p, { price }, `Preço de "${p.name}" atualizado para ${formatBRL(price)}.`)} />
                 <span className="adm-prow-switches">
                   <Switch checked={p.active} onChange={v => patch(p, { active: v }, v ? 'Produto visível no site.' : 'Produto oculto: não aparece mais no site.')} label="No site" />
                   <Switch checked={p.available} onChange={v => patch(p, { available: v }, v ? 'Produto disponível para compra.' : 'Produto indisponível: continua no site, sem preço.')} label="Disponível" />
