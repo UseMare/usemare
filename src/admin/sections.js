@@ -1,4 +1,4 @@
-import { CircleHelp, FileText, House, LayoutDashboard, Mail, Package, PanelsTopLeft, Settings, Sparkles, Star, Tags, Users, Menu } from 'lucide-react'
+import { CircleHelp, FileText, Gift, House, LayoutDashboard, Mail, Package, PanelsTopLeft, Settings, Sparkles, Star, Tags, Users, Menu } from 'lucide-react'
 
 export const BASE = '/painel-loja'
 
@@ -9,6 +9,7 @@ export const sections = {
   categorias:    { label: 'Categorias',      icon: Tags,            path: `${BASE}/categorias`,          stage: 7,  description: 'Coleções, tipos de peça e cards.' },
   destaques:     { label: 'Destaques',       icon: Sparkles,        path: `${BASE}/destaques`,           stage: 8,  description: 'Produtos do card flutuante.' },
   paginaInicial: { label: 'Página inicial',  icon: House,           path: `${BASE}/pagina-inicial`,      stage: 9,  description: 'Banner, vitrine e textos do Início.' },
+  colecao:       { label: 'Coleção',         icon: Gift,            path: `${BASE}/colecao`,             stage: 11, description: 'Nome, textos e peças da coleção.' },
   menuSite:      { label: 'Menu do site',    icon: Menu,            path: `${BASE}/menu-do-site`,        stage: 11, description: 'Nomes das páginas no menu.' },
   paginas:       { label: 'Textos das páginas', icon: FileText,     path: `${BASE}/paginas`,             stage: 10, description: 'Sobre, catálogo, promoções e avisos.' },
   clientes:      { label: 'Clientes',        icon: Users,           path: `${BASE}/clientes`,            stage: 12, description: 'Contas e WhatsApp das clientes.' },
@@ -23,6 +24,6 @@ export const sections = {
 export const navGroups = [
   { label: null,       items: ['inicio'] },
   { label: 'Loja',     items: ['produtos', 'categorias', 'destaques'] },
-  { label: 'Site',     items: ['paginaInicial', 'menuSite', 'paginas', 'aparencia'] },
+  { label: 'Site',     items: ['paginaInicial', 'colecao', 'menuSite', 'paginas', 'aparencia'] },
   { label: 'Clientes', items: ['clientes', 'avaliacoes', 'newsletter'] },
 ]

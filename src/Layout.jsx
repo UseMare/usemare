@@ -39,9 +39,12 @@ export const announcementDefaults = {
 
 // Menu do topo: os endereços são fixos; os nomes vêm do painel (Menu do site → chave 'menu').
 export const menuDefaults = { inicio: 'Início', produtos: 'Produtos', colecao: 'Coleção Dezembro', promocoes: 'Promoções', sobre: 'Sobre nós' }
-const menuLinks = [['inicio', '/'], ['produtos', '/produtos'], ['colecao', '/colecao-dezembro'], ['promocoes', '/promocoes'], ['sobre', '/sobre']]
+const menuLinks = [['inicio', '/'], ['produtos', '/produtos'], ['colecao', '/colecao'], ['promocoes', '/promocoes'], ['sobre', '/sobre']]
 export const getNavItems = () => {
   const names = pageContent('menu', menuDefaults)
+  // O nome da coleção vem do painel → Coleção (é o mesmo nome do menu, da página e da aba).
+  const collectionName = String(pageContent('collection', { name: '' }).name || '').trim()
+  if (collectionName) names.colecao = collectionName
   return menuLinks.map(([key, to]) => ({ label: String(names[key] || '').trim() || menuDefaults[key], to }))
 }
 

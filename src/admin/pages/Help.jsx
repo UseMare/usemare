@@ -53,6 +53,18 @@ const topics = [
     </>,
   },
   {
+    title: 'Coleção (página da coleção do momento)',
+    body: <>
+      <p>A página <b>usemare.com.br/colecao</b> muda quando você quiser: Coleção Janeiro, Verão, Dia das Mães…</p>
+      <ul>
+        <li><b>Nome da coleção</b> é também o nome no menu do topo.</li>
+        <li>Escolha as peças e a ordem delas; o resto do catálogo não muda.</li>
+        <li>Os enfeites dourados e o quadro do final podem ser ligados ou desligados.</li>
+      </ul>
+      {go('/colecao', 'Ir para Coleção')}
+    </>,
+  },
+  {
     title: 'Destaques (card que aparece no canto)',
     body: <>
       <p>Escolha até <b>5 produtos</b> e a ordem. O card aparece no canto do site alguns segundos depois que a cliente entra e troca de peça a cada 5 segundos. Peças escondidas ou esgotadas saem do card sozinhas e voltam quando ficarem disponíveis.</p>

@@ -1,6 +1,6 @@
 import React, { Suspense, lazy } from 'react'
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import './fonts.css'
 import './styles.css'
 import './pages.css'
@@ -17,7 +17,7 @@ const Catalog = lazy(loadCatalog)
 const Product = lazy(loadProduct)
 const About = lazy(() => import('./pages/About.jsx'))
 const Promotions = lazy(() => import('./pages/Promotions.jsx'))
-const December = lazy(() => import('./pages/December.jsx'))
+const Collection = lazy(() => import('./pages/Collection.jsx'))
 const NotFound = lazy(() => import('./pages/NotFound.jsx'))
 const Login = lazy(() => import('./pages/Login.jsx'))
 const LegalPage = lazy(() => import('./pages/Legal.jsx'))
@@ -40,7 +40,8 @@ const AdminApp = lazy(() => import('./admin/AdminApp.jsx'))
 //   /produtos             Catálogo completo (?categoria=, ?busca=, filtros)
 //   /produto/:slug        Página individual de cada peça
 //   /promocoes            Promoções
-//   /colecao-dezembro     Coleção Dezembro (peças da categoria colecao-dezembro)
+//   /colecao              Página da coleção (nome, textos e peças no painel → Coleção)
+//                         (/colecao-dezembro, o endereço antigo, leva para /colecao)
 //   /sobre                Sobre nós (+ #como-comprar)
 //   /entrar               Login / criar conta
 //   /politica-de-privacidade, /trocas-e-devolucoes, /termos-de-uso   (links só no rodapé)
@@ -58,7 +59,8 @@ createRoot(document.getElementById('root')).render(
                 <Route path="produtos" element={<Catalog />} />
                 <Route path="produto/:slug" element={<Product />} />
                 <Route path="promocoes" element={<Promotions />} />
-                <Route path="colecao-dezembro" element={<December />} />
+                <Route path="colecao" element={<Collection />} />
+                <Route path="colecao-dezembro" element={<Navigate to="/colecao" replace />} />
                 <Route path="sobre" element={<About />} />
                 <Route path="entrar" element={<Login />} />
                 {legalPages.map(p => <Route key={p.path} path={p.path.slice(1)} element={<LegalPage contentKey={p.contentKey} />} />)}
