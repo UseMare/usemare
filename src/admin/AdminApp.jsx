@@ -187,7 +187,7 @@ function Shell({ session, profile }) {
           <button className="adm-icon-btn adm-only-mobile" onClick={() => setMenuOpen(true)} aria-label="Abrir menu"><Menu /></button>
           <span className="adm-topbar-title">{title}</span>
           <Link className="adm-icon-btn adm-help-btn" to={sections.ajuda.path} aria-label="Ajuda do painel" title="Ajuda do painel"><CircleHelp /></Link>
-          <a className="adm-btn outline small" href="/" target="_blank" rel="noreferrer"><ExternalLink /> <span>Ver loja</span></a>
+          <a className="adm-btn outline small adm-site-btn" href="/" target="_blank" rel="noreferrer" title="Abrir o site da loja"><ExternalLink /> <span>Site</span></a>
           <UserMenu email={session.user.email} name={profile?.full_name} avatar={profile?.avatar_url} />
         </header>
         <main className="adm-content">

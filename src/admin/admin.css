@@ -98,7 +98,8 @@
   .adm-only-desktop { display: none !important; }
   .adm-content { padding: 4px 16px 24px; }
   .adm-page-title { margin-bottom: 16px; }
-  .adm-topbar .adm-btn span, .adm-usermenu-name { display: none; }
+  .adm-topbar .adm-btn:not(.adm-site-btn) span, .adm-usermenu-name { display: none; }
+  .adm-site-btn { gap: 6px; padding-inline: 10px; }
 }
 
 /* ---------- Componentes ---------- */
@@ -905,3 +906,11 @@ a.adm-stat:hover { border-color: var(--adm-wine); }
 /* Gráfico de acessos 45% mais baixo */
 .adm-feature .adm-chart { height: 72px; }
 @media (max-width: 600px) { .adm-feature .adm-chart { height: 55px; } }
+.adm-feature-top b.adm-feature-total { display: flex; align-items: baseline; gap: 8px; } .adm-feature-total small { color: var(--adm-muted); font-size: 15px; font-weight: 600; letter-spacing: 0; }
+.adm .adm-quickprice-field input:focus-visible { outline: none; } /* a caixa em volta já mostra o foco */
+/* Menu lateral: acompanha a animação da coluna ao recolher/expandir (antes pulava de largura
+   e ficava por cima da página ou deixava um vão). */
+@media (min-width: 961px) {
+  .adm-sidebar { width: auto; min-width: 0; }
+  .adm-nav a, .adm-nav-foot a, .adm-nav-group p, .adm-brand { white-space: nowrap; }
+}

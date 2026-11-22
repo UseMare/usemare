@@ -138,7 +138,7 @@ export default function Dashboard({ session, profile }) {
                 <span className="adm-feature-label"><Users /> Visitantes · {periodLabel}
                   <InfoTip label="Sobre os acessos">{'Contamos as visitas direto no seu banco, sem Google e sem cookies. Ninguém é identificado: cada aparelho recebe só um código aleatório.\n\nVocê (e quem administra a loja) não conta, nem robôs de busca.\n\nComeçou a contar em 22/11/2026.'}</InfoTip>
                 </span>
-                <b>{s ? num(s.visitors) : '–'}</b>
+                <b className="adm-feature-total"><small>Total de</small>{s ? num(s.visitors) : '–'}{s && <small>{s.visitors === 1 ? 'visitante' : 'visitantes'}</small>}</b>
                 {s && <Change now={s.visitors} before={s.prevVisitors} />}
               </div>
               <div className="adm-kpis">
