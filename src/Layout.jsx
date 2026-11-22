@@ -37,13 +37,13 @@ export const announcementDefaults = {
   ],
 }
 
-export const navItems = [
-  { label: 'Início', to: '/' },
-  { label: 'Produtos', to: '/produtos' },
-  { label: 'Coleção Dezembro', to: '/colecao-dezembro' },
-  { label: 'Promoções', to: '/promocoes' },
-  { label: 'Sobre nós', to: '/sobre' },
-]
+// Menu do topo: os endereços são fixos; os nomes vêm do painel (Menu do site → chave 'menu').
+export const menuDefaults = { inicio: 'Início', produtos: 'Produtos', colecao: 'Coleção Dezembro', promocoes: 'Promoções', sobre: 'Sobre nós' }
+const menuLinks = [['inicio', '/'], ['produtos', '/produtos'], ['colecao', '/colecao-dezembro'], ['promocoes', '/promocoes'], ['sobre', '/sobre']]
+export const getNavItems = () => {
+  const names = pageContent('menu', menuDefaults)
+  return menuLinks.map(([key, to]) => ({ label: String(names[key] || '').trim() || menuDefaults[key], to }))
+}
 
 // Marca o item do menu certo também quando a página é /produtos com categoria.
 function isActive(item, location, params) {
@@ -318,7 +318,7 @@ export default function Layout() {
           </div>
           <Brand />
           <nav className="main-nav" aria-label="Menu principal">
-            {navItems.map(item => (
+            {getNavItems().map(item => (
               <NavLink key={item.label} to={item.to} className={() => isActive(item, location, params) ? 'active' : ''} end>{item.label}</NavLink>
             ))}
           </nav>
@@ -336,7 +336,7 @@ export default function Layout() {
 
       <div className={`drawer ${menuOpen ? 'open' : ''}`} inert={!menuOpen}>
         <div className="drawer-head"><Brand onClick={() => setMenuOpen(false)} /><button className="icon-button" onClick={() => setMenuOpen(false)} aria-label="Fechar menu"><X /></button></div>
-        {navItems.map(item => <Link to={item.to} key={item.label} className={isActive(item, location, params) ? 'active' : ''}>{item.label}<ArrowRight /></Link>)}
+        {getNavItems().map(item => <Link to={item.to} key={item.label} className={isActive(item, location, params) ? 'active' : ''}>{item.label}<ArrowRight /></Link>)}
         <Link to="/entrar" className="drawer-account"><UserRound /> {user ? 'Minha conta' : 'Entrar / criar conta'}</Link>
         <a className="drawer-whats" href={whatsappLink(helloMessage)} target="_blank" rel="noreferrer"><WhatsApp /> Fale com a gente</a>
       </div>

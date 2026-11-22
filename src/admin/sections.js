@@ -1,4 +1,4 @@
-import { CircleHelp, FileText, House, LayoutDashboard, Mail, Package, PanelsTopLeft, Settings, Sparkles, Star, Tags, Users } from 'lucide-react'
+import { CircleHelp, FileText, House, LayoutDashboard, Mail, Package, PanelsTopLeft, Settings, Sparkles, Star, Tags, Users, Menu } from 'lucide-react'
 
 export const BASE = '/painel-loja'
 
@@ -9,6 +9,7 @@ export const sections = {
   categorias:    { label: 'Categorias',      icon: Tags,            path: `${BASE}/categorias`,          stage: 7,  description: 'Criar, renomear, ordenar e ocultar categorias; imagem do card da página inicial e texto do banner.' },
   destaques:     { label: 'Destaques',       icon: Sparkles,        path: `${BASE}/destaques`,           stage: 8,  description: 'Escolher até 5 produtos para o card flutuante de destaques e a ordem deles.' },
   paginaInicial: { label: 'Página inicial',  icon: House,           path: `${BASE}/pagina-inicial`,      stage: 9,  description: 'Hero (fotos e textos), cards de categorias, banners e quadro de serviços.' },
+  menuSite:      { label: 'Menu do site',    icon: Menu,            path: `${BASE}/menu-do-site`,        stage: 11, description: 'Nomes das páginas no menu do topo (ex.: trocar Coleção Dezembro por Coleção Janeiro).' },
   paginas:       { label: 'Textos das páginas', icon: FileText,     path: `${BASE}/paginas`,             stage: 10, description: 'Sobre nós, Como comprar, topo do catálogo, promoções e faixa de avisos do topo.' },
   clientes:      { label: 'Clientes',        icon: Users,           path: `${BASE}/clientes`,            stage: 12, description: 'Contas criadas no site: nome, e-mail e WhatsApp (clique para conversar), com busca e planilha.' },
   avaliacoes:    { label: 'Avaliações',      icon: Star,            path: `${BASE}/avaliacoes`,          stage: 12, description: 'Aprovar ou recusar as avaliações que as clientes enviam.' },
@@ -22,6 +23,6 @@ export const sections = {
 export const navGroups = [
   { label: null,       items: ['inicio'] },
   { label: 'Loja',     items: ['produtos', 'categorias', 'destaques'] },
-  { label: 'Site',     items: ['paginaInicial', 'paginas', 'aparencia'] },
+  { label: 'Site',     items: ['paginaInicial', 'menuSite', 'paginas', 'aparencia'] },
   { label: 'Clientes', items: ['clientes', 'avaliacoes', 'newsletter'] },
 ]

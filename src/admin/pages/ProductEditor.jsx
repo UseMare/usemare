@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, ExternalLink, Plus, Trash2, X } from 'lucide-react'
 import { supabase } from '../../supabase.js'
@@ -101,7 +101,6 @@ export default function ProductEditor() {
   const [errors, setErrors] = useState({})
   const [saving, setSaving] = useState(false)
   const [loadError, setLoadError] = useState(null)
-  const slugTouched = useRef(false)
 
   useEffect(() => {
     let alive = true
@@ -119,7 +118,6 @@ export default function ProductEditor() {
           if (!product) { setLoadError('Produto não encontrado (pode ter sido excluído).'); return }
           const f = toForm(product)
           setForm(f); setSaved(f); setRow(product)
-          slugTouched.current = true
         }
       } catch (error) { if (alive) setLoadError(errorText(error)) }
     })()
@@ -135,7 +133,7 @@ export default function ProductEditor() {
   if (!form) return <Loading text="Carregando produto…" />
 
   const set = (field, value) => setForm(f => ({ ...f, [field]: value }))
-  const setName = name => setForm(f => ({ ...f, name, slug: slugTouched.current ? f.slug : slugify(name) }))
+  const setName = name => setForm(f => ({ ...f, name }))
   const toggleCategory = cid => set('categoryIds', form.categoryIds.includes(cid) ? form.categoryIds.filter(x => x !== cid) : [...form.categoryIds, cid])
   const setKind = kind => setForm(f => ({ ...f, kind, sizes: kind === 'suplemento' ? [] : (f.sizes.length ? f.sizes : [...DEFAULT_SIZES]) }))
 
@@ -155,7 +153,9 @@ export default function ProductEditor() {
       const isRoupa = form.kind === 'roupa'
       const fields = {
         name: form.name.trim(),
-        slug: await uniqueSlug(form.slug || form.name, 'products', row?.id),
+        // Endereço da página: criado sozinho pelo nome no cadastro e depois fixo (renomear o produto
+        // não muda o link, para não quebrar links já compartilhados ou guardados pelo Google).
+        slug: isNew ? await uniqueSlug(form.name, 'products') : row.slug,
         kind: form.kind,
         price: toNumber(form.price),
         old_price: form.old_price ? toNumber(form.old_price) : null,
@@ -198,7 +198,6 @@ export default function ProductEditor() {
       const fresh = await getProduct(productId)
       const f = toForm(fresh)
       setRow(fresh); setForm(f); setSaved(f); setErrors({})
-      slugTouched.current = true
       toast(isNew ? 'Produto criado! Ele já aparece no site.' : 'Alterações salvas. O site já mostra a versão nova.')
       if (isNew) navigate(`${BASE}/produtos/${productId}`, { replace: true })
     } catch (error) {
@@ -235,9 +234,10 @@ export default function ProductEditor() {
             <Field label="Nome do produto *" error={errors.name}>
               <input value={form.name} onChange={e => setName(e.target.value)} placeholder="Ex.: Conjunto Maré Move Lilás" maxLength={120} />
             </Field>
-            <Field label="Endereço da página" hint={`maré.com.br/produto/${form.slug || slugify(form.name) || '…'} — preenchido sozinho pelo nome.`}>
-              <input value={form.slug} onChange={e => { slugTouched.current = true; set('slug', slugify(e.target.value)) }} placeholder="conjunto-mare-move-lilas" />
-            </Field>
+            <p className="adm-hint adm-slug-info">
+              Endereço da página: <b>usemare.com.br/produto/{isNew ? (slugify(form.name) || '…') : row.slug}</b>
+              {isNew ? ' — criado sozinho a partir do nome.' : ' — fica fixo mesmo se o nome mudar, para não quebrar links já compartilhados.'}
+            </p>
             <div className="adm-field">
               <span>Tipo de ficha</span>
               <div className="adm-segmented" role="radiogroup">

@@ -5,6 +5,7 @@ import { categoryBySlug, products } from '../products.js'
 import { usePageTitle, useShop } from '../shop.jsx'
 import { PageIntro, ProductCard, WhatsApp } from '../ui.jsx'
 import { whatsappLink } from '../store.js'
+import { getNavItems } from '../Layout.jsx'
 
 // Coleção Dezembro (/colecao-dezembro): mostra as peças da categoria "colecao-dezembro".
 // Textos do topo = os da categoria (painel → Categorias → Coleção Dezembro); as peças entram e
@@ -23,7 +24,8 @@ const giftMessage = 'Oi, Maré! 🎁 Quero presentear alguém com uma peça da C
 export default function December() {
   useShop() // redesenha quando o catálogo do Supabase chega
   const category = { ...defaults, ...Object.fromEntries(Object.entries(categoryBySlug(DECEMBER_SLUG) || {}).filter(([, v]) => v)) }
-  usePageTitle(category.name)
+  const menuName = getNavItems().find(i => i.to === '/colecao-dezembro')?.label || category.name // nome do menu (painel → Menu do site)
+  usePageTitle(menuName)
   const items = products.filter(p => p.categorySlugs.includes(DECEMBER_SLUG))
   const photos = items.map(p => p.photos[0]).filter(Boolean)
 
@@ -31,7 +33,7 @@ export default function December() {
     <div className="xmas-page">
       <PageIntro
         className="is-xmas"
-        crumbs={[{ label: category.name }]}
+        crumbs={[{ label: menuName }]}
         eyebrow={category.banner_eyebrow}
         title={category.banner_title}
         text={category.banner_text}

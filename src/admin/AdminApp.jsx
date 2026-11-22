@@ -19,6 +19,7 @@ import Appearance from './pages/Appearance.jsx'
 import Reviews from './pages/Reviews.jsx'
 import Newsletter from './pages/Newsletter.jsx'
 import Customers from './pages/Customers.jsx'
+import MenuNames from './pages/MenuNames.jsx'
 import Help from './pages/Help.jsx'
 import { supabase } from '../supabase.js'
 import { ConfirmProvider, ToastProvider } from './ui.jsx'
@@ -38,6 +39,7 @@ const pages = {
   aparencia: Appearance,
   configuracoes: Settings,
   clientes: Customers,
+  menuSite: MenuNames,
   avaliacoes: Reviews,
   newsletter: Newsletter,
   ajuda: Help,
