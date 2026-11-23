@@ -7,6 +7,7 @@ import { Minus, Plus, X } from 'lucide-react'
 
 const SIZE = 320
 const QUALITY = 0.5
+const JPEG_QUALITY = 0.8 // reserva do Safari: ~20–30 KB
 
 export default function AvatarCropper({ file, onCancel, onConfirm }) {
   const [src, setSrc] = useState(null)
@@ -88,8 +89,11 @@ export default function AvatarCropper({ file, onCancel, onConfirm }) {
       const ctx = canvas.getContext('2d')
       ctx.imageSmoothingQuality = 'high'
       ctx.drawImage(img, -pos.x / scale, -pos.y / scale, frame / scale, frame / scale, 0, 0, SIZE, SIZE)
-      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/webp', QUALITY))
-      if (!blob || blob.type !== 'image/webp') throw new Error('webp')
+      // O Safari (iPhone/iPad) não gera WebP: devolve PNG. Nesse caso salva em JPG.
+      const toBlob = (type, q) => new Promise(resolve => canvas.toBlob(resolve, type, q))
+      let blob = await toBlob('image/webp', QUALITY)
+      if (!blob || blob.type !== 'image/webp') blob = await toBlob('image/jpeg', JPEG_QUALITY)
+      if (!blob || blob.type !== 'image/jpeg' && blob.type !== 'image/webp') throw new Error('formato')
       await onConfirm(blob)
     } catch {
       setError('Não deu para preparar a foto. Tente de novo. 🤍')

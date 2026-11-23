@@ -19,7 +19,7 @@ const TABS = [
   { id: 'acesso', label: 'E-mail e senha', Icon: LockKeyhole },
 ]
 
-const AVATAR_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+const AVATAR_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'] // HEIC: fotos do iPhone
 const AVATAR_MAX = 15 * 1024 * 1024 // arquivo escolhido no aparelho; o enviado é um WebP de ~10–20 KB
 
 // Caminho do arquivo dentro do bucket, a partir do link público.
@@ -76,8 +76,8 @@ function useAvatarUpload() {
   const upload = async blob => {
     setBusy(true)
     try {
-      const path = `${user.id}/avatar.webp`
-      const { error } = await supabase.storage.from('avatares').upload(path, blob, { contentType: 'image/webp', cacheControl: '3600', upsert: true })
+      const path = `${user.id}/avatar.${blob.type === 'image/jpeg' ? 'jpg' : 'webp'}` // JPG vem do Safari
+      const { error } = await supabase.storage.from('avatares').upload(path, blob, { contentType: blob.type, cacheControl: '3600', upsert: true })
       if (error) throw error
       await saveUrl(`${supabase.storage.from('avatares').getPublicUrl(path).data.publicUrl}?v=${Date.now()}`)
       setPicked(null)
