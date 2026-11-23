@@ -6,7 +6,7 @@ import { supabase } from '../supabase.js'
 const must = ({ data, error }) => { if (error) throw error; return data }
 
 export const PRODUCT_COLUMNS = `id, code, slug, old_slugs, name, kind, brand, price, old_price, available, active, sort_order, description,
-  colors, sizes, details, flavors, package_size, usage, notice, created_at, updated_at,
+  colors, sizes, details, flavors, package_size, usage, notice, installments_times, installment_value, installment_note, created_at, updated_at,
   product_images ( id, path, thumb_path, alt, position ),
   product_categories ( category_id )`
 

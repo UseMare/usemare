@@ -352,6 +352,10 @@ select.adm-input { appearance: auto; }
 .adm-card.adm-ed-delete { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; padding-block: 14px; }
 .adm-ed-delete .adm-hint { flex: 1 1 200px; margin: 0; }
 .adm-segmented button { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.adm-segmented.adm-seg-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.adm-segmented.adm-seg-3 button { padding-inline: 4px; }
+.adm-ed-inst .adm-inst-pair { margin-top: 12px; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); }
+.adm-ed-inst .adm-inst-pair + .adm-field { margin-top: 10px; }
 .adm-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .adm-chips button { min-width: 46px; padding: 7px 12px; border: 1px solid var(--adm-line-strong); border-radius: 999px; color: var(--adm-text); background: #fff; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
 .adm-chips button.active { border-color: var(--adm-wine); color: #fff; background: var(--adm-wine); }

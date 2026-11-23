@@ -19,9 +19,10 @@ const photos = (id, count) =>
 
 const thumbOf = photo => photo.replace(/\.webp$/, '-480.webp')
 
-// Parcelas (Configurações do painel). 1 = só à vista: não mostra parcela.
-const installments = (price, times = 6) => times > 1
-  ? `${times}x de R$ ${(price / times).toFixed(2).replace(".", ",")}`
+// Parcelas: o produto pode ter as suas (vezes, valor, texto); senão usa as Configurações do painel.
+// 1 = só à vista: não mostra parcela.
+const installments = (price, times = 6, value) => times > 1
+  ? `${times}x de R$ ${(value || price / times).toFixed(2).replace(".", ",")}`
   : null
 
 const formatPrice = price => `R$ ${price.toFixed(2).replace('.', ',')}`
@@ -518,7 +519,8 @@ const enrich = product => {
     available: product.available !== false,
     thumbs: product.thumbs || product.photos.map(thumbOf),
     priceLabel: formatPrice(product.price),
-    installments: installments(product.price, store.installments),
+    installments: installments(product.price, product.installmentsTimes || store.installments, product.installmentValue),
+    installmentNote: product.installmentNote || 'sem juros',
   }
 }
 

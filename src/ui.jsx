@@ -100,7 +100,7 @@ export function ProductCard({ product, index = 0, sizes = defaultSizes }) {
       </div>
       <h3><Link to={url}>{product.name}</Link></h3>
       <Price product={product} />
-      {product.installments && <small>{product.installments} sem juros</small>}
+      {product.installments && <small>{product.installments} {product.installmentNote}</small>}
     </article>
   )
 }

@@ -15,7 +15,16 @@ const emptyProduct = () => ({
   colors: [{ name: '', hex: '#c9a99a' }], sizes: [...DEFAULT_SIZES], details: [],
   brand: '', flavors: [], package_size: '', usage: '', notice: '',
   active: true, available: true, categoryIds: [], photos: [],
+  inst_mode: 'padrao', inst_times: '6', inst_value: '', inst_note: '',
 })
+
+// Parcelamento do produto: padrão da loja (tudo vazio), só à vista (1) ou personalizado.
+const instForm = row => ({
+  inst_mode: !row.installments_times ? 'padrao' : row.installments_times === 1 ? 'avista' : 'custom',
+  inst_times: String(row.installments_times > 1 ? row.installments_times : 6),
+  inst_value: moneyText(row.installment_value), inst_note: row.installment_note || '',
+})
+const INST_MODES = [['padrao', 'Padrão'], ['custom', 'Personalizar'], ['avista', 'À vista']]
 
 // Linha do banco → formulário
 const toForm = row => ({
@@ -27,6 +36,7 @@ const toForm = row => ({
   active: row.active, available: row.available,
   categoryIds: (row.product_categories || []).map(pc => pc.category_id),
   photos: (row.product_images || []).map(img => ({ id: img.id, path: img.path, thumb_path: img.thumb_path })),
+  ...instForm(row),
 })
 
 // "89,90", "89.90", "1.299,90" → número. Vírgula é sempre o decimal; ponto só é decimal em "89.90".
@@ -68,6 +78,7 @@ const validate = (form, categories) => {
     if (!(old > 0)) errors.old_price = 'Preço antigo inválido.'
     else if (old <= price) errors.old_price = 'Para entrar em promoção, o preço antigo precisa ser MAIOR que o preço atual.'
   }
+  if (form.inst_mode === 'custom' && form.inst_value && !(toNumber(form.inst_value) > 0)) errors.inst_value = 'Valor da parcela inválido.'
   if (!form.categoryIds.some(id => categories.find(c => c.id === id)?.kind === 'colecao')) errors.categories = 'Marque pelo menos uma coleção (ex.: Maré Move ou Moda feminina).'
   if (form.kind === 'roupa' && form.colors.some(c => !c.name.trim())) errors.colors = 'Dê um nome para cada cor (ou remova a cor vazia).'
   if (form.details.some(d => !d.label.trim() || !d.value.trim())) errors.details = 'Preencha os dois campos de cada detalhe (ou remova a linha).'
@@ -114,6 +125,12 @@ export default function ProductEditor() {
   const [errors, setErrors] = useState({})
   const [saving, setSaving] = useState(false)
   const [loadError, setLoadError] = useState(null)
+  const [storeTimes, setStoreTimes] = useState(6) // parcelas padrão (Configurações)
+
+  useEffect(() => {
+    supabase.from('store_settings').select('installments_max').eq('id', 1).maybeSingle()
+      .then(({ data }) => { if (data?.installments_max) setStoreTimes(data.installments_max) })
+  }, [])
 
   useEffect(() => {
     let alive = true
@@ -183,6 +200,9 @@ export default function ProductEditor() {
         notice: !isRoupa ? form.notice.trim() || null : null,
         active: form.active,
         available: form.available,
+        installments_times: form.inst_mode === 'padrao' ? null : form.inst_mode === 'avista' ? 1 : Number(form.inst_times),
+        installment_value: form.inst_mode === 'custom' && form.inst_value ? toNumber(form.inst_value) : null,
+        installment_note: form.inst_mode === 'custom' ? form.inst_note.trim() || null : null,
       }
 
       let productId = row?.id
@@ -232,6 +252,16 @@ export default function ProductEditor() {
   }
 
   const promo = form.old_price && toNumber(form.old_price) > toNumber(form.price)
+
+  // Prévia do texto do site: "ou 6x de R$ 13,32 sem juros"
+  const instPreview = (() => {
+    const times = form.inst_mode === 'padrao' ? storeTimes : form.inst_mode === 'avista' ? 1 : Number(form.inst_times)
+    const price = toNumber(form.price)
+    if (times <= 1 || !(price > 0)) return null
+    const value = form.inst_mode === 'custom' && toNumber(form.inst_value) > 0 ? toNumber(form.inst_value) : price / times
+    const note = (form.inst_mode === 'custom' && form.inst_note.trim()) || 'sem juros'
+    return `ou ${times}x de R$ ${moneyText(value)} ${note}`
+  })()
 
   return (
     <div className="adm-editor">
@@ -345,6 +375,31 @@ export default function ProductEditor() {
               </Field>
             </div>
             {promo && <p className="adm-hint adm-price-hint is-promo">Em promoção.</p>}
+          </section>
+
+          <section className="adm-card adm-ed-inst">
+            <CardHead title="Parcelamento" info={`Padrão: segue as Configurações da loja (hoje ${storeTimes > 1 ? `${storeTimes}x sem juros` : 'só à vista'}).\n\nPersonalizar: escolha as vezes, o valor de cada parcela e o texto só deste produto. Valor vazio = preço dividido pelas vezes.`} />
+            <div className="adm-segmented adm-seg-3" role="radiogroup">
+              {INST_MODES.map(([key, label]) => (
+                <button key={key} type="button" role="radio" aria-checked={form.inst_mode === key} className={form.inst_mode === key ? 'active' : ''} onClick={() => set('inst_mode', key)}>{label}</button>
+              ))}
+            </div>
+            {form.inst_mode === 'custom' && <>
+              <div className="adm-price-pair adm-inst-pair">
+                <Field label="Vezes">
+                  <select value={form.inst_times} onChange={e => set('inst_times', e.target.value)}>
+                    {Array.from({ length: 23 }, (_, i) => String(i + 2)).map(n => <option key={n} value={n}>{n}x</option>)}
+                  </select>
+                </Field>
+                <Field label="Valor da parcela" error={errors.inst_value} hint="Vazio = preço dividido pelas vezes.">
+                  <div className="adm-money"><span>R$</span><input inputMode="decimal" value={form.inst_value} onChange={e => set('inst_value', e.target.value.replace(/[^0-9,.]/g, ''))} placeholder={toNumber(form.price) > 0 ? moneyText(toNumber(form.price) / Number(form.inst_times)) : '0,00'} /></div>
+                </Field>
+              </div>
+              <Field label="Texto depois do valor" hint={'Ex.: "sem juros", "com juros", "no cartão".\n\nVazio = "sem juros".'}>
+                <input value={form.inst_note} onChange={e => set('inst_note', e.target.value)} placeholder="sem juros" maxLength={40} />
+              </Field>
+            </>}
+            <p className="adm-hint adm-price-hint">{instPreview || 'Sem parcelas no site.'}</p>
           </section>
 
           <section className={`adm-card adm-ed-cats ${errors.categories ? 'has-error-card' : ''}`}>

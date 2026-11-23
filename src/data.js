@@ -11,7 +11,7 @@ import { setContent } from './content.js'
 const CACHE_KEY = 'mare-catalogo-v2'
 
 const PRODUCT_FIELDS = `id, code, slug, old_slugs, name, kind, brand, price, old_price, available, sort_order, description,
-  colors, sizes, details, flavors, package_size, usage, notice,
+  colors, sizes, details, flavors, package_size, usage, notice, installments_times, installment_value, installment_note,
   product_images ( path, thumb_path, position ),
   product_categories ( category_id )`
 
@@ -44,6 +44,9 @@ const fromRow = (row, slugById) => {
     size: row.package_size,
     usage: row.usage,
     notice: row.notice,
+    installmentsTimes: row.installments_times || undefined, // vazio = padrão da loja
+    installmentValue: row.installment_value ? Number(row.installment_value) : undefined,
+    installmentNote: row.installment_note || undefined,
     photos: images.length ? images.map(i => i.path) : ['/placeholder.svg'],
     thumbs: images.length ? images.map(i => i.thumb_path) : ['/placeholder.svg'],
   }
