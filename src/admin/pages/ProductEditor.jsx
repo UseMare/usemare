@@ -273,7 +273,6 @@ export default function ProductEditor() {
       <div className="adm-editor-grid">
         <div className="adm-editor-main">
           <section className="adm-card adm-ed-info">
-            <div className="adm-card-head"><div><h2>{isNew ? 'Novo produto' : 'Editar produto'}</h2></div></div>
             <Field label="Nome do produto *" error={errors.name}>
               <input value={form.name} onChange={e => setName(e.target.value)} placeholder="Ex.: Conjunto Maré Move Lilás" maxLength={120} />
             </Field>
