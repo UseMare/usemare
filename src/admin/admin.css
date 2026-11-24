@@ -354,6 +354,9 @@ select.adm-input { appearance: auto; }
 .adm-segmented button { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .adm-segmented.adm-seg-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .adm-segmented.adm-seg-3 button { padding-inline: 4px; }
+.adm-segmented.adm-seg-compact { display: inline-grid; grid-template-columns: auto auto; gap: 2px; padding: 3px; border-radius: 8px; justify-self: start; width: max-content; }
+.adm-segmented.adm-seg-compact button { padding: 5px 14px; font-size: 12.5px; border-radius: 6px; }
+.adm-kind-field > span { display: inline-flex; align-items: center; gap: 6px; }
 .adm-ed-inst .adm-inst-pair { margin-top: 12px; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); }
 .adm-ed-inst .adm-inst-pair + .adm-field { margin-top: 10px; }
 .adm-chips { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -660,7 +663,7 @@ a.adm-stat:hover { border-color: var(--adm-wine); }
   .adm-editor-grid .adm-card { padding: 16px; }
   .adm-editor-grid .adm-card-head { margin-bottom: 12px; }
   .adm-ed-cats .adm-check-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .adm-segmented button { padding: 9px 6px; font-size: 12.5px; }
+  .adm-segmented:not(.adm-seg-compact) button { padding: 9px 6px; font-size: 12.5px; }
 }
 
 /* ---------- Página inicial (painel): mais compacta ---------- */
