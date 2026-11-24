@@ -371,7 +371,7 @@ select.adm-input { appearance: auto; }
   .adm-editor-main, .adm-editor-side { display: contents; }
   .adm-editor-grid .adm-card { grid-column: 1 / -1; margin: 0 !important; }
   .adm-editor-grid .adm-ed-visibility, .adm-editor-grid .adm-ed-price { grid-column: auto; }
-  .adm-ed-info { order: 1; } .adm-ed-visibility { order: 2; } .adm-ed-price { order: 3; } .adm-ed-cats { order: 4; }
+  .adm-ed-info { order: 1; } .adm-ed-visibility { order: 2; } .adm-ed-price { order: 3; } .adm-ed-inst { order: 3; } .adm-ed-cats { order: 4; }
   .adm-ed-photos { order: 5; } .adm-ed-kind { order: 6; } .adm-ed-details { order: 7; } .adm-ed-delete { order: 8; }
   .adm-ed-cats .adm-check-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
   .adm-editor-side { position: static; }
