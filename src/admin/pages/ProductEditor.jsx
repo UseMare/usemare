@@ -283,8 +283,8 @@ export default function ProductEditor() {
             <div className="adm-field adm-kind-field">
               <span>Tipo de ficha <InfoTip>{'Produto: cores e tamanhos.\n\nSuplemento: sabores e embalagem.'}</InfoTip></span>
               <div className="adm-segmented adm-seg-compact" role="radiogroup">
-                <button type="button" role="radio" aria-checked={form.kind === 'roupa'} className={form.kind === 'roupa' ? 'active' : ''} onClick={() => setKind('roupa')} title="Produto (cores e tamanhos)">Produto</button>
-                <button type="button" role="radio" aria-checked={form.kind === 'suplemento'} className={form.kind === 'suplemento' ? 'active' : ''} onClick={() => setKind('suplemento')} title="Suplemento (sabores e embalagem)">Suplemento</button>
+                <button type="button" role="radio" aria-checked={form.kind === 'roupa'} className={form.kind === 'roupa' ? 'active' : ''} onClick={() => setKind('roupa')} title="Roupas (cores e tamanhos)">Roupas</button>
+                <button type="button" role="radio" aria-checked={form.kind === 'suplemento'} className={form.kind === 'suplemento' ? 'active' : ''} onClick={() => setKind('suplemento')} title="Produtos (sabores e embalagem)">Produtos</button>
               </div>
             </div>
             <Field label="Descrição" hint={'A primeira frase (até a primeira linha em branco) aparece em destaque.\n\nDeixe uma linha em branco entre os parágrafos.'}>
@@ -327,7 +327,7 @@ export default function ProductEditor() {
             </section>
           ) : (
             <section className="adm-card adm-ed-kind">
-              <div className="adm-card-head"><div><h2>Ficha do suplemento</h2></div></div>
+              <div className="adm-card-head"><div><h2>Ficha do produto</h2></div></div>
               <div className="adm-grid-2">
                 <Field label="Marca"><input value={form.brand} onChange={e => set('brand', e.target.value)} placeholder="Ex.: Lifemore" /></Field>
                 <Field label="Embalagem"><input value={form.package_size} onChange={e => set('package_size', e.target.value)} placeholder="Ex.: Pote de 210 g" /></Field>
