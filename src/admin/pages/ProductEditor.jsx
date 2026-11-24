@@ -282,9 +282,9 @@ export default function ProductEditor() {
               <InfoTip>{'O endereço da página acompanha o nome do produto sozinho.\n\nAo renomear, os links antigos continuam funcionando e levam para o novo endereço.'}</InfoTip>
             </p>
             <div className="adm-field adm-kind-field">
-              <span>Tipo de ficha <InfoTip>{'Roupa: cores e tamanhos.\n\nSuplemento: sabores e embalagem.'}</InfoTip></span>
+              <span>Tipo de ficha <InfoTip>{'Produto: cores e tamanhos.\n\nSuplemento: sabores e embalagem.'}</InfoTip></span>
               <div className="adm-segmented adm-seg-compact" role="radiogroup">
-                <button type="button" role="radio" aria-checked={form.kind === 'roupa'} className={form.kind === 'roupa' ? 'active' : ''} onClick={() => setKind('roupa')} title="Roupa (cores e tamanhos)">Roupa</button>
+                <button type="button" role="radio" aria-checked={form.kind === 'roupa'} className={form.kind === 'roupa' ? 'active' : ''} onClick={() => setKind('roupa')} title="Produto (cores e tamanhos)">Produto</button>
                 <button type="button" role="radio" aria-checked={form.kind === 'suplemento'} className={form.kind === 'suplemento' ? 'active' : ''} onClick={() => setKind('suplemento')} title="Suplemento (sabores e embalagem)">Suplemento</button>
               </div>
             </div>
