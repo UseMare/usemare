@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600">
+  <rect width="600" height="600" fill="#e2cbb9"/>
+  <path d="M0 0 600 600M600 0 0 600" stroke="#c0a999" stroke-width="2" opacity=".55"/>
+  <rect x="210" y="265" width="180" height="70" rx="35" fill="#fcf8f5"/>
+  <text x="300" y="310" fill="#6b5655" font-family="Arial, sans-serif" font-size="20" text-anchor="middle" letter-spacing="4">IMAGEM</text>
+</svg>

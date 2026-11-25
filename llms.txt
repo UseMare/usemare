@@ -1,0 +1,22 @@
+# Maré — Moda feminina e fitness
+
+> Loja online brasileira de moda feminina e fitness (conjuntos Maré Move, vestidos, blusas, saias e calças). O site é a vitrine: a cliente monta a sacola, entra na conta e o pedido segue pronto para o WhatsApp da loja, onde se combinam tamanho, pagamento e entrega. Enviamos para todo o Brasil.
+
+## Loja
+
+- [Início](https://usemare.com.br/): destaques, categorias e novidades
+- [Todos os produtos](https://usemare.com.br/produtos): catálogo completo com filtros e busca
+- [Coleção Dezembro](https://usemare.com.br/colecao-dezembro): peças para as festas de fim de ano
+- [Moda feminina](https://usemare.com.br/produtos?categoria=moda-feminina)
+- [Promoções](https://usemare.com.br/promocoes)
+- [Sobre a Maré](https://usemare.com.br/sobre): história da marca e como comprar
+
+## Políticas
+
+- [Trocas e Devoluções](https://usemare.com.br/trocas-e-devolucoes)
+- [Política de Privacidade](https://usemare.com.br/politica-de-privacidade)
+- [Termos de Uso](https://usemare.com.br/termos-de-uso)
+
+## Lista de páginas
+
+- [Mapa do site](https://usemare.com.br/sitemap.xml): todas as páginas e produtos
