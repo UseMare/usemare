@@ -399,10 +399,10 @@ a.category { display: block; color: inherit; }
   .pdp-strip::-webkit-scrollbar { display: none; }
   .pdp-strip img { flex: 0 0 100%; opacity: 1; transform: none; scroll-snap-align: center; }
   .pdp-main .gallery-arrow { display: none; }
-  .pdp-dots { position: absolute; left: 0; right: 0; bottom: 14px; display: flex; justify-content: center; gap: 6px; }
-  .pdp-dots i { width: 7px; height: 7px; border-radius: 999px; background: rgba(255, 255, 255, .6); transition: width .4s var(--ease-out), background .3s; }
-  .pdp-dots i.active { width: 22px; background: #fff; }
-  .zoom-button { bottom: 34px; }
+  /* Bolinhas abaixo da foto (não por cima): mostram que há mais fotos pra deslizar */
+  .pdp-dots { display: flex; justify-content: center; align-items: center; gap: 7px; padding: 14px 0 4px; }
+  .pdp-dots i { width: 8px; height: 8px; border-radius: 999px; background: rgba(58, 29, 23, .2); cursor: pointer; transition: width .4s var(--ease-out), background .3s; }
+  .pdp-dots i.active { width: 26px; background: var(--wine); }
   .pdp-actions { grid-template-columns: 1fr auto; }
   .pdp-actions .button.outline { grid-column: 1; }
   .pdp-actions .like-big { grid-column: 2; }

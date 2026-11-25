@@ -63,8 +63,12 @@ function Gallery({ product }) {
           <button className="gallery-arrow right" onClick={() => select((active + 1) % total)} aria-label="Próxima foto"><ChevronRight /></button>
         </>}
         <button className="zoom-button" onClick={() => setZoom(true)} aria-label="Ampliar foto"><ZoomIn /></button>
-        <div className="pdp-dots">{product.photos.map((p, i) => <i key={p} className={i === active ? 'active' : ''} />)}</div>
       </div>
+      {total > 1 && (
+        <div className="pdp-dots" aria-hidden="true">
+          {product.photos.map((p, i) => <i key={p} className={i === active ? 'active' : ''} onClick={() => select(i)} />)}
+        </div>
+      )}
 
       {/* Renderizado direto no <body>: dentro da galeria animada, o "position: fixed" ficava preso a ela. */}
       {zoom && createPortal(
