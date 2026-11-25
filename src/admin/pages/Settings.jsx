@@ -3,6 +3,7 @@ import { ExternalLink, MessageCircle } from 'lucide-react'
 import { supabase } from '../../supabase.js'
 import { CardHead, InfoTip, Loading, errorText, useToast, useUnsavedGuard } from '../ui.jsx'
 import { Instagram } from '../../ui.jsx'
+import AdminUsers from '../components/AdminUsers.jsx'
 
 // Configurações da loja (store_settings): WhatsApp, Instagram e parcelamento.
 // O WhatsApp daqui é usado em todos os botões do site (produto, sacola, rodapé, avisos).
@@ -26,7 +27,7 @@ const instagramUser = text => {
   return /^[A-Za-z0-9._]{1,30}$/.test(user) ? user : ''
 }
 
-export default function Settings() {
+export default function Settings({ session }) {
   const toast = useToast()
   const [saved, setSaved] = useState(null)
   const [form, setForm] = useState(null)
@@ -128,6 +129,8 @@ export default function Settings() {
           </select>
         </label>
       </section>
+
+      <AdminUsers currentUserId={session?.user?.id} />
 
       <div className="adm-savebar">
         <span className="adm-savebar-msg">{dirty ? 'Você tem alterações não salvas.' : 'Tudo salvo.'}</span>

@@ -921,3 +921,19 @@ a.adm-stat:hover { border-color: var(--adm-wine); }
   .adm-sidebar { width: auto; min-width: 0; }
   .adm-nav a, .adm-nav-foot a, .adm-nav-group p, .adm-brand { white-space: nowrap; }
 }
+
+/* Configurações → Administração (nível de cada conta) */
+.adm-users-search { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+.adm-users-search .adm-search { flex: 1; }
+.adm-users-search > span { font-size: 12.5px; white-space: nowrap; }
+.adm-users-who { display: grid; gap: 2px; }
+.adm-users-name em { color: var(--adm-muted); font-style: normal; font-weight: 500; }
+.adm-users th:nth-child(2), .adm-users td:nth-child(2) { width: 170px; }
+.adm-users th:nth-child(3), .adm-users td:nth-child(3) { width: 150px; white-space: nowrap; }
+.adm-users-level { width: 100%; min-height: 36px; padding: 6px 10px; border: 1px solid var(--adm-line); border-radius: 8px; background: var(--adm-surface); font: inherit; font-size: 13.5px; cursor: pointer; }
+.adm-users-level.is-admin { border-color: var(--adm-accent); font-weight: 700; }
+.adm-users-level:disabled { opacity: .65; cursor: not-allowed; }
+@media (max-width: 640px) {
+  .adm-users th:nth-child(3), .adm-users td:nth-child(3) { display: none; }
+  .adm-users th:nth-child(2), .adm-users td:nth-child(2) { width: 140px; }
+}
